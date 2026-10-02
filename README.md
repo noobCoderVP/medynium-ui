@@ -1,36 +1,58 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# medynium-ui
 
-## Getting Started
+Next.js workstation for Medynium, a governed Patient 360 and clinical agent. Synthetic data only; decision support, not diagnosis.
 
-First, run the development server:
+Sibling repo: `medynium-apis` (FastAPI). The UI talks only to that API.
+
+## Quick start
+
+Requirements: Node 22 (`.nvmrc`), npm.
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
+cp .env.example .env.local     # Windows: copy .env.example .env.local
+npm run dev                    # http://localhost:3000
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+The home page shows API status. Start the backend in the other repo first (`poetry run poe dev`), or it reports "not reachable".
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## How it talks to the API
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+The browser calls same-origin `/api/*`. `next.config.ts` proxies that to `BACKEND_URL`, so the session cookie is first-party and no CORS or third-party-cookie setup is needed. Use `apiFetch` from `src/lib/api/client.ts`; it turns the API's `{error, message}` contract into an `ApiError`.
 
-## Learn More
+Types come from the backend's OpenAPI file:
 
-To learn more about Next.js, take a look at the following resources:
+```bash
+npm run api:types              # reads ../medynium-apis/docs/api/openapi.json
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Run it after the backend's `poetry run poe openapi` whenever routes or schemas change, and commit `src/lib/api/schema.d.ts`.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Daily commands
 
-## Deploy on Vercel
+| Command              | What it does                                                    |
+| -------------------- | --------------------------------------------------------------- |
+| `npm run dev`        | Dev server (Turbopack)                                          |
+| `npm run check`      | ESLint, Prettier check, `tsc`, Vitest. Run before every commit. |
+| `npm run format`     | Prettier (with Tailwind class sorting)                          |
+| `npm run test:watch` | Vitest in watch mode                                            |
+| `npm run build`      | Production build                                                |
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Husky runs lint-staged (ESLint and Prettier on staged files) on every commit.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Stack
+
+Next.js 16 (App Router), React 19, TypeScript, Tailwind CSS 4, shadcn/ui (add components with `npx shadcn@latest add <name>`), TanStack Query, Zod, Vitest with Testing Library.
+
+## Deploy (Vercel)
+
+1. Import the GitHub repo in Vercel (framework is detected as Next.js).
+2. Set `BACKEND_URL` to the deployed API (see `.env.example`) and optionally `NEXT_PUBLIC_APP_NAME`.
+3. Add the Vercel URL to `CORS_ORIGINS` on the backend only if you ever call the API from the browser directly; the proxy does not need it.
+
+The full list of external accounts, keys and decisions is in `medynium-apis/docs/external-dependencies.md`.
+
+## Notes
+
+- `medynium-prototype.html` (in the project folder) is a behaviour reference, not the target look.
+- A banner stating that data is synthetic is rendered in the root layout and must stay on every screen that shows patient data.
