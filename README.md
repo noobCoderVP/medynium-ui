@@ -1,12 +1,104 @@
-# medynium-ui
+# Medynium UI
 
-Next.js workstation for Medynium, a governed Patient 360 and clinical agent. Synthetic data only; decision support, not diagnosis.
+**The clinical workstation for Medynium: one Patient 360 screen, an evidence-first AI assistant, and a full audit trail.**
 
-Sibling repo: `medynium-apis` (FastAPI). The UI talks only to that API.
+A doctor opens a patient, sees the medications, labs, claims and timeline in one place, and can ask the assistant a question. Every statement in the answer carries a tag and opens a **Why?** panel showing the exact record or label text behind it.
+
+> Synthetic data only. Decision support, not diagnosis. Built for the Snowflake CoCo CLI Hackathon 2026.
+
+This is the Next.js front end. It never talks to Snowflake: the only thing it calls is the FastAPI backend in the sibling repo, `medynium-apis`.
+
+## What you can do
+
+| Screen | Route | What it gives you |
+| --- | --- | --- |
+| Sign in | `/sign-in`, `/invite/[token]` | Password sign-in, optional email code, invite and reset links |
+| Dashboard | `/dashboard` | Worklist, what changed, utilisation, and a "Brief me" summary |
+| Patients | `/patients`, `/patients/[patientId]` | Live search with server-side paging and filters. A patient workspace with Overview, Timeline, Medications, Labs, Claims, Notes and Safety review tabs |
+| Knowledge | `/knowledge` | Drug label search with full citations |
+| Activity | `/activity` | The signed-in user's own audit log |
+| Admin | `/admin`, `/admin/users`, `/admin/invites` | Health, users and entitlements, invites (admin doctors only) |
+| Assistant | collapsible panel and command bar | Ask in plain words; watch the steps stream in; open the Why? evidence drawer |
+
+Workstation touches: collapsible sidebar, command palette, focus mode, resizable assistant, light and dark themes, and a mobile tab bar.
+
+## Principles the UI holds to
+
+- **Evidence everywhere.** Each answer statement shows whether it is a patient fact, a retrieved source or an AI synthesis, and opens the Why? panel without needing hover.
+- **Manual parity.** Every agent action has a manual control. The workspace stays fully usable when the assistant is collapsed or failing.
+- **Denied looks like missing.** A patient you cannot open renders the same not-found state as one that does not exist.
+- **Synthetic-data banner** on every screen that shows patient data.
+- **Every data screen has four states:** loading, empty, error with retry, and agent unavailable.
+- **Accessible by default:** keyboard reachable, WCAG contrast checked in both themes, no hover-only content.
+
+## Architecture
+
+```mermaid
+flowchart LR
+  B([Browser]) --> N
+  subgraph N [Next.js 16 · Vercel]
+    direction TB
+    P[proxy.ts<br/>auth gate] --> Pages[App Router pages<br/>server components by default]
+    Pages --> H[Page hooks<br/>TanStack Query]
+    H --> C[lib/api/client.ts<br/>+ sse.ts]
+  end
+  C -->|same-origin /api/*<br/>httpOnly cookies| RW[next.config.ts rewrite]
+  RW -->|BACKEND_URL| API[medynium-apis<br/>FastAPI on Cloud Run]
+  API --> SF[(Snowflake + Cortex)]
+```
+
+The browser only ever calls its own origin. `next.config.ts` proxies `/api/*` to `BACKEND_URL`, so the session cookie is first-party and no CORS setup is needed.
+
+### Types flow from the API
+
+```mermaid
+flowchart LR
+  A[medynium-apis<br/>routers and schemas] -->|poetry run poe openapi| O[docs/api/openapi.json]
+  O -->|npm run api:types| T[src/lib/api/schema.d.ts]
+  T --> U[Hooks and components<br/>typed end to end]
+```
+
+Change the API first, regenerate, then build the UI on the generated types. Never edit `schema.d.ts` by hand.
+
+### Folder layout
+
+```text
+src/
+  proxy.ts                  auth gate (Next 16's name for middleware)
+  app/
+    (auth)/                 sign-in, invite and reset
+    (workstation)/          dashboard, patients, knowledge, activity, admin
+      patients/[patientId]/
+        page.tsx            thin: reads params, composes components
+        components/         used only by this page
+        hooks/              the only place that calls the API client
+        lib/  types.ts      page-specific helpers and view-models
+        README.md           context card for this page
+    dev/components/         component gallery (404 in production)
+  features/                 cross-page features: session, evidence, agent-panel
+  components/ui/            shadcn/ui primitives only
+  components/shared/        used by two or more pages
+  lib/                      api client, SSE, env, formatting; no UI
+docs/design/                design direction, component specs, accessibility pass
+docs/quality/               manual parity checklist and test evidence
+```
+
+Each page folder is self-contained and carries a README card (purpose, endpoints used, requirement IDs, states handled). ESLint enforces the boundaries: no imports across route folders, and components never call `fetch` or the API client.
+
+## Tech stack
+
+| Area | Choice |
+| --- | --- |
+| Framework | Next.js 16 (App Router), React 19, TypeScript (strict) |
+| Styling | Tailwind CSS 4, design tokens in `src/app/globals.css` |
+| Components | shadcn/ui on Base UI, Lucide icons, Framer Motion |
+| Data | TanStack Query, Zod, types generated by `openapi-typescript` |
+| Quality | ESLint, Prettier (Tailwind class sorting), Vitest with Testing Library, contrast checker, Husky and lint-staged |
+| Hosting | Vercel, with the API on Google Cloud Run |
 
 ## Quick start
 
-Requirements: Node 22 (`.nvmrc`), npm.
+Requirements: Node 22 (see `.nvmrc`) and npm.
 
 ```bash
 npm install
@@ -14,63 +106,43 @@ cp .env.example .env.local     # Windows: copy .env.example .env.local
 npm run dev                    # http://localhost:3000
 ```
 
-Start the backend in the other repo first (`poetry run poe dev`). Add `REFRESH_COOKIE_PATH=/api/auth` to the backend's `.env` (see its `.env.example`): the browser reaches the API under `/api`, so the refresh cookie must be scoped to that path or sessions cannot renew. Then open the app and sign in with a demo account (credentials are in `~/.medynium/demo_credentials.txt`, outside the repo).
+Start the backend first (`poetry run poe dev` in `medynium-apis`) and add `REFRESH_COOKIE_PATH=/api/auth` to its `.env`. The browser reaches the API under `/api`, so the refresh cookie must be scoped to that path or sessions cannot renew. Then sign in with a demo account; the credentials are in `~/.medynium/demo_credentials.txt`, outside the repo.
 
-## Screens
+### Environment
 
-| Route                                      | What                                                                                   | Folder                             |
-| ------------------------------------------ | -------------------------------------------------------------------------------------- | ---------------------------------- |
-| `/sign-in`, `/invite/[token]`              | Sign in, accept an invite or reset link                                                | `src/app/(auth)/`                  |
-| `/dashboard`                               | Worklist, what changed, utilisation, Brief me                                          | `src/app/(workstation)/dashboard/` |
-| `/patients`, `/patients/[patientId]`       | Search; Overview, Timeline, Medications, Labs, Claims, Notes, Safety review (`?tab=`)  | `src/app/(workstation)/patients/`  |
-| `/knowledge`                               | Drug label search with full citations                                                  | `src/app/(workstation)/knowledge/` |
-| `/activity`                                | The signed-in user's audit log                                                         | `src/app/(workstation)/activity/`  |
-| `/admin`, `/admin/users`, `/admin/invites` | Health, users and entitlements, invites (admin doctors)                                | `src/app/(workstation)/admin/`     |
-| `/dev/components`                          | Component gallery in every state, light and dark (development only; 404 in production) | `src/app/dev/`                     |
+| Variable | Where | Purpose |
+| --- | --- | --- |
+| `BACKEND_URL` | server only | The FastAPI base URL that `/api/*` is proxied to. `http://localhost:8000` locally; the Cloud Run URL on Vercel |
+| `NEXT_PUBLIC_APP_NAME` | client-safe | App name in the page title and header |
 
-Cross-page features live in `src/features/`: `session`, `evidence` (answer view and the Why? drawer) and `agent-panel` (assistant and command bar). Each folder has a README context card; start there when analysing a folder.
-
-The auth gate is `src/proxy.ts` (Next 16's name for middleware) plus the client's refresh-once-then-sign-in handling in `src/lib/api/client.ts`.
-
-## How it talks to the API
-
-The browser calls same-origin `/api/*`. `next.config.ts` proxies that to `BACKEND_URL`, so the session cookie is first-party and no CORS or third-party-cookie setup is needed. All calls go through `src/lib/api/client.ts` (refresh once on 401, `{error, message}` into `ApiError`, the `X-Medynium-Client` header on writes), the typed list in `src/lib/api/endpoints.ts`, and `src/lib/api/sse.ts` for the assistant and safety-review streams. Only hooks call them; components never do (enforced by ESLint).
-
-Types come from the backend's OpenAPI file:
-
-```bash
-npm run api:types              # reads ../medynium-apis/docs/api/openapi.json
-```
-
-Run it after the backend's `poetry run poe openapi` whenever routes or schemas change, and commit `src/lib/api/schema.d.ts`.
+Only `NEXT_PUBLIC_*` variables may be read in the browser.
 
 ## Daily commands
 
-| Command              | What it does                                                                    |
-| -------------------- | ------------------------------------------------------------------------------- |
-| `npm run dev`        | Dev server (Turbopack)                                                          |
-| `npm run check`      | ESLint, Prettier check, `tsc`, Vitest, contrast check. Run before every commit. |
-| `npm run contrast`   | WCAG contrast of every colour-token pair, both themes                           |
-| `npm run format`     | Prettier (with Tailwind class sorting)                                          |
-| `npm run test:watch` | Vitest in watch mode                                                            |
-| `npm run build`      | Production build                                                                |
+| Command | What it does |
+| --- | --- |
+| `npm run dev` | Dev server (Turbopack) |
+| `npm run check` | ESLint, Prettier check, `tsc`, Vitest and the contrast check. Run before every commit |
+| `npm run test:watch` | Vitest in watch mode |
+| `npm run contrast` | WCAG contrast of every colour-token pair, both themes |
+| `npm run api:types` | Regenerate API types from `../medynium-apis/docs/api/openapi.json` |
+| `npm run format` | Prettier |
+| `npm run build` | Production build |
 
-Husky runs lint-staged (ESLint and Prettier on staged files) on every commit.
+## Quality at a glance
 
-## Stack
-
-Next.js 16 (App Router), React 19, TypeScript, Tailwind CSS 4, shadcn/ui (add components with `npx shadcn@latest add <name>`), TanStack Query, Zod, Vitest with Testing Library.
+From the backend's latest [test report](../medynium-apis/docs/quality/test-report.md): 78 UI tests passing, contrast 52 of 52 token pairs, and Lighthouse accessibility 100 on the component gallery (both themes), sign-in and the invalid-invite page. The manual parity checklist is in [docs/quality/](docs/quality/manual-parity-checklist.md).
 
 ## Deploy (Vercel)
 
-1. Import the GitHub repo in Vercel (framework is detected as Next.js).
-2. Set `BACKEND_URL` to the deployed API (see `.env.example`) and optionally `NEXT_PUBLIC_APP_NAME`.
-3. Add the Vercel URL to `CORS_ORIGINS` on the backend only if you ever call the API from the browser directly; the proxy does not need it.
+1. Import the GitHub repo in Vercel; it is detected as Next.js.
+2. Set `BACKEND_URL` to the deployed API (no trailing slash) and optionally `NEXT_PUBLIC_APP_NAME`.
+3. Add the Vercel URL to `CORS_ORIGINS` on the backend only if the browser ever calls the API directly. The proxy does not need it.
 
-The full list of external accounts, keys and decisions is in `medynium-apis/docs/external-dependencies.md`.
+All external accounts, keys and decisions are listed in `medynium-apis/docs/external-dependencies.md`.
 
-## Notes
+## More
 
-- `medynium-prototype.html` (in the project folder) is a behaviour reference, not the target look.
-- The synthetic-data banner is rendered by the workstation shell and so shows on every screen with patient data.
-- Design tokens live in `src/app/globals.css`; the design direction, component specs and accessibility pass are in `docs/design/`, and manual parity and test evidence in `docs/quality/`.
+- [AGENTS.md](AGENTS.md): working rules for contributors and AI sessions
+- [Design direction](docs/design/design-direction.md), [component specs](docs/design/component-specs.md), [accessibility pass](docs/design/usability-and-accessibility-pass.md)
+- `medynium-prototype.html` (in the workspace root) is a behaviour reference, not the visual target
