@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import { SyntheticBanner } from "@/components/synthetic-banner";
+import { themeInitScript } from "@/components/shared/theme-provider";
 import { env } from "@/lib/env";
 import { Providers } from "./providers";
 import "./globals.css";
@@ -15,9 +15,16 @@ export const metadata: Metadata = {
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="en" className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}>
-      <body className="flex min-h-full flex-col">
-        <SyntheticBanner />
+    // suppressHydrationWarning: the init script sets the theme class before React hydrates.
+    <html
+      lang="en-IN"
+      suppressHydrationWarning
+      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+    >
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
+      </head>
+      <body className="min-h-full">
         <Providers>{children}</Providers>
       </body>
     </html>

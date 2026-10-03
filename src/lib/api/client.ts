@@ -1,39 +1,104 @@
-import type { components } from "./schema";
+import { ApiError } from "./errors";
+import type { Health } from "./types";
 
-export type Health = components["schemas"]["HealthResponse"];
+export { ApiError } from "./errors";
+export type { Health } from "./types";
 
-/** The API error contract: { error, message }. */
-export class ApiError extends Error {
-  constructor(
-    readonly status: number,
-    readonly code: string,
-    message: string,
-  ) {
-    super(message);
-    this.name = "ApiError";
-  }
+type Method = "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
+
+interface RequestOptions {
+  method?: Method;
+  body?: unknown;
+  headers?: Record<string, string>;
+  signal?: AbortSignal;
+  /** Set on streams so the response is returned unparsed. */
+  accept?: string;
 }
 
-export async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
-  const response = await fetch(`/api${path}`, {
-    credentials: "same-origin",
-    ...init,
-    headers: { Accept: "application/json", ...init?.headers },
-  });
+let refreshInFlight: Promise<boolean> | null = null;
 
-  if (!response.ok) {
-    const body = (await response.json().catch(() => null)) as {
-      error?: string;
-      message?: string;
-    } | null;
-    throw new ApiError(
-      response.status,
-      body?.error ?? "unknown",
-      body?.message ?? response.statusText,
-    );
+/** One refresh at a time; concurrent 401s share it. */
+function refreshSession(): Promise<boolean> {
+  refreshInFlight ??= fetch("/api/auth/refresh", {
+    method: "POST",
+    credentials: "same-origin",
+    headers: { "X-Medynium-Client": "web" },
+  })
+    .then((response) => response.ok)
+    .catch(() => false)
+    .finally(() => {
+      refreshInFlight = null;
+    });
+  return refreshInFlight;
+}
+
+export function redirectToSignIn(): void {
+  if (typeof window === "undefined" || window.location.pathname.startsWith("/sign-in")) return;
+  const next = encodeURIComponent(window.location.pathname + window.location.search);
+  // A hard navigation on purpose: it discards every in-memory cache and half-finished request.
+  // eslint-disable-next-line @next/next/no-location-assign-relative-destination
+  window.location.href = `/sign-in?next=${next}`;
+}
+
+async function toApiError(response: Response): Promise<ApiError> {
+  const body = (await response.json().catch(() => null)) as {
+    error?: string;
+    message?: string;
+    details?: unknown;
+  } | null;
+  const retryAfter = Number(response.headers.get("Retry-After"));
+  return new ApiError(
+    response.status,
+    body?.error ?? "unknown",
+    body?.message ?? response.statusText,
+    response.headers.get("X-Request-Id"),
+    Number.isFinite(retryAfter) && retryAfter > 0 ? retryAfter : null,
+    body?.details ?? null,
+  );
+}
+
+/** Same-origin call to /api/*. On 401 it refreshes the session once and retries, then goes to sign-in. */
+export async function request(path: string, options: RequestOptions = {}): Promise<Response> {
+  const method = options.method ?? "GET";
+  const send = () =>
+    fetch(`/api${path}`, {
+      method,
+      credentials: "same-origin",
+      signal: options.signal,
+      body: options.body === undefined ? undefined : JSON.stringify(options.body),
+      headers: {
+        Accept: options.accept ?? "application/json",
+        ...(options.body === undefined ? {} : { "Content-Type": "application/json" }),
+        ...(method === "GET" ? {} : { "X-Medynium-Client": "web" }),
+        ...options.headers,
+      },
+    });
+
+  let response = await send();
+  // Sign-in and refresh answer 401 for ordinary reasons (wrong password); they never trigger a refresh.
+  if (response.status === 401 && !path.startsWith("/auth/")) {
+    if (await refreshSession()) response = await send();
+    if (response.status === 401) {
+      redirectToSignIn();
+      throw await toApiError(response);
+    }
   }
+  if (!response.ok) throw await toApiError(response);
+  return response;
+}
+
+export async function apiFetch<T>(path: string, options: RequestOptions = {}): Promise<T> {
+  const response = await request(path, options);
   if (response.status === 204) return undefined as T;
   return (await response.json()) as T;
 }
 
-export const getHealth = () => apiFetch<Health>("/health");
+export const get = <T>(path: string, signal?: AbortSignal) => apiFetch<T>(path, { signal });
+export const post = <T>(path: string, body?: unknown, headers?: Record<string, string>) =>
+  apiFetch<T>(path, { method: "POST", body, headers });
+export const put = <T>(path: string, body: unknown) => apiFetch<T>(path, { method: "PUT", body });
+export const patch = <T>(path: string, body: unknown) =>
+  apiFetch<T>(path, { method: "PATCH", body });
+export const del = <T = void>(path: string) => apiFetch<T>(path, { method: "DELETE" });
+
+export const getHealth = () => get<Health>("/health");

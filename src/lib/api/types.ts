@@ -1,0 +1,56 @@
+import type { components } from "./schema";
+
+// Aliases over the generated schema. Nothing here is hand-written API shape (AGENTS rule 2).
+type S = components["schemas"];
+
+export type Health = S["HealthResponse"];
+export type HealthDetails = S["HealthDetails"];
+export type Me = S["MeResponse"];
+export type UserOut = S["UserOut"];
+export type Dashboard = S["DashboardResponse"];
+export type WorklistItem = S["WorklistItem"];
+export type Flag = S["Flag"];
+export type EncounterRef = S["EncounterRef"];
+export type PatientListItem = S["PatientListItem"];
+export type PatientPage = S["Page_PatientListItem_"];
+export type Overview = S["Overview"];
+export type Medication = S["Medication"];
+export type LabLatest = S["LabLatest"];
+export type LabTrend = S["LabTrend"];
+export type Timeline = S["Timeline"];
+export type TimelineEvent = S["TimelineEvent"];
+export type Claims = S["Claims"];
+export type Claim = S["Claim"];
+export type Utilization = S["Utilization"];
+export type NoteSummary = S["NoteSummary"];
+export type NoteDetail = S["NoteDetail"];
+export type Pin = S["Pin"];
+export type PinList = S["PinList"];
+export type AnswerObject = S["AnswerObject"];
+export type Consideration = S["Consideration"];
+export type Limits = S["Limits"];
+export type EvidenceResponse = S["EvidenceResponse"];
+export type PatientEvidence = S["PatientEvidence"];
+export type SourceEvidence = S["SourceEvidence"];
+export type SqlEvidence = S["SqlEvidence"];
+export type AskRequest = S["AskRequest"];
+export type ActionResponse = S["ActionResponse"];
+export type SearchResponse = S["SearchResponse"];
+export type Citation = S["Citation"];
+export type KnowledgeStatus = S["KnowledgeStatus"];
+export type AuditItem = S["AuditItem"];
+export type AuditPage = S["Page_AuditItem_"];
+export type UserItem = S["UserItem"];
+export type UserPage = S["Page_UserItem_"];
+export type UserPatch = S["UserPatch"];
+export type Entitlements = S["Entitlements"];
+export type InviteItem = S["InviteItem"];
+export type InviteCreate = S["InviteCreate"];
+export type InviteCreated = S["InviteCreated"];
+export type InvitePreview = S["InvitePreview"];
+export type Briefing = S["BriefingResponse"];
+export type ViewPreview = S["ViewPreview"];
+export type SavedView = S["SavedView"];
+
+export type Tag = Consideration["tag"];
+export type Screen = AskRequest["screen"];

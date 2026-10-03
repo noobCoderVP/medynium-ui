@@ -14,11 +14,27 @@ cp .env.example .env.local     # Windows: copy .env.example .env.local
 npm run dev                    # http://localhost:3000
 ```
 
-The home page shows API status. Start the backend in the other repo first (`poetry run poe dev`), or it reports "not reachable".
+Start the backend in the other repo first (`poetry run poe dev`). Add `REFRESH_COOKIE_PATH=/api/auth` to the backend's `.env` (see its `.env.example`): the browser reaches the API under `/api`, so the refresh cookie must be scoped to that path or sessions cannot renew. Then open the app and sign in with a demo account (credentials are in `~/.medynium/demo_credentials.txt`, outside the repo).
+
+## Screens
+
+| Route                                      | What                                                                                   | Folder                             |
+| ------------------------------------------ | -------------------------------------------------------------------------------------- | ---------------------------------- |
+| `/sign-in`, `/invite/[token]`              | Sign in, accept an invite or reset link                                                | `src/app/(auth)/`                  |
+| `/dashboard`                               | Worklist, what changed, utilisation, Brief me                                          | `src/app/(workstation)/dashboard/` |
+| `/patients`, `/patients/[patientId]`       | Search; Overview, Timeline, Medications, Labs, Claims, Notes, Safety review (`?tab=`)  | `src/app/(workstation)/patients/`  |
+| `/knowledge`                               | Drug label search with full citations                                                  | `src/app/(workstation)/knowledge/` |
+| `/activity`                                | The signed-in user's audit log                                                         | `src/app/(workstation)/activity/`  |
+| `/admin`, `/admin/users`, `/admin/invites` | Health, users and entitlements, invites (admin doctors)                                | `src/app/(workstation)/admin/`     |
+| `/dev/components`                          | Component gallery in every state, light and dark (development only; 404 in production) | `src/app/dev/`                     |
+
+Cross-page features live in `src/features/`: `session`, `evidence` (answer view and the Why? drawer) and `agent-panel` (assistant and command bar). Each folder has a README context card; start there when analysing a folder.
+
+The auth gate is `src/proxy.ts` (Next 16's name for middleware) plus the client's refresh-once-then-sign-in handling in `src/lib/api/client.ts`.
 
 ## How it talks to the API
 
-The browser calls same-origin `/api/*`. `next.config.ts` proxies that to `BACKEND_URL`, so the session cookie is first-party and no CORS or third-party-cookie setup is needed. Use `apiFetch` from `src/lib/api/client.ts`; it turns the API's `{error, message}` contract into an `ApiError`.
+The browser calls same-origin `/api/*`. `next.config.ts` proxies that to `BACKEND_URL`, so the session cookie is first-party and no CORS or third-party-cookie setup is needed. All calls go through `src/lib/api/client.ts` (refresh once on 401, `{error, message}` into `ApiError`, the `X-Medynium-Client` header on writes), the typed list in `src/lib/api/endpoints.ts`, and `src/lib/api/sse.ts` for the assistant and safety-review streams. Only hooks call them; components never do (enforced by ESLint).
 
 Types come from the backend's OpenAPI file:
 
@@ -30,13 +46,14 @@ Run it after the backend's `poetry run poe openapi` whenever routes or schemas c
 
 ## Daily commands
 
-| Command              | What it does                                                    |
-| -------------------- | --------------------------------------------------------------- |
-| `npm run dev`        | Dev server (Turbopack)                                          |
-| `npm run check`      | ESLint, Prettier check, `tsc`, Vitest. Run before every commit. |
-| `npm run format`     | Prettier (with Tailwind class sorting)                          |
-| `npm run test:watch` | Vitest in watch mode                                            |
-| `npm run build`      | Production build                                                |
+| Command              | What it does                                                                    |
+| -------------------- | ------------------------------------------------------------------------------- |
+| `npm run dev`        | Dev server (Turbopack)                                                          |
+| `npm run check`      | ESLint, Prettier check, `tsc`, Vitest, contrast check. Run before every commit. |
+| `npm run contrast`   | WCAG contrast of every colour-token pair, both themes                           |
+| `npm run format`     | Prettier (with Tailwind class sorting)                                          |
+| `npm run test:watch` | Vitest in watch mode                                                            |
+| `npm run build`      | Production build                                                                |
 
 Husky runs lint-staged (ESLint and Prettier on staged files) on every commit.
 
@@ -55,4 +72,5 @@ The full list of external accounts, keys and decisions is in `medynium-apis/docs
 ## Notes
 
 - `medynium-prototype.html` (in the project folder) is a behaviour reference, not the target look.
-- A banner stating that data is synthetic is rendered in the root layout and must stay on every screen that shows patient data.
+- The synthetic-data banner is rendered by the workstation shell and so shows on every screen with patient data.
+- Design tokens live in `src/app/globals.css`; the design direction, component specs and accessibility pass are in `docs/design/`, and manual parity and test evidence in `docs/quality/`.

@@ -12,12 +12,13 @@
     "lint": "eslint",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "typecheck": "tsc --noEmit",
+    "typecheck": "next typegen && tsc --noEmit",
     "test": "vitest run",
     "test:watch": "vitest",
-    "check": "npm run lint && npm run format:check && npm run typecheck && npm run test",
+    "check": "npm run lint && npm run format:check && npm run typecheck && npm run test && npm run contrast",
     "api:types": "openapi-typescript ../medynium-apis/docs/api/openapi.json -o src/lib/api/schema.d.ts",
-    "prepare": "husky"
+    "prepare": "husky",
+    "contrast": "node scripts/check-contrast.mjs"
   },
   "lint-staged": {
     "*.{ts,tsx,mjs,mts}": [

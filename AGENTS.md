@@ -36,5 +36,46 @@ Next.js workstation for Medynium: dashboard, patient workspace (Overview, Timeli
 
 - TypeScript strict, no `any`. Prettier decides formatting (Tailwind classes are sorted by its plugin).
 - Server components by default; add `"use client"` only where state or effects need it.
-- UI primitives from shadcn/ui under `src/components/ui`; feature components beside their route or in `src/components`.
+- UI primitives from shadcn/ui under `src/components/ui`; everything else follows "Modularization" below.
 - Tests next to the code (`*.test.ts(x)`), run with Vitest.
+- No mock layer: build against the real API (stubs answer 501), and show the agent-unavailable or error state until a slice lands.
+
+## Modularization (enforced by `eslint.config.mjs`)
+
+Each page folder is self-contained so it can be analysed, tested or handed to an AI session on its own:
+
+```text
+src/app/(workstation)/patients/[patientId]/
+  page.tsx        thin: reads params, composes components
+  components/     used only by this page
+  hooks/          page-specific React Query hooks; the only place that calls src/lib/api/client.ts
+  lib/            page-specific helpers and constants
+  types.ts        local view-models (API types still come from schema.d.ts)
+  README.md       context card: purpose, API endpoints used, requirement IDs, states handled
+src/components/ui/       shadcn primitives only
+src/components/shared/   used by 2+ pages (promote on the second use, not before)
+src/lib/                 api client, env, utils; no UI
+```
+
+- Never import from another route folder, by relative path or `@/app/...`. Shared code moves to `components/shared` or `lib`.
+- Components do not call `fetch` or the API client. Hooks do.
+- One component per file, at most 200 lines (skipping blanks and comments). Split before it grows.
+- Keep each page's `README.md` card current when its endpoints, states or requirement IDs change.
+
+## Definition of done for a slice
+
+1. `npm run check` passes (lint, format, types, tests).
+2. Loading, empty, error-with-retry and agent-unavailable states exist; the synthetic banner shows on patient data.
+3. Keyboard reachable, readable in light and dark, no hover-only content.
+4. `npm run api:types` was run if the API changed, and the page README card is current.
+
+## Don't
+
+- Don't add a dependency without asking. Don't edit `src/lib/api/schema.d.ts` or `.env` (a hook blocks both).
+- Don't port prototype styling before design direction arrives.
+- Don't add `"use client"` to a page or layout when a small client child component will do.
+
+## Project skills (`.claude/skills/`)
+
+- `new-page-feature`: scaffold a page folder with components, hooks, states, test and README card
+- `slice-done`: run the done checklist and tick the implementation-plan tracker
