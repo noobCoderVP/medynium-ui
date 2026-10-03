@@ -3,6 +3,7 @@
 import { Trash2 } from "lucide-react";
 import { DataState, SkeletonRows } from "@/components/shared/data-state";
 import { Button } from "@/components/ui/button";
+import { Tooltip } from "@/components/ui/tooltip";
 import { Card, CardBody, CardHeader, CardTitle } from "@/components/ui/card";
 import { RefButton } from "@/features/evidence";
 import { copy } from "@/lib/copy";
@@ -42,15 +43,17 @@ export function PinsCard({ patientId }: { patientId: string }) {
                     <RefButton answerId={pin.answer_id} evidenceId={pin.evidence_id}>
                       {pin.evidence_id}
                     </RefButton>
-                    <Button
-                      variant="ghost"
-                      size="icon-sm"
-                      aria-label={`Remove pin ${pin.evidence_id}`}
-                      onClick={() => remove.mutate(pin.pin_id)}
-                      disabled={remove.isPending}
-                    >
-                      <Trash2 aria-hidden="true" />
-                    </Button>
+                    <Tooltip label="Remove pin">
+                      <Button
+                        variant="ghost"
+                        size="icon-sm"
+                        aria-label={`Remove pin ${pin.evidence_id}`}
+                        onClick={() => remove.mutate(pin.pin_id)}
+                        disabled={remove.isPending}
+                      >
+                        <Trash2 aria-hidden="true" />
+                      </Button>
+                    </Tooltip>
                   </div>
                 </li>
               ))}

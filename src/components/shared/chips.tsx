@@ -1,5 +1,10 @@
 import {
   BookOpen,
+  CircleDot,
+  Pencil,
+  TriangleAlert,
+  TrendingDown,
+  TrendingUp,
   FileText,
   FlaskConical,
   Pill,
@@ -39,17 +44,56 @@ const flagIcon: Record<Flag["type"], LucideIcon> = {
   NEW_DOCUMENT: FileText,
 };
 
+export type ChangeKind = "new" | "increased" | "decreased" | "updated" | "review";
+
+const changeStyle: Record<ChangeKind, { icon: LucideIcon; className: string; word: string }> = {
+  new: { icon: CircleDot, className: "border-fact/30 bg-fact-soft text-fact", word: "New" },
+  increased: {
+    icon: TrendingUp,
+    className: "border-border bg-muted text-foreground",
+    word: "Increased",
+  },
+  decreased: {
+    icon: TrendingDown,
+    className: "border-border bg-muted text-foreground",
+    word: "Decreased",
+  },
+  updated: { icon: Pencil, className: "border-border bg-muted text-foreground", word: "Updated" },
+  review: {
+    icon: TriangleAlert,
+    className: "border-crit/30 bg-crit-soft text-crit",
+    word: "Requires review",
+  },
+};
+
+/**
+ * One vocabulary for change: new, increased, decreased, updated, requires review. Each has its own icon shape and a
+ * word, so it never depends on colour alone. Pass children to say what changed; the word is read out before it.
+ */
+export function ChangeChip({ kind, children }: { kind: ChangeKind; children?: string }) {
+  const { icon: Icon, className, word } = changeStyle[kind];
+  return (
+    <span className={cn(base, className)}>
+      <Icon className="size-3" aria-hidden="true" />
+      {children ? (
+        <>
+          <span className="sr-only">{word}: </span>
+          {children}
+        </>
+      ) : (
+        word
+      )}
+    </span>
+  );
+}
+
 /** A "what changed" flag on a worklist row. */
 export function FlagChip({ flag }: { flag: Flag }) {
   const Icon = flagIcon[flag.type];
   const urgent = flag.type === "RECENT_EMERGENCY";
+  if (urgent) return <ChangeChip kind="review">{flag.label}</ChangeChip>;
   return (
-    <span
-      className={cn(
-        base,
-        urgent ? "border-crit/30 bg-crit-soft text-crit" : "border-border bg-muted text-foreground",
-      )}
-    >
+    <span className={cn(base, "border-border bg-muted text-foreground")}>
       <Icon className="size-3" aria-hidden="true" />
       {flag.label}
     </span>

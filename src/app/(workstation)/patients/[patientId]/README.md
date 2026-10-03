@@ -27,3 +27,5 @@
 **States handled:** loading skeleton, not found, error with retry, rate limited. Agent-unavailable appears only on the Safety tab and in the assistant panel, so the record stays usable.
 
 **Keyboard:** the tab bar is a `<nav>` of links with `aria-current="page"`; every tab control is native or a named button.
+
+**Needs attention and what changed:** `components/recent-changes.tsx` sits under the header and lists labs outside their reference range (Requires review) and the latest medicine, lab and visit events from the overview already loaded (no extra call), each as a `ChangeChip` (icon and word, never colour alone) linking to its record, plus a Review safety link. Hidden when there are none.

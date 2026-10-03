@@ -17,6 +17,8 @@ export interface Column<T> {
   sortKey?: string;
   align?: "right";
   className?: string;
+  /** On a phone card: "secondary" shows the cell smaller and muted, so the key fields lead. Default is full size. */
+  mobile?: "secondary";
 }
 
 interface Props<T> {
@@ -159,6 +161,7 @@ export function DataTable<T>({
                     "px-4 py-2.5",
                     column.align === "right" && "text-right",
                     column.className,
+                    column.mobile === "secondary" && "max-md:text-xs max-md:text-muted-foreground",
                     i === 0
                       ? "max-md:block max-md:px-3.5 max-md:pt-2 max-md:pb-1 max-md:text-base max-md:font-medium"
                       : "max-md:flex max-md:max-w-none max-md:items-baseline max-md:justify-between max-md:gap-4 max-md:px-3.5 max-md:py-1.5 max-md:text-right max-md:before:shrink-0 max-md:before:text-left max-md:before:text-xs max-md:before:font-medium max-md:before:text-muted-foreground max-md:before:content-[attr(data-label)]",

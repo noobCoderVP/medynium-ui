@@ -2,6 +2,7 @@
 
 import { Monitor, Moon, Sun } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Tooltip } from "@/components/ui/tooltip";
 import { useTheme, type Theme } from "./theme-provider";
 
 const order: Theme[] = ["light", "dark", "system"];
@@ -14,13 +15,15 @@ export function ThemeToggle() {
   const next = order[(order.indexOf(theme) + 1) % order.length];
   const Icon = icons[theme];
   return (
-    <Button
-      variant="ghost"
-      size="icon"
-      aria-label={`Theme: ${labels[theme]}. Switch to ${labels[next].toLowerCase()}.`}
-      onClick={() => setTheme(next)}
-    >
-      <Icon aria-hidden="true" />
-    </Button>
+    <Tooltip label={`Theme: ${labels[theme]}`}>
+      <Button
+        variant="ghost"
+        size="icon"
+        aria-label={`Theme: ${labels[theme]}. Switch to ${labels[next].toLowerCase()}.`}
+        onClick={() => setTheme(next)}
+      >
+        <Icon aria-hidden="true" />
+      </Button>
+    </Tooltip>
   );
 }

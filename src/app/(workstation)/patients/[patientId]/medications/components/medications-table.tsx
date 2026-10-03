@@ -24,6 +24,7 @@ const columns: Column<Medication>[] = [
     key: "started",
     header: "Started",
     sortKey: "started",
+    mobile: "secondary",
     cell: (m) => formatDate(m.started),
   },
   {
@@ -50,6 +51,7 @@ const columns: Column<Medication>[] = [
   {
     key: "label",
     header: "Label",
+    mobile: "secondary",
     cell: (m) =>
       m.in_knowledge_base ? (
         <StatusChip tone="ok">indexed</StatusChip>

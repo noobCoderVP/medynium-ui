@@ -1,4 +1,4 @@
-import { StatusChip } from "@/components/shared/chips";
+import { ChangeChip, StatusChip, type ChangeKind } from "@/components/shared/chips";
 import { DataTable, type Column } from "@/components/shared/data-table";
 import { Button } from "@/components/ui/button";
 import { formatDate, formatValue } from "@/lib/format";
@@ -11,6 +11,14 @@ function range(lab: LabLatest): string {
   if (low === null) return `up to ${formatValue(high)}`;
   if (high === null) return `${formatValue(low)} or more`;
   return `${formatValue(low)} to ${formatValue(high)}`;
+}
+
+/** Which way the latest value moved from the previous one; null when there is nothing to compare. */
+export function labChange(lab: LabLatest): ChangeKind | null {
+  if (!lab.previous) return null;
+  if (lab.value > lab.previous.value) return "increased";
+  if (lab.value < lab.previous.value) return "decreased";
+  return null;
 }
 
 export const LAB_SORTS = [
@@ -57,11 +65,30 @@ export function LabsTable({
       align: "right",
       cell: (l) => <span className="font-medium">{formatValue(l.value, l.unit)}</span>,
     },
-    { key: "date", header: "Date", sortKey: "date", cell: (l) => formatDate(l.date) },
+    {
+      key: "change",
+      header: "Change",
+      cell: (l) => {
+        const kind = labChange(l);
+        return kind ? (
+          <ChangeChip kind={kind} />
+        ) : (
+          <span className="text-muted-foreground">{l.previous ? "No change" : "–"}</span>
+        );
+      },
+    },
+    {
+      key: "date",
+      header: "Date",
+      sortKey: "date",
+      mobile: "secondary",
+      cell: (l) => formatDate(l.date),
+    },
     {
       key: "prev",
       header: "Previous",
       align: "right",
+      mobile: "secondary",
       cell: (l) =>
         l.previous ? (
           <span>
@@ -72,7 +99,7 @@ export function LabsTable({
           "–"
         ),
     },
-    { key: "ref", header: "Reference", cell: range },
+    { key: "ref", header: "Reference", mobile: "secondary", cell: range },
     {
       key: "flag",
       header: "Flag",

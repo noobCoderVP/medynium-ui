@@ -18,6 +18,7 @@ const columns: Column<Claim>[] = [
   {
     key: "encounter",
     header: "Encounter",
+    mobile: "secondary",
     cell: (c) =>
       c.encounter_id ? <span className="font-mono text-xs">{c.encounter_id}</span> : "–",
   },

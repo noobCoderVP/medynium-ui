@@ -10,6 +10,8 @@
 
 **Opening a record:** each event links to the tab for its record type (medications, labs, claims, notes), deep-linked where an id is available (`?claim=`, `?note=`). Diagnoses and visits link to the overview.
 
+**Filters:** search and sort are always shown; date range and event types sit behind a Filters button (with a count) that reports `aria-expanded` and opens by itself when a filter is applied.
+
 **States handled:** loading skeleton, empty (says to widen the range), error with retry, rate limited.
 
 **Keyboard:** native date and checkbox inputs; each event has one link, named for its event.

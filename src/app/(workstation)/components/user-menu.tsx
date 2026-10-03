@@ -2,29 +2,54 @@
 
 import { LogOut } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Menu, MenuItem, MenuLabel, MenuSeparator } from "@/components/ui/menu";
 import { useMe, useSignOut } from "@/features/session";
 
 const ROLE = { DOCTOR: "Doctor", ASSISTANT: "Clinic assistant" } as const;
 
-/** Who is signed in, their role, and sign out. A plain button rather than a menu: fewer keystrokes, no focus trap. */
+const initials = (name: string) =>
+  name
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part[0]?.toUpperCase())
+    .join("");
+
+/** The account control: initials as the trigger, name and role inside, and Sign out as one of its items. */
 export function UserMenu() {
   const me = useMe();
   const signOut = useSignOut();
   const user = me.data;
+  const role = user ? `${ROLE[user.role]}${user.is_admin ? " · Admin" : ""}` : "";
   return (
-    <div className="flex items-center gap-2">
-      {user ? (
-        <p className="hidden text-right leading-tight lg:block">
-          <span className="block text-sm font-medium">{user.display_name}</span>
-          <span className="block text-xs text-muted-foreground">
-            {ROLE[user.role]}
-            {user.is_admin ? " · Admin" : ""}
+    <Menu
+      trigger={
+        <Button
+          variant="ghost"
+          size="icon"
+          aria-label={user ? `Account: ${user.display_name}` : "Account"}
+          className="rounded-full"
+        >
+          <span
+            aria-hidden="true"
+            className="flex size-7 items-center justify-center rounded-full bg-primary/10 text-xs font-semibold text-primary"
+          >
+            {user ? initials(user.display_name) : "?"}
           </span>
-        </p>
+        </Button>
+      }
+    >
+      {user ? (
+        <MenuLabel>
+          <span className="block text-sm font-medium">{user.display_name}</span>
+          <span className="block text-xs text-muted-foreground">{role}</span>
+        </MenuLabel>
       ) : null}
-      <Button variant="ghost" size="icon" aria-label="Sign out" onClick={() => signOut.mutate()}>
-        <LogOut aria-hidden="true" />
-      </Button>
-    </div>
+      <MenuSeparator />
+      <MenuItem onClick={() => signOut.mutate()}>
+        <LogOut className="size-4" aria-hidden="true" />
+        Sign out
+      </MenuItem>
+    </Menu>
   );
 }

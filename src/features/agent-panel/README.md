@@ -18,6 +18,8 @@
 
 **States:** running (live steps, a polite live region), answer (announced once on completion), refusal (calm and scoped), not found (same wording for denied and missing), agent unavailable or timeout (panel-only banner with retry), rate limited (countdown), network error.
 
+**Layout:** the panel is 320 to 480 px wide (default 384) on tablet and desktop; the left edge is a draggable `role="separator"` that also takes Left/Right arrows, Home and End. The width is kept in `localStorage` (`medynium-agent-width`). The top-bar button reads "Ask AI" and has a tooltip; icon-only buttons in the panel have tooltips too.
+
 **Keyboard:** panel toggle is a button with `aria-expanded`; the form is a single field with Send/Stop; steps expand with `<details>`.
 
 **Imports:** `@/lib/*`, `@/components/*`, and `@/features/evidence` through its `index.ts`.

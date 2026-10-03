@@ -7,6 +7,7 @@ import { PatientAvatar } from "@/components/shared/patient-avatar";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
 import { usePatientSuggestions } from "../hooks/use-patient-suggestions";
+import { rememberPatient } from "../lib/recent-patients";
 
 /**
  * Top-bar patient search: type to see matching patients (name, id or condition) and open one, or press Enter on
@@ -45,8 +46,10 @@ export function PatientSearch({
 
   function choose(index: number) {
     const item = items[index];
-    if (item) go(`/patients/${encodeURIComponent(item.patient_id)}`);
-    else seeAll();
+    if (item) {
+      rememberPatient({ id: item.patient_id, name: item.name });
+      go(`/patients/${encodeURIComponent(item.patient_id)}`);
+    } else seeAll();
   }
 
   function onKeyDown(event: KeyboardEvent<HTMLInputElement>) {

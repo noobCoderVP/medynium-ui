@@ -4,6 +4,7 @@ import { Dialog as DialogPrimitive } from "@base-ui/react/dialog";
 import { X } from "lucide-react";
 import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
+import { Tooltip } from "./tooltip";
 
 type Placement = "center" | "right" | "bottom";
 
@@ -63,12 +64,14 @@ export function Dialog({
                 </DialogPrimitive.Description>
               ) : null}
             </div>
-            <DialogPrimitive.Close
-              aria-label="Close"
-              className="inline-flex size-11 shrink-0 items-center justify-center rounded-lg hover:bg-muted md:size-9"
-            >
-              <X className="size-4" aria-hidden="true" />
-            </DialogPrimitive.Close>
+            <Tooltip label="Close">
+              <DialogPrimitive.Close
+                aria-label="Close"
+                className="inline-flex size-11 shrink-0 items-center justify-center rounded-lg hover:bg-muted md:size-9"
+              >
+                <X className="size-4" aria-hidden="true" />
+              </DialogPrimitive.Close>
+            </Tooltip>
           </div>
           <div className="min-h-0 flex-1 overflow-y-auto">{children}</div>
         </DialogPrimitive.Popup>

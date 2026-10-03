@@ -4,6 +4,7 @@ import { SendHorizontal, Square } from "lucide-react";
 import { useId, useState, type FormEvent } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import { Tooltip } from "@/components/ui/tooltip";
 import { copy } from "@/lib/copy";
 import { useAgent } from "../hooks/agent-context";
 
@@ -36,13 +37,17 @@ export function AskForm({ className }: { className?: string }) {
           autoComplete="off"
         />
         {running ? (
-          <Button type="button" variant="outline" size="icon" aria-label="Stop" onClick={stop}>
-            <Square aria-hidden="true" />
-          </Button>
+          <Tooltip label="Stop">
+            <Button type="button" variant="outline" size="icon" aria-label="Stop" onClick={stop}>
+              <Square aria-hidden="true" />
+            </Button>
+          </Tooltip>
         ) : (
-          <Button type="submit" size="icon" aria-label="Send" disabled={!text.trim()}>
-            <SendHorizontal aria-hidden="true" />
-          </Button>
+          <Tooltip label="Send" disabled={!text.trim()}>
+            <Button type="submit" size="icon" aria-label="Send" disabled={!text.trim()}>
+              <SendHorizontal aria-hidden="true" />
+            </Button>
+          </Tooltip>
         )}
       </div>
     </form>

@@ -7,6 +7,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { usePatient } from "../hooks/use-patient";
 import type { TabId } from "../lib/tabs";
 import { PatientHeader } from "./patient-header";
+import { RecentChanges } from "./recent-changes";
 import { TabBar } from "./tab-bar";
 
 function WorkspaceSkeleton() {
@@ -39,6 +40,7 @@ export function PatientWorkspace({
       {(patient) => (
         <div className="space-y-4">
           <PatientHeader patient={patient} />
+          <RecentChanges patient={patient} />
           <TabBar patientId={patientId} active={tab} />
           <div id="patient-tab-content">{children}</div>
         </div>

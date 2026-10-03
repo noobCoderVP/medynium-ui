@@ -32,6 +32,35 @@ const loaded = {
     sex: "M",
     city: "Pune",
     as_of: "2026-10-02",
+    latest_labs: [
+      {
+        lab_id: "L-1",
+        test: "HbA1c",
+        value: 8.2,
+        unit: "%",
+        date: "2026-09-28",
+        flag: "HIGH",
+      },
+      {
+        lab_id: "L-2",
+        test: "Sodium",
+        value: 140,
+        unit: "mmol/L",
+        date: "2026-09-28",
+        flag: "NORMAL",
+      },
+    ],
+    recent_events: [
+      {
+        event_id: "E-1",
+        date: "2026-09-30",
+        type: "MEDICATION_CHANGE",
+        title: "Metformin dose raised",
+        summary: null,
+        record: { id: "M-1" },
+      },
+      { event_id: "E-2", date: "2026-09-20", type: "CLAIM", title: "Claim", record: { id: "C-1" } },
+    ],
   },
 };
 
@@ -46,6 +75,20 @@ describe("PatientWorkspace", () => {
     );
     expect(screen.getByRole("link", { name: "Overview" })).toHaveAttribute("aria-current", "page");
     expect(screen.getByText("tab content")).toBeInTheDocument();
+  });
+
+  it("lists the latest medicine, lab and visit changes, with a way into the safety review", () => {
+    usePatient.mockReturnValue(loaded);
+    render_();
+    const strip = screen.getByRole("region", { name: "Recent changes" });
+    expect(strip).toHaveTextContent("Updated: Metformin dose raised");
+    expect(strip).not.toHaveTextContent("Claim");
+    expect(strip).toHaveTextContent("Requires review: HbA1c");
+    expect(strip).not.toHaveTextContent("Sodium");
+    expect(screen.getByRole("link", { name: /Review safety/ })).toHaveAttribute(
+      "href",
+      "/patients/P-1?tab=safety",
+    );
   });
 
   it("renders one not-found state for a denied or missing patient, with no header, tabs or content", () => {
