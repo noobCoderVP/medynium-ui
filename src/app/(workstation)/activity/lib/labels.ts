@@ -5,6 +5,7 @@ export const ACTIONS = [
   "SHOW_TIMELINE",
   "PIN_EVIDENCE",
   "SAVE_VIEW",
+  "EMAIL_SUMMARY",
   "DENIED_PATIENT",
   "DENIED_ACTION",
 ] as const;

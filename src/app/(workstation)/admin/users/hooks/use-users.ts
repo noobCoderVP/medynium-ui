@@ -3,18 +3,21 @@
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { endpoints } from "@/lib/api/endpoints";
 import { adminKeys } from "@/lib/api/keys";
-import { useUrlParams } from "@/lib/use-url-params";
+import { useListState } from "@/lib/use-list-state";
 
-/** Users, with search and status in the URL, plus disable/enable and password reset. */
+/** Users, searched, filtered, sorted and paged by the API (state in the URL), plus disable/enable and reset. */
 export function useUsers() {
-  const { params, update } = useUrlParams();
-  const q = params.get("q") ?? "";
-  const status = params.get("status") ?? "";
+  const list = useListState({
+    filters: ["role", "status"],
+    defaultSort: "name",
+    defaultOrder: "asc",
+    defaultSize: 25,
+  });
   const client = useQueryClient();
 
   const query = useQuery({
-    queryKey: adminKeys.users(q, status),
-    queryFn: () => endpoints.users({ q, status: status || undefined, limit: 100 }),
+    queryKey: adminKeys.users(list.apiParams),
+    queryFn: () => endpoints.users(list.apiParams),
     placeholderData: keepPreviousData,
   });
   const setStatus = useMutation({
@@ -24,13 +27,5 @@ export function useUsers() {
   });
   const reset = useMutation({ mutationFn: (id: string) => endpoints.resetPassword(id) });
 
-  return {
-    query,
-    q,
-    status,
-    setQ: (value: string) => update({ q: value.trim() || null }),
-    setStatusFilter: (value: string) => update({ status: value || null }),
-    setStatus,
-    reset,
-  };
+  return { ...list, query, setStatus, reset };
 }

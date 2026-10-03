@@ -2,6 +2,7 @@ import Link from "next/link";
 import { FlagChip } from "@/components/shared/chips";
 import { DataTable, type Column } from "@/components/shared/data-table";
 import { EmptyState } from "@/components/shared/state-panels";
+import { PatientAvatar } from "@/components/shared/patient-avatar";
 import { EncounterCell } from "@/components/shared/encounter-cell";
 import { copy } from "@/lib/copy";
 import type { WorklistItem } from "@/lib/api/types";
@@ -14,9 +15,10 @@ const columns: Column<WorklistItem>[] = [
     cell: (p) => (
       <Link
         href={`/patients/${p.patient_id}`}
-        className="font-medium text-primary underline-offset-2 hover:underline"
+        className="group inline-flex items-center gap-3 font-medium text-foreground"
       >
-        {p.name}
+        <PatientAvatar name={p.name} />
+        <span className="text-primary underline-offset-2 group-hover:underline">{p.name}</span>
       </Link>
     ),
   },

@@ -3,21 +3,32 @@ import { DataTable, type Column } from "@/components/shared/data-table";
 import { Button } from "@/components/ui/button";
 import { formatDateTime } from "@/lib/format";
 import type { InviteItem } from "@/lib/api/types";
+import type { SortOrder } from "@/lib/use-list-state";
+
+export const INVITE_SORTS = [
+  { key: "created", label: "Created" },
+  { key: "expires", label: "Expires" },
+  { key: "email", label: "Email" },
+];
 
 export function InviteList({
   items,
   onRevoke,
   busy,
+  sort,
+  onSort,
 }: {
   items: InviteItem[];
   onRevoke: (invite: InviteItem) => void;
   busy: boolean;
+  sort: { key: string; order: SortOrder };
+  onSort: (key: string) => void;
 }) {
   const columns: Column<InviteItem>[] = [
     {
       key: "who",
       header: "Invitee",
-      sortValue: (i) => i.display_name,
+      sortKey: "email",
       cell: (i) => (
         <div>
           <p className="font-medium">{i.display_name}</p>
@@ -38,7 +49,6 @@ export function InviteList({
     {
       key: "status",
       header: "Status",
-      sortValue: (i) => i.status,
       cell: (i) => (
         <StatusChip tone={i.status === "PENDING" ? "warn" : "muted"}>
           {i.status.toLowerCase()}
@@ -48,7 +58,7 @@ export function InviteList({
     {
       key: "expires",
       header: "Expires",
-      sortValue: (i) => i.expires_at,
+      sortKey: "expires",
       cell: (i) => formatDateTime(i.expires_at),
     },
     {
@@ -74,7 +84,8 @@ export function InviteList({
       columns={columns}
       rows={items}
       rowKey={(i) => i.invite_id}
-      initialSort={{ key: "expires", direction: "desc" }}
+      sort={sort}
+      onSort={onSort}
     />
   );
 }

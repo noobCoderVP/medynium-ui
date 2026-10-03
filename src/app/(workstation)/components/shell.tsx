@@ -2,7 +2,7 @@
 
 import dynamic from "next/dynamic";
 import type { ReactNode } from "react";
-import { SyntheticBanner } from "@/components/synthetic-banner";
+import { PageTransition } from "@/components/shared/page-transition";
 import { AgentActivity, AgentProvider } from "@/features/agent-panel";
 import { BottomTabs } from "./bottom-tabs";
 import { NavRail } from "./nav-rail";
@@ -30,12 +30,13 @@ export function Shell({ children }: { children: ReactNode }) {
         Skip to content
       </a>
       <div className="flex h-dvh flex-col">
-        <SyntheticBanner />
         <TopBar />
         <div className="flex min-h-0 flex-1">
           <NavRail />
           <main id="main" tabIndex={-1} className="min-w-0 flex-1 overflow-y-auto outline-none">
-            <div className="mx-auto w-full max-w-6xl space-y-4 p-4 md:p-6">{children}</div>
+            <div className="mx-auto w-full max-w-[112rem] p-4 md:px-6 md:py-8 2xl:px-10">
+              <PageTransition>{children}</PageTransition>
+            </div>
           </main>
           <AgentPanel />
         </div>

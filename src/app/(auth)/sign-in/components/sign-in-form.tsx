@@ -1,14 +1,16 @@
 "use client";
 
+import Link from "next/link";
 import { useId, useState, type FormEvent } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardBody } from "@/components/ui/card";
 import { useResumeSession, useSignIn } from "../hooks/use-sign-in";
+import { OtpForm } from "./otp-form";
 
 export function SignInForm({ next }: { next: string }) {
   const resuming = useResumeSession(next);
-  const { signIn, pending, message } = useSignIn(next);
+  const { signIn, verify, challenge, cancel, pending, message } = useSignIn(next);
   const [touched, setTouched] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -30,6 +32,18 @@ export function SignInForm({ next }: { next: string }) {
       <p role="status" className="text-sm text-muted-foreground">
         Checking for an existing session…
       </p>
+    );
+  }
+
+  if (challenge) {
+    return (
+      <OtpForm
+        challenge={challenge}
+        pending={pending}
+        message={message}
+        onVerify={verify}
+        onCancel={cancel}
+      />
     );
   }
 
@@ -93,6 +107,11 @@ export function SignInForm({ next }: { next: string }) {
           <Button type="submit" size="lg" className="w-full" disabled={pending}>
             {pending ? "Signing in…" : "Sign in"}
           </Button>
+          <p className="text-center text-sm">
+            <Link href="/forgot-password" className="font-medium text-primary hover:underline">
+              Forgot your password?
+            </Link>
+          </p>
         </form>
       </CardBody>
     </Card>

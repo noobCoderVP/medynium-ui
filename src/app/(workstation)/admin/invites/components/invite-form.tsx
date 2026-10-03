@@ -150,7 +150,9 @@ export function InviteForm({ invites }: { invites: ReturnType<typeof useInvites>
             role="status"
           >
             <p className="text-sm font-medium text-ok">
-              Invite created. Share this link with {create.data.email}.
+              {create.data.email_sent
+                ? `Invite created and emailed to ${create.data.email}.`
+                : `Invite created. Email is not configured, so share this link with ${create.data.email}.`}
             </p>
             <CopyLink label="Invite link" url={create.data.accept_url} />
             <p className="text-xs text-muted-foreground">

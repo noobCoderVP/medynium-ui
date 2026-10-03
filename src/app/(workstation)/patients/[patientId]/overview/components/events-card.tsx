@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { RowList, Row } from "@/components/shared/row-list";
 import { Card, CardBody, CardHeader, CardTitle } from "@/components/ui/card";
 import { formatDate } from "@/lib/format";
 import type { OverviewEvent } from "../types";
@@ -19,18 +20,18 @@ export function EventsCard({ patientId, events }: { patientId: string; events: O
         {events.length === 0 ? (
           <p className="text-sm text-muted-foreground">No recent events.</p>
         ) : (
-          <ul className="divide-y divide-border">
+          <RowList>
             {events.map((e) => (
-              <li key={e.event_id} className="py-2 text-sm">
+              <Row key={e.event_id}>
                 <p className="font-medium">{e.title}</p>
                 <p className="text-xs text-muted-foreground">
                   {formatDate(e.date)}
                   {e.summary ? ` · ${e.summary}` : ""} ·{" "}
                   <span className="font-mono">{e.record.table}</span>
                 </p>
-              </li>
+              </Row>
             ))}
-          </ul>
+          </RowList>
         )}
       </CardBody>
     </Card>

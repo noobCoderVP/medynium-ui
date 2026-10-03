@@ -10,24 +10,26 @@ import type {
   HealthDetails,
   InviteCreate,
   InviteCreated,
-  InviteItem,
+  InvitePage,
   InvitePreview,
   KnowledgeStatus,
-  LabLatest,
+  LabPage,
   LabTrend,
+  LoginResponse,
   Me,
-  Medication,
+  MedicationPage,
   NoteDetail,
-  NoteSummary,
+  NotePage,
+  OtpChallenge,
   Overview,
   PatientPage,
   Pin,
   PinList,
   SavedView,
   SearchResponse,
+  ShareRequest,
   Timeline,
   UserItem,
-  UserOut,
   UserPage,
   UserPatch,
   ViewPreview,
@@ -50,8 +52,12 @@ const pid = (id: string) => `/patients/${encodeURIComponent(id)}`;
 /** Every API call the app makes. Hooks use these; components never do. */
 export const endpoints = {
   // session
+  /** A session, or an `OtpChallenge` when this deployment asks for the emailed code too. */
   login: (email: string, password: string) =>
-    post<{ user: UserOut; session_expires_at: string }>("/auth/login", { email, password }),
+    post<LoginResponse | OtpChallenge>("/auth/login", { email, password }),
+  verifyLogin: (challenge: string, code: string) =>
+    post<LoginResponse>("/auth/login/verify", { challenge, code }),
+  forgotPassword: (email: string) => post<void>("/auth/password/forgot", { email }),
   logout: () => post<void>("/auth/logout"),
   refresh: () => post<void>("/auth/refresh"),
   me: () => get<Me>("/me"),
@@ -65,18 +71,18 @@ export const endpoints = {
   // dashboard and patients
   dashboard: () => get<Dashboard>("/dashboard"),
   briefing: () => get<Briefing>("/dashboard/briefing"),
-  patients: (params: { q?: string; changed?: boolean; limit?: number; offset?: number }) =>
-    get<PatientPage>(`/patients${qs(params)}`),
+  patients: (params: Params) => get<PatientPage>(`/patients${qs(params)}`),
   patient: (id: string) => get<Overview>(pid(id)),
-  medications: (id: string, status?: string) =>
-    get<Medication[]>(`${pid(id)}/medications${qs({ status })}`),
-  labs: (id: string, q?: string) => get<LabLatest[]>(`${pid(id)}/labs${qs({ q })}`),
+  medications: (id: string, params: Params) =>
+    get<MedicationPage>(`${pid(id)}/medications${qs(params)}`),
+  labs: (id: string, params: Params) => get<LabPage>(`${pid(id)}/labs${qs(params)}`),
   labTrend: (id: string, code: string) =>
     get<LabTrend>(`${pid(id)}/labs/${encodeURIComponent(code)}/trend`),
-  timeline: (id: string, params: { from?: string; to?: string; types?: string }) =>
-    get<Timeline>(`${pid(id)}/timeline${qs(params)}`),
-  claims: (id: string) => get<Claims>(`${pid(id)}/claims`),
-  notes: (id: string) => get<NoteSummary[]>(`${pid(id)}/notes`),
+  timeline: (id: string, params: Params) => get<Timeline>(`${pid(id)}/timeline${qs(params)}`),
+  claims: (id: string, params: Params) => get<Claims>(`${pid(id)}/claims${qs(params)}`),
+  notes: (id: string, params: Params) => get<NotePage>(`${pid(id)}/notes${qs(params)}`),
+  sharePatient: (id: string, body: ShareRequest) =>
+    post<{ sent: boolean }>(`${pid(id)}/share`, body),
   note: (id: string, noteId: string) =>
     get<NoteDetail>(`${pid(id)}/notes/${encodeURIComponent(noteId)}`),
   pins: (id: string) => get<PinList>(`${pid(id)}/pins`),
@@ -104,25 +110,11 @@ export const endpoints = {
   knowledgeSearch: (params: { q: string; drug?: string; section?: string; limit?: number }) =>
     get<SearchResponse>(`/knowledge/search${qs(params)}`),
   knowledgeStatus: () => get<KnowledgeStatus>("/knowledge/status"),
-  audit: (params: {
-    patient_id?: string;
-    action?: string;
-    outcome?: string;
-    from?: string;
-    to?: string;
-    limit?: number;
-    offset?: number;
-  }) => get<AuditPage>(`/audit${qs(params)}`),
+  audit: (params: Params) => get<AuditPage>(`/audit${qs(params)}`),
 
   // admin
   healthDetails: () => get<HealthDetails>("/health/details"),
-  users: (params: {
-    q?: string;
-    role?: string;
-    status?: string;
-    limit?: number;
-    offset?: number;
-  }) => get<UserPage>(`/admin/users${qs(params)}`),
+  users: (params: Params) => get<UserPage>(`/admin/users${qs(params)}`),
   patchUser: (id: string, body: UserPatch) =>
     patch<UserItem>(`/admin/users/${encodeURIComponent(id)}`, body),
   entitlements: (id: string) =>
@@ -131,7 +123,7 @@ export const endpoints = {
     put<Entitlements>(`/admin/users/${encodeURIComponent(id)}/entitlements`, { patient_ids }),
   resetPassword: (id: string) =>
     post<InviteCreated>(`/admin/users/${encodeURIComponent(id)}/reset-password`),
-  invites: () => get<InviteItem[]>("/admin/invites"),
+  invites: (params: Params) => get<InvitePage>(`/admin/invites${qs(params)}`),
   createInvite: (body: InviteCreate) => post<InviteCreated>("/admin/invites", body),
   revokeInvite: (id: string) => del(`/admin/invites/${encodeURIComponent(id)}`),
 };

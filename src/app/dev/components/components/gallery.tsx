@@ -6,6 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Dialog } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { SamplerData } from "./sampler-data";
+import { SamplerLists } from "./sampler-lists";
 import { SamplerStates } from "./sampler-states";
 
 // Full class names, so Tailwind can see them (it cannot read names built from strings).
@@ -77,6 +78,7 @@ function Panel({ mode }: { mode: "light" | "dark" }) {
       <Controls />
       <SamplerStates />
       <SamplerData />
+      <SamplerLists />
     </div>
   );
 }
@@ -85,7 +87,7 @@ function Panel({ mode }: { mode: "light" | "dark" }) {
 export function Gallery() {
   return (
     <div className="mx-auto max-w-7xl space-y-6 p-4">
-      <h1 className="text-2xl font-semibold">Component gallery</h1>
+      <h1>Component gallery</h1>
       <p className="text-sm text-muted-foreground">
         Development only: this route is a 404 in a production build. Every shared component in every
         state, in both themes.

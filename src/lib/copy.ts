@@ -73,6 +73,10 @@ export const copy = {
     locked: "Too many attempts. Wait a minute, then try again.",
     inviteInvalid: "This link is no longer valid. Ask your administrator for a new one.",
     inviteDone: "Your password is set. You can sign in now.",
+    otpWrong: "That code is incorrect or has expired. Check it, or sign in again for a new one.",
+    otpSendFailed: "We could not send your sign-in code. Try again in a moment.",
+    forgotSent:
+      "If that email belongs to an active account, a reset link is on its way. It works once and expires in 72 hours.",
   },
 
   loadingSlow: "Still working. This can take a few seconds.",

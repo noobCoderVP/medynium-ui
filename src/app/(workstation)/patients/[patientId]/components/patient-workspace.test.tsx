@@ -11,6 +11,7 @@ vi.mock("next/navigation", () => ({
   useSearchParams: () => new URLSearchParams(),
 }));
 vi.mock("./views-dialog", () => ({ ViewsDialog: () => null }));
+vi.mock("./share-dialog", () => ({ ShareDialog: () => null }));
 
 const render_ = () =>
   render(

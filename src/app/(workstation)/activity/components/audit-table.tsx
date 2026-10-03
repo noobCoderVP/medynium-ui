@@ -6,6 +6,7 @@ import { RefButton } from "@/features/evidence";
 import { formatDateTime } from "@/lib/format";
 import type { AuditItem } from "@/lib/api/types";
 import type { StreamStep } from "@/lib/api/events";
+import type { SortOrder } from "@/lib/use-list-state";
 import { humanize, outcomeTone } from "../lib/labels";
 
 /** Stored steps are loosely typed on the wire; keep only well-formed ones for display. */
@@ -28,10 +29,10 @@ const columns: Column<AuditItem>[] = [
   {
     key: "when",
     header: "When",
-    sortValue: (a) => a.occurred_at,
+    sortKey: "when",
     cell: (a) => <span className="whitespace-nowrap">{formatDateTime(a.occurred_at)}</span>,
   },
-  { key: "action", header: "Action", sortValue: (a) => a.action, cell: (a) => humanize(a.action) },
+  { key: "action", header: "Action", sortKey: "action", cell: (a) => humanize(a.action) },
   {
     key: "route",
     header: "Route",
@@ -83,19 +84,34 @@ const columns: Column<AuditItem>[] = [
   {
     key: "outcome",
     header: "Outcome",
-    sortValue: (a) => a.outcome,
+    sortKey: "outcome",
     cell: (a) => <StatusChip tone={outcomeTone(a.outcome)}>{humanize(a.outcome)}</StatusChip>,
   },
 ];
 
-export function AuditTable({ items }: { items: AuditItem[] }) {
+export const AUDIT_SORTS = [
+  { key: "when", label: "When" },
+  { key: "action", label: "Action" },
+  { key: "outcome", label: "Outcome" },
+];
+
+export function AuditTable({
+  items,
+  sort,
+  onSort,
+}: {
+  items: AuditItem[];
+  sort: { key: string; order: SortOrder };
+  onSort: (key: string) => void;
+}) {
   return (
     <DataTable
       caption="Your activity"
       columns={columns}
       rows={items}
       rowKey={(a) => a.audit_id}
-      initialSort={{ key: "when", direction: "desc" }}
+      sort={sort}
+      onSort={onSort}
     />
   );
 }

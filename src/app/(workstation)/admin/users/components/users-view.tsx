@@ -3,21 +3,21 @@
 import { useState } from "react";
 import { CopyLink } from "@/components/shared/copy-link";
 import { DataState, SkeletonRows } from "@/components/shared/data-state";
+import { FilterField, ListToolbar } from "@/components/shared/list-toolbar";
 import { PageHeading } from "@/components/shared/page-heading";
+import { Pagination } from "@/components/shared/pagination";
 import { EmptyState } from "@/components/shared/state-panels";
 import { Dialog } from "@/components/ui/dialog";
-import { Input, Select } from "@/components/ui/input";
 import type { InviteCreated, UserItem } from "@/lib/api/types";
 import { formatDateTime } from "@/lib/format";
 import { useUsers } from "../hooks/use-users";
 import { EntitlementsDialog } from "./entitlements-dialog";
-import { UsersTable } from "./users-table";
+import { USER_SORTS, UsersTable } from "./users-table";
 
 export function UsersView() {
   const u = useUsers();
   const [access, setAccess] = useState<UserItem | null>(null);
   const [link, setLink] = useState<InviteCreated | null>(null);
-  const [text, setText] = useState(u.q);
 
   return (
     <>
@@ -25,44 +25,33 @@ export function UsersView() {
         title="Users and access"
         note="Disable accounts, set who sees which patients, and issue password-reset links."
       />
-      <form
-        role="search"
-        aria-label="Find a user"
-        className="flex flex-wrap items-end gap-3"
-        onSubmit={(e) => {
-          e.preventDefault();
-          u.setQ(text);
-        }}
+      <ListToolbar
+        search={{ value: u.text, onChange: u.setText, label: "Search name or email" }}
+        sort={{ options: USER_SORTS, value: u.sort, order: u.order, onChange: u.setSort }}
+        activeCount={u.activeCount}
+        onClear={u.clear}
       >
-        <div className="space-y-1">
-          <label htmlFor="user-q" className="text-sm font-medium">
-            Search
-          </label>
-          <Input
-            id="user-q"
-            className="w-64"
-            value={text}
-            onChange={(e) => setText(e.target.value)}
-            placeholder="Name or email"
-            autoComplete="off"
-          />
-        </div>
-        <div className="space-y-1">
-          <label htmlFor="user-status" className="text-sm font-medium">
-            Status
-          </label>
-          <Select
-            id="user-status"
-            className="w-40"
-            value={u.status}
-            onChange={(e) => u.setStatusFilter(e.target.value)}
-          >
-            <option value="">Any status</option>
-            <option value="ACTIVE">Active</option>
-            <option value="DISABLED">Disabled</option>
-          </Select>
-        </div>
-      </form>
+        <FilterField
+          label="Role"
+          value={u.filters.role}
+          onChange={(v) => u.setFilter("role", v)}
+          anyLabel="Any role"
+          options={[
+            { value: "DOCTOR", label: "Doctor" },
+            { value: "ASSISTANT", label: "Clinic assistant" },
+          ]}
+        />
+        <FilterField
+          label="Status"
+          value={u.filters.status}
+          onChange={(v) => u.setFilter("status", v)}
+          anyLabel="Any status"
+          options={[
+            { value: "ACTIVE", label: "Active" },
+            { value: "DISABLED", label: "Disabled" },
+          ]}
+        />
+      </ListToolbar>
       {u.setStatus.isError || u.reset.isError ? (
         <p role="alert" className="text-sm text-crit">
           That change didn&apos;t go through. Try again.
@@ -71,23 +60,35 @@ export function UsersView() {
       <DataState
         query={u.query}
         skeleton={<SkeletonRows rows={4} />}
-        isEmpty={(p) => p.items.length === 0}
+        isEmpty={(p) => p.total === 0}
         empty={<EmptyState title="No users match." />}
       >
         {(page) => (
-          <UsersTable
-            users={page.items}
-            actions={{
-              busy: u.setStatus.isPending || u.reset.isPending,
-              onAccess: setAccess,
-              onToggle: (user) =>
-                u.setStatus.mutate({
-                  id: user.user_id,
-                  next: user.status === "ACTIVE" ? "DISABLED" : "ACTIVE",
-                }),
-              onReset: (user) => u.reset.mutate(user.user_id, { onSuccess: setLink }),
-            }}
-          />
+          <div className="space-y-3">
+            <UsersTable
+              users={page.items}
+              sort={{ key: u.sort, order: u.order }}
+              onSort={u.toggleSort}
+              actions={{
+                busy: u.setStatus.isPending || u.reset.isPending,
+                onAccess: setAccess,
+                onToggle: (user) =>
+                  u.setStatus.mutate({
+                    id: user.user_id,
+                    next: user.status === "ACTIVE" ? "DISABLED" : "ACTIVE",
+                  }),
+                onReset: (user) => u.reset.mutate(user.user_id, { onSuccess: setLink }),
+              }}
+            />
+            <Pagination
+              noun="users"
+              total={page.total}
+              offset={u.offset}
+              limit={u.limit}
+              onOffsetChange={u.setOffset}
+              onLimitChange={u.setLimit}
+            />
+          </div>
         )}
       </DataState>
       <EntitlementsDialog user={access} onClose={() => setAccess(null)} />
@@ -101,8 +102,11 @@ export function UsersView() {
           <div className="space-y-2 p-4">
             <CopyLink label="Reset link" url={link.accept_url} />
             <p className="text-xs text-muted-foreground">
-              Expires {formatDateTime(link.expires_at)}. Anyone with the link can set the password,
-              so send it privately.
+              Expires {formatDateTime(link.expires_at)}.{" "}
+              {link.email_sent
+                ? `We also emailed it to ${link.email}.`
+                : "Email is not configured, so share it yourself."}{" "}
+              Anyone with the link can set the password, so send it privately.
             </p>
           </div>
         ) : null}

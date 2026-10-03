@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { StatusChip } from "@/components/shared/chips";
 import { ValueWithSource } from "@/components/shared/value-with-source";
+import { RowList, Row } from "@/components/shared/row-list";
 import { Card, CardBody, CardHeader, CardTitle } from "@/components/ui/card";
 import { formatDate, formatValue } from "@/lib/format";
 import type { OverviewLab } from "../types";
@@ -21,9 +22,9 @@ export function LabsCard({ patientId, labs }: { patientId: string; labs: Overvie
         {labs.length === 0 ? (
           <p className="text-sm text-muted-foreground">No lab results on record.</p>
         ) : (
-          <ul className="divide-y divide-border">
+          <RowList>
             {labs.map((lab) => (
-              <li key={lab.lab_id} className="flex items-start justify-between gap-3 py-2 text-sm">
+              <Row key={lab.lab_id} className="flex items-start justify-between gap-3">
                 <ValueWithSource
                   value={
                     <Link
@@ -46,9 +47,9 @@ export function LabsCard({ patientId, labs }: { patientId: string; labs: Overvie
                 {lab.flag && lab.flag !== "NORMAL" ? (
                   <StatusChip tone="warn">{lab.flag.toLowerCase()}</StatusChip>
                 ) : null}
-              </li>
+              </Row>
             ))}
-          </ul>
+          </RowList>
         )}
       </CardBody>
     </Card>

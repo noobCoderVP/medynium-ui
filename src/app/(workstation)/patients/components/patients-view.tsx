@@ -1,90 +1,104 @@
 "use client";
 
-import { ChevronLeft, ChevronRight, Search } from "lucide-react";
 import { DataState, SkeletonRows } from "@/components/shared/data-state";
+import { FilterField, ListToolbar } from "@/components/shared/list-toolbar";
 import { PageHeading } from "@/components/shared/page-heading";
+import { Pagination } from "@/components/shared/pagination";
 import { EmptyState } from "@/components/shared/state-panels";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { copy } from "@/lib/copy";
-import { formatNumber } from "@/lib/format";
-import { PAGE_SIZE, usePatientList } from "../hooks/use-patients";
-import { PatientTable } from "./patient-table";
+import { usePatientList } from "../hooks/use-patients";
+import { PATIENT_SORTS, PatientTable } from "./patient-table";
+
+const SEX = [
+  { value: "F", label: "Female" },
+  { value: "M", label: "Male" },
+];
+const KIND = [
+  { value: "OUTPATIENT", label: "Outpatient visit" },
+  { value: "EMERGENCY", label: "Emergency visit" },
+  { value: "HOSPITALIZATION", label: "Hospital stay" },
+];
+const FLAG = [
+  { value: "NEW_LAB", label: "New lab results" },
+  { value: "NEW_MEDICATION", label: "Medication updated" },
+  { value: "RECENT_EMERGENCY", label: "Recent ED visit" },
+  { value: "NEW_DOCUMENT", label: "New document" },
+];
 
 export function PatientsView() {
-  const { query, text, setText, changed, offset, setChanged, setOffset } = usePatientList();
-  const total = query.data?.total ?? 0;
-  const from = total === 0 ? 0 : offset + 1;
-  const to = Math.min(offset + PAGE_SIZE, total);
+  const list = usePatientList();
+  const { query } = list;
 
   return (
-    <>
+    <div className="space-y-4">
       <PageHeading title="Patients" note="Only patients you are assigned to appear here." />
-      <div className="flex flex-wrap items-center gap-3">
-        <div className="relative w-full max-w-sm">
-          <label htmlFor="patient-filter" className="sr-only">
-            Search patients by name, id or condition
-          </label>
-          <Search
-            className="pointer-events-none absolute top-2.5 left-2.5 size-4 text-muted-foreground"
-            aria-hidden="true"
-          />
-          <Input
-            id="patient-filter"
-            className="pl-8"
-            value={text}
-            onChange={(e) => setText(e.target.value)}
-            placeholder="Name, id or condition"
-            autoComplete="off"
-          />
-        </div>
-        <label className="flex items-center gap-2 text-sm">
+      <ListToolbar
+        search={{
+          value: list.text,
+          onChange: list.setText,
+          label: "Search name, id or condition",
+        }}
+        sort={{
+          options: PATIENT_SORTS,
+          value: list.sort,
+          order: list.order,
+          onChange: list.setSort,
+        }}
+        activeCount={list.activeCount}
+        onClear={list.clear}
+      >
+        <FilterField
+          label="Sex"
+          value={list.filters.sex}
+          onChange={(v) => list.setFilter("sex", v)}
+          options={SEX}
+        />
+        <FilterField
+          label="Last encounter"
+          value={list.filters.kind}
+          onChange={(v) => list.setFilter("kind", v)}
+          options={KIND}
+        />
+        <FilterField
+          label="Change"
+          value={list.filters.flag}
+          onChange={(v) => list.setFilter("flag", v)}
+          options={FLAG}
+        />
+        <label className="flex min-h-9 cursor-pointer items-center gap-2 self-end text-sm">
           <input
             type="checkbox"
             className="size-4 accent-primary"
-            checked={changed}
-            onChange={(e) => setChanged(e.target.checked)}
+            checked={list.filters.changed === "1"}
+            onChange={(e) => list.setFilter("changed", e.target.checked ? "1" : "")}
           />
-          Only patients with changes
+          Only with changes
         </label>
-      </div>
+      </ListToolbar>
       <DataState
         query={query}
         skeleton={<SkeletonRows rows={8} />}
-        isEmpty={(page) => page.items.length === 0}
+        isEmpty={(page) => page.total === 0}
         empty={<EmptyState title={copy.empty.patients} />}
       >
         {(page) => (
           <div className="space-y-3">
-            <PatientTable items={page.items} />
-            <nav aria-label="Pages" className="flex items-center justify-between text-sm">
-              <span className="text-muted-foreground" aria-live="polite">
-                {formatNumber(from)} to {formatNumber(to)} of {formatNumber(total)}
-              </span>
-              <span className="flex gap-2">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  disabled={offset === 0}
-                  onClick={() => setOffset(Math.max(0, offset - PAGE_SIZE))}
-                >
-                  <ChevronLeft aria-hidden="true" />
-                  Previous
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  disabled={to >= total}
-                  onClick={() => setOffset(offset + PAGE_SIZE)}
-                >
-                  Next
-                  <ChevronRight aria-hidden="true" />
-                </Button>
-              </span>
-            </nav>
+            <PatientTable
+              items={page.items}
+              sort={{ key: list.sort, order: list.order }}
+              onSort={list.toggleSort}
+            />
+            <Pagination
+              noun="patients"
+              total={page.total}
+              offset={list.offset}
+              limit={list.limit}
+              onOffsetChange={list.setOffset}
+              onLimitChange={list.setLimit}
+            />
           </div>
         )}
       </DataState>
-    </>
+    </div>
   );
 }

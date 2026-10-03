@@ -1,6 +1,9 @@
 "use client";
 
 import { DataState } from "@/components/shared/data-state";
+import { StatGrid } from "@/components/shared/stat-grid";
+import { Stagger } from "@/components/shared/stagger";
+import { StaggerItem } from "@/components/shared/stagger-item";
 import { StatTile } from "@/components/shared/stat-tile";
 import { Skeleton } from "@/components/ui/skeleton";
 import { formatMoney, formatNumber } from "@/lib/format";
@@ -27,7 +30,7 @@ export function OverviewTab({ patientId }: { patientId: string }) {
     <DataState query={query} skeleton={<OverviewSkeleton />}>
       {(p) => (
         <div className="space-y-4">
-          <dl className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-6">
+          <StatGrid>
             <StatTile
               label="Outpatient visits"
               value={formatNumber(p.utilization.opd_visits)}
@@ -41,13 +44,21 @@ export function OverviewTab({ patientId }: { patientId: string }) {
             <StatTile label="Procedures" value={formatNumber(p.utilization.procedures)} />
             <StatTile label="Billed" value={formatMoney(p.utilization.billed)} />
             <StatTile label="Approved" value={formatMoney(p.utilization.approved)} />
-          </dl>
-          <div className="grid gap-4 md:grid-cols-2">
-            <MedicationsCard patientId={patientId} medications={p.medications} />
-            <LabsCard patientId={patientId} labs={p.latest_labs} />
-            <DiagnosesCard diagnoses={p.diagnoses} />
-            <EventsCard patientId={patientId} events={p.recent_events} />
-          </div>
+          </StatGrid>
+          <Stagger className="grid gap-4 md:grid-cols-2">
+            <StaggerItem className="[&>section]:h-full">
+              <MedicationsCard patientId={patientId} medications={p.medications} />
+            </StaggerItem>
+            <StaggerItem className="[&>section]:h-full">
+              <LabsCard patientId={patientId} labs={p.latest_labs} />
+            </StaggerItem>
+            <StaggerItem className="[&>section]:h-full">
+              <DiagnosesCard diagnoses={p.diagnoses} />
+            </StaggerItem>
+            <StaggerItem className="[&>section]:h-full">
+              <EventsCard patientId={patientId} events={p.recent_events} />
+            </StaggerItem>
+          </Stagger>
         </div>
       )}
     </DataState>

@@ -2,7 +2,7 @@ import { formatDate } from "@/lib/format";
 import type { NoteSummary } from "@/lib/api/types";
 import { cn } from "@/lib/utils";
 
-/** Notes, newest first. Each is a button that opens the reader, so selection works by keyboard. */
+/** Notes in the order the API returned them. Each is a button that opens the reader, so selection works by keyboard. */
 export function NoteList({
   notes,
   selected,
@@ -12,18 +12,17 @@ export function NoteList({
   selected: string;
   onOpen: (id: string) => void;
 }) {
-  const sorted = [...notes].sort((a, b) => b.date.localeCompare(a.date));
   return (
-    <ul className="divide-y divide-border rounded-lg border border-border bg-card">
-      {sorted.map((note) => (
+    <ul className="divide-y divide-border overflow-hidden rounded-xl border border-border bg-card shadow-xs">
+      {notes.map((note) => (
         <li key={note.note_id}>
           <button
             type="button"
             aria-current={note.note_id === selected ? "true" : undefined}
             onClick={() => onOpen(note.note_id)}
             className={cn(
-              "block w-full px-4 py-3 text-left text-sm hover:bg-muted",
-              note.note_id === selected && "bg-accent",
+              "block w-full border-l-2 border-transparent px-4 py-3 text-left text-sm transition-colors hover:bg-muted/60",
+              note.note_id === selected && "border-primary bg-accent hover:bg-accent",
             )}
           >
             <span className="block font-medium">{note.title}</span>

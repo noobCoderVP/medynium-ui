@@ -2,12 +2,13 @@ import { StatusChip } from "@/components/shared/chips";
 import { DataTable, type Column } from "@/components/shared/data-table";
 import { formatDate } from "@/lib/format";
 import type { Medication } from "@/lib/api/types";
+import type { SortOrder } from "@/lib/use-list-state";
 
 const columns: Column<Medication>[] = [
   {
     key: "drug",
     header: "Medicine",
-    sortValue: (m) => m.drug,
+    sortKey: "drug",
     cell: (m) => (
       <div>
         <p className="font-medium">{m.drug}</p>
@@ -22,18 +23,18 @@ const columns: Column<Medication>[] = [
   {
     key: "started",
     header: "Started",
-    sortValue: (m) => m.started ?? "",
+    sortKey: "started",
     cell: (m) => formatDate(m.started),
   },
   {
     key: "stopped",
     header: "Stopped",
-    sortValue: (m) => m.stopped ?? "9999",
     cell: (m) => (m.stopped ? formatDate(m.stopped) : <StatusChip tone="ok">current</StatusChip>),
   },
   {
     key: "change",
     header: "Last change",
+    sortKey: "last_change",
     cell: (m) =>
       m.change ? (
         <span>
@@ -59,7 +60,21 @@ const columns: Column<Medication>[] = [
 ];
 
 /** Dose, start, change note and whether the drug's label is in the knowledge corpus. */
-export function MedicationsTable({ rows }: { rows: Medication[] }) {
+export const MEDICATION_SORTS = [
+  { key: "started", label: "Start date" },
+  { key: "drug", label: "Medicine" },
+  { key: "last_change", label: "Last change" },
+];
+
+export function MedicationsTable({
+  rows,
+  sort,
+  onSort,
+}: {
+  rows: Medication[];
+  sort: { key: string; order: SortOrder };
+  onSort: (key: string) => void;
+}) {
   return (
     <div className="space-y-2">
       <DataTable
@@ -67,7 +82,8 @@ export function MedicationsTable({ rows }: { rows: Medication[] }) {
         columns={columns}
         rows={rows}
         rowKey={(m) => m.medication_id}
-        initialSort={{ key: "started", direction: "desc" }}
+        sort={sort}
+        onSort={onSort}
       />
       <p className="text-xs text-muted-foreground">
         Source: <span className="font-mono">CLINICAL.MEDICATION</span>. &quot;Not indexed&quot;

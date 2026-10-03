@@ -8,16 +8,14 @@ export const dashboardKeys = {
 
 export const patientKeys = {
   all: ["patients"] as const,
-  list: (q: string, changed: boolean, offset: number) =>
-    ["patients", "list", { q, changed, offset }] as const,
+  list: (params: object) => ["patients", "list", params] as const,
   detail: (id: string) => ["patients", id, "detail"] as const,
-  medications: (id: string, status: string) => ["patients", id, "medications", status] as const,
-  labs: (id: string) => ["patients", id, "labs"] as const,
+  medications: (id: string, params: object) => ["patients", id, "medications", params] as const,
+  labs: (id: string, params: object = {}) => ["patients", id, "labs", params] as const,
   trend: (id: string, code: string) => ["patients", id, "labs", code, "trend"] as const,
-  timeline: (id: string, from: string, to: string, types: string) =>
-    ["patients", id, "timeline", { from, to, types }] as const,
-  claims: (id: string) => ["patients", id, "claims"] as const,
-  notes: (id: string) => ["patients", id, "notes"] as const,
+  timeline: (id: string, params: object) => ["patients", id, "timeline", params] as const,
+  claims: (id: string, params: object) => ["patients", id, "claims", params] as const,
+  notes: (id: string, params: object) => ["patients", id, "notes", params] as const,
   note: (id: string, noteId: string) => ["patients", id, "notes", noteId] as const,
   pins: (id: string) => ["patients", id, "pins"] as const,
   views: (id: string) => ["patients", id, "views"] as const,
@@ -34,12 +32,13 @@ export const knowledgeKeys = {
 };
 
 export const auditKeys = {
-  list: (filters: Record<string, string | number>) => ["audit", filters] as const,
+  list: (filters: object) => ["audit", filters] as const,
 };
 
 export const adminKeys = {
   health: ["admin", "health"] as const,
-  users: (q: string, status: string) => ["admin", "users", { q, status }] as const,
+  users: (params: object) => ["admin", "users", params] as const,
   entitlements: (id: string) => ["admin", "users", id, "entitlements"] as const,
   invites: ["admin", "invites"] as const,
+  invitePage: (params: object) => ["admin", "invites", "page", params] as const,
 };

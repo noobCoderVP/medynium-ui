@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { RowList, Row } from "@/components/shared/row-list";
 import { Card, CardBody, CardHeader, CardTitle } from "@/components/ui/card";
 import { StatusChip } from "@/components/shared/chips";
 import { formatDate, formatValue } from "@/lib/format";
@@ -7,7 +8,7 @@ import type { Dashboard } from "@/lib/api/types";
 /** The newest lab and medication changes across the caller's patients, abnormal labs first. */
 export function RecentChanges({ changes }: { changes: Dashboard["recent_changes"] }) {
   return (
-    <div className="grid gap-4 md:grid-cols-2">
+    <div className="grid gap-4 lg:grid-cols-2 2xl:grid-cols-1">
       <Card>
         <CardHeader>
           <CardTitle>Recent lab results</CardTitle>
@@ -16,11 +17,11 @@ export function RecentChanges({ changes }: { changes: Dashboard["recent_changes"
           {changes.labs.length === 0 ? (
             <p className="text-sm text-muted-foreground">No new results.</p>
           ) : (
-            <ul className="divide-y divide-border text-sm">
+            <RowList>
               {changes.labs.map((lab) => (
-                <li
+                <Row
                   key={`${lab.patient_id}-${lab.test}-${lab.date}`}
-                  className="flex items-center justify-between gap-3 py-2"
+                  className="flex items-center justify-between gap-3"
                 >
                   <div className="min-w-0">
                     <Link
@@ -47,9 +48,9 @@ export function RecentChanges({ changes }: { changes: Dashboard["recent_changes"
                       <StatusChip tone="warn">{lab.abnormal.toLowerCase()}</StatusChip>
                     ) : null}
                   </div>
-                </li>
+                </Row>
               ))}
-            </ul>
+            </RowList>
           )}
         </CardBody>
       </Card>
@@ -61,9 +62,9 @@ export function RecentChanges({ changes }: { changes: Dashboard["recent_changes"
           {changes.medications.length === 0 ? (
             <p className="text-sm text-muted-foreground">No new changes.</p>
           ) : (
-            <ul className="divide-y divide-border text-sm">
+            <RowList>
               {changes.medications.map((m) => (
-                <li key={`${m.patient_id}-${m.drug}-${m.date}`} className="py-2">
+                <Row key={`${m.patient_id}-${m.drug}-${m.date}`}>
                   <Link
                     href={`/patients/${m.patient_id}?tab=medications`}
                     className="font-medium text-primary hover:underline"
@@ -73,9 +74,9 @@ export function RecentChanges({ changes }: { changes: Dashboard["recent_changes"
                   <p className="text-xs text-muted-foreground">
                     {m.drug}: {m.change} · {formatDate(m.date)}
                   </p>
-                </li>
+                </Row>
               ))}
-            </ul>
+            </RowList>
           )}
         </CardBody>
       </Card>

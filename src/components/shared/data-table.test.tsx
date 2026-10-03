@@ -1,6 +1,6 @@
 import { render, screen, within } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 import { DataTable, type Column } from "./data-table";
 
 interface Row {
@@ -63,5 +63,33 @@ describe("DataTable", () => {
       />,
     );
     expect(screen.getByRole("row", { name: /asha/i })).toHaveAttribute("aria-current", "true");
+  });
+
+  it("in server mode shows the API order, sorts through onSort and marks the active column", async () => {
+    const onSort = vi.fn();
+    const serverColumns: Column<Row>[] = [
+      { key: "name", header: "Name", sortKey: "name", cell: (r) => r.name },
+      { key: "age", header: "Age", sortKey: "age", cell: (r) => r.age },
+      { key: "plain", header: "Plain", cell: () => "x" },
+    ];
+    render(
+      <DataTable
+        caption="People"
+        columns={serverColumns}
+        rows={rows}
+        rowKey={(r) => r.id}
+        sort={{ key: "age", order: "desc" }}
+        onSort={onSort}
+      />,
+    );
+    expect(names()).toEqual(["Bela", "Asha"]);
+    expect(screen.getByRole("columnheader", { name: /age/i })).toHaveAttribute(
+      "aria-sort",
+      "descending",
+    );
+    await userEvent.click(screen.getByRole("button", { name: /name/i }));
+    expect(onSort).toHaveBeenCalledWith("name");
+    expect(names()).toEqual(["Bela", "Asha"]);
+    expect(screen.queryByRole("button", { name: /plain/i })).not.toBeInTheDocument();
   });
 });

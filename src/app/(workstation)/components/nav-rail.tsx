@@ -1,7 +1,9 @@
 "use client";
 
+import { motion } from "framer-motion";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { spring } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 import { useNavItems } from "../hooks/use-nav-items";
 import { isActive } from "../lib/nav";
@@ -13,7 +15,7 @@ export function NavRail() {
   return (
     <nav
       aria-label="Main"
-      className="hidden w-14 shrink-0 flex-col gap-1 border-r border-border bg-sidebar p-2 md:flex xl:w-52"
+      className="hidden w-14 shrink-0 flex-col gap-1 border-r border-border bg-sidebar p-2 pt-4 md:flex xl:w-56"
     >
       {items.map(({ href, label, icon: Icon }) => {
         const active = isActive(pathname, href);
@@ -23,12 +25,20 @@ export function NavRail() {
             href={href}
             aria-current={active ? "page" : undefined}
             className={cn(
-              "flex h-10 items-center gap-3 rounded-lg px-3 text-sm font-medium hover:bg-sidebar-accent",
-              active && "bg-sidebar-accent text-sidebar-accent-foreground",
+              "relative flex h-10 items-center gap-3 rounded-lg px-3 text-sm font-medium text-muted-foreground transition-colors hover:bg-sidebar-accent/60 hover:text-foreground",
+              active && "text-sidebar-accent-foreground hover:text-sidebar-accent-foreground",
             )}
           >
-            <Icon className="size-4 shrink-0" aria-hidden="true" />
-            <span className="max-xl:sr-only">{label}</span>
+            {active ? (
+              <motion.span
+                layoutId="nav-active"
+                transition={spring}
+                className="absolute inset-0 rounded-lg bg-sidebar-accent"
+                aria-hidden="true"
+              />
+            ) : null}
+            <Icon className="relative size-4 shrink-0" aria-hidden="true" />
+            <span className="relative max-xl:sr-only">{label}</span>
           </Link>
         );
       })}

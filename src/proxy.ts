@@ -10,6 +10,7 @@ import { NextResponse, type NextRequest } from "next/server";
 const PUBLIC_PREFIXES = [
   "/sign-in",
   "/invite",
+  "/forgot-password",
   ...(process.env.NODE_ENV === "production" ? [] : ["/dev"]),
 ];
 

@@ -45,13 +45,15 @@ export function DashboardView() {
         {(data) => (
           <div className="space-y-6">
             <UtilizationTiles utilization={data.utilization} />
-            <section aria-labelledby="worklist-heading" className="space-y-2">
-              <h2 id="worklist-heading" className="text-sm font-semibold">
-                Worklist ({data.worklist.length})
-              </h2>
-              <Worklist items={data.worklist} />
-            </section>
-            <RecentChanges changes={data.recent_changes} />
+            <div className="grid items-start gap-6 2xl:grid-cols-[minmax(0,1.7fr)_minmax(0,1fr)]">
+              <section aria-labelledby="worklist-heading" className="space-y-3">
+                <h2 id="worklist-heading" className="text-sm font-semibold">
+                  Worklist ({data.worklist.length})
+                </h2>
+                <Worklist items={data.worklist} />
+              </section>
+              <RecentChanges changes={data.recent_changes} />
+            </div>
           </div>
         )}
       </DataState>

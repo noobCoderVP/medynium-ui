@@ -3,6 +3,7 @@ import { X } from "lucide-react";
 import { TagChip } from "@/components/shared/chips";
 import { ErrorState } from "@/components/shared/state-panels";
 import { Button } from "@/components/ui/button";
+import { RowList, Row } from "@/components/shared/row-list";
 import { Card, CardBody, CardHeader, CardTitle } from "@/components/ui/card";
 import { formatDate } from "@/lib/format";
 import type { Briefing } from "@/lib/api/types";
@@ -38,12 +39,9 @@ export function BriefingCard({
         {briefing.items.length === 0 ? (
           <p className="text-sm">{briefing.empty_note ?? "Nothing new."}</p>
         ) : (
-          <ul className="divide-y divide-border text-sm" aria-live="polite">
+          <RowList aria-live="polite">
             {briefing.items.map((item, i) => (
-              <li
-                key={`${item.patient_id}-${i}`}
-                className="flex flex-wrap items-center gap-2 py-2"
-              >
+              <Row key={`${item.patient_id}-${i}`} className="flex flex-wrap items-center gap-2">
                 <TagChip tag="patient_fact" />
                 <Link
                   href={`/patients/${item.patient_id}`}
@@ -52,9 +50,9 @@ export function BriefingCard({
                   {item.name}
                 </Link>
                 <span>{item.text}</span>
-              </li>
+              </Row>
             ))}
-          </ul>
+          </RowList>
         )}
       </CardBody>
     </Card>

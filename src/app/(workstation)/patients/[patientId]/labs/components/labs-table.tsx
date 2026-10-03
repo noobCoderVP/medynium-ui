@@ -3,6 +3,7 @@ import { DataTable, type Column } from "@/components/shared/data-table";
 import { Button } from "@/components/ui/button";
 import { formatDate, formatValue } from "@/lib/format";
 import type { LabLatest } from "@/lib/api/types";
+import type { SortOrder } from "@/lib/use-list-state";
 
 function range(lab: LabLatest): string {
   const { low, high } = lab.ref;
@@ -12,20 +13,30 @@ function range(lab: LabLatest): string {
   return `${formatValue(low)} to ${formatValue(high)}`;
 }
 
+export const LAB_SORTS = [
+  { key: "test", label: "Test" },
+  { key: "date", label: "Date" },
+  { key: "value", label: "Latest value" },
+];
+
 export function LabsTable({
   rows,
   selected,
   onSelect,
+  sort,
+  onSort,
 }: {
   rows: LabLatest[];
   selected: string;
   onSelect: (code: string) => void;
+  sort: { key: string; order: SortOrder };
+  onSort: (key: string) => void;
 }) {
   const columns: Column<LabLatest>[] = [
     {
       key: "test",
       header: "Test",
-      sortValue: (l) => l.test,
+      sortKey: "test",
       cell: (l) => (
         <Button
           variant="link"
@@ -42,10 +53,11 @@ export function LabsTable({
     {
       key: "value",
       header: "Latest",
+      sortKey: "value",
       align: "right",
       cell: (l) => <span className="font-medium">{formatValue(l.value, l.unit)}</span>,
     },
-    { key: "date", header: "Date", sortValue: (l) => l.date, cell: (l) => formatDate(l.date) },
+    { key: "date", header: "Date", sortKey: "date", cell: (l) => formatDate(l.date) },
     {
       key: "prev",
       header: "Previous",
@@ -78,7 +90,8 @@ export function LabsTable({
       columns={columns}
       rows={rows}
       rowKey={(l) => l.lab_id}
-      initialSort={{ key: "date", direction: "desc" }}
+      sort={sort}
+      onSort={onSort}
     />
   );
 }

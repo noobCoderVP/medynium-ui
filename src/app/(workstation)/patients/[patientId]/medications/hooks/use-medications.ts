@@ -1,21 +1,25 @@
 "use client";
 
-import { useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { endpoints } from "@/lib/api/endpoints";
 import { patientKeys } from "@/lib/api/keys";
-import { useUrlParams } from "@/lib/use-url-params";
+import { useListState } from "@/lib/use-list-state";
 
-/** "Current" (default) or "all", held in ?status= so the view is linkable. */
+/**
+ * Search, "current or all", sort and page live in the URL (?q=&status=&sort=&order=&offset=&size=). The API
+ * filters and sorts every medicine on record before it cuts the page.
+ */
 export function useMedications(patientId: string) {
-  const { params, update } = useUrlParams();
-  const status = params.get("status") === "all" ? "all" : "active";
-  const query = useQuery({
-    queryKey: patientKeys.medications(patientId, status),
-    queryFn: () => endpoints.medications(patientId, status),
+  const list = useListState({
+    filters: ["status"],
+    defaultSort: "started",
+    defaultOrder: "desc",
+    defaultSize: 25,
   });
-  return {
-    query,
-    status,
-    setStatus: (value: "active" | "all") => update({ status: value === "all" ? "all" : null }),
-  };
+  const query = useQuery({
+    queryKey: patientKeys.medications(patientId, list.apiParams),
+    queryFn: () => endpoints.medications(patientId, list.apiParams),
+    placeholderData: keepPreviousData,
+  });
+  return { ...list, query };
 }

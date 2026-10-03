@@ -3,6 +3,7 @@ import { DataTable, type Column } from "@/components/shared/data-table";
 import { Button } from "@/components/ui/button";
 import { formatDateTime } from "@/lib/format";
 import type { UserItem } from "@/lib/api/types";
+import type { SortOrder } from "@/lib/use-list-state";
 
 interface Actions {
   onAccess: (user: UserItem) => void;
@@ -11,12 +12,30 @@ interface Actions {
   busy: boolean;
 }
 
-export function UsersTable({ users, actions }: { users: UserItem[]; actions: Actions }) {
+export const USER_SORTS = [
+  { key: "name", label: "Name" },
+  { key: "email", label: "Email" },
+  { key: "role", label: "Role" },
+  { key: "last_login", label: "Last sign-in" },
+  { key: "patients", label: "Patients" },
+];
+
+export function UsersTable({
+  users,
+  actions,
+  sort,
+  onSort,
+}: {
+  users: UserItem[];
+  actions: Actions;
+  sort: { key: string; order: SortOrder };
+  onSort: (key: string) => void;
+}) {
   const columns: Column<UserItem>[] = [
     {
       key: "name",
       header: "User",
-      sortValue: (u) => u.display_name,
+      sortKey: "name",
       cell: (u) => (
         <div>
           <p className="font-medium">{u.display_name}</p>
@@ -27,7 +46,7 @@ export function UsersTable({ users, actions }: { users: UserItem[]; actions: Act
     {
       key: "role",
       header: "Role",
-      sortValue: (u) => u.role,
+      sortKey: "role",
       cell: (u) => (
         <span>
           {u.role === "DOCTOR" ? "Doctor" : "Clinic assistant"}
@@ -38,7 +57,6 @@ export function UsersTable({ users, actions }: { users: UserItem[]; actions: Act
     {
       key: "status",
       header: "Status",
-      sortValue: (u) => u.status,
       cell: (u) => (
         <StatusChip tone={u.status === "ACTIVE" ? "ok" : "muted"}>
           {u.status.toLowerCase()}
@@ -49,13 +67,13 @@ export function UsersTable({ users, actions }: { users: UserItem[]; actions: Act
       key: "patients",
       header: "Patients",
       align: "right",
-      sortValue: (u) => u.patient_count,
+      sortKey: "patients",
       cell: (u) => u.patient_count,
     },
     {
       key: "login",
       header: "Last sign-in",
-      sortValue: (u) => u.last_login_at ?? "",
+      sortKey: "last_login",
       cell: (u) => formatDateTime(u.last_login_at),
     },
     {
@@ -99,7 +117,8 @@ export function UsersTable({ users, actions }: { users: UserItem[]; actions: Act
       columns={columns}
       rows={users}
       rowKey={(u) => u.user_id}
-      initialSort={{ key: "name", direction: "asc" }}
+      sort={sort}
+      onSort={onSort}
     />
   );
 }

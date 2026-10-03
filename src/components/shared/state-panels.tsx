@@ -1,10 +1,12 @@
 "use client";
 
+import { motion } from "framer-motion";
 import { AlertTriangle, Bot, Inbox, SearchX, Timer } from "lucide-react";
 import { useEffect, useState, type ReactNode } from "react";
 import { Button } from "@/components/ui/button";
 import { ApiError } from "@/lib/api/errors";
 import { copy } from "@/lib/copy";
+import { easeOut } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 
 function Panel({
@@ -21,19 +23,27 @@ function Panel({
   role?: "alert" | "status";
 }) {
   return (
-    <div
+    <motion.div
       role={role}
+      initial={{ opacity: 0, scale: 0.98 }}
+      animate={{ opacity: 1, scale: 1 }}
+      transition={easeOut}
       className={cn(
-        "flex flex-col items-center gap-2 rounded-lg border border-dashed px-6 py-10 text-center",
+        "flex flex-col items-center gap-2 rounded-xl border border-dashed px-6 py-12 text-center",
         tone === "crit" && "border-crit/40 bg-crit-soft text-crit",
         tone === "agent" && "border-agent/40 bg-agent-soft text-agent",
         tone === "muted" && "border-border text-muted-foreground",
       )}
     >
-      <span aria-hidden="true">{icon}</span>
+      <span
+        aria-hidden="true"
+        className="mb-1 flex size-12 items-center justify-center rounded-full bg-muted/70"
+      >
+        {icon}
+      </span>
       <p className="text-sm font-medium text-foreground">{title}</p>
       {children ? <div className="text-sm">{children}</div> : null}
-    </div>
+    </motion.div>
   );
 }
 

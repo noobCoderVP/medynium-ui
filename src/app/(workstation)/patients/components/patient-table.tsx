@@ -1,24 +1,27 @@
 import Link from "next/link";
 import { FlagChip } from "@/components/shared/chips";
 import { DataTable, type Column } from "@/components/shared/data-table";
+import { PatientAvatar } from "@/components/shared/patient-avatar";
 import { EncounterCell } from "@/components/shared/encounter-cell";
 import type { PatientListItem } from "@/lib/api/types";
+import type { SortOrder } from "@/lib/use-list-state";
 
 const columns: Column<PatientListItem>[] = [
   {
     key: "name",
     header: "Patient",
-    sortValue: (p) => p.name,
+    sortKey: "name",
     cell: (p) => (
       <Link
         href={`/patients/${p.patient_id}`}
-        className="font-medium text-primary underline-offset-2 hover:underline"
+        className="group inline-flex items-center gap-3 font-medium text-foreground"
       >
-        {p.name}
+        <PatientAvatar name={p.name} />
+        <span className="text-primary underline-offset-2 group-hover:underline">{p.name}</span>
       </Link>
     ),
   },
-  { key: "age", header: "Age, sex", sortValue: (p) => p.age, cell: (p) => `${p.age}, ${p.sex}` },
+  { key: "age", header: "Age, sex", sortKey: "age", cell: (p) => `${p.age}, ${p.sex}` },
   {
     key: "dx",
     header: "Main diagnoses",
@@ -33,13 +36,13 @@ const columns: Column<PatientListItem>[] = [
   {
     key: "last",
     header: "Last encounter",
-    sortValue: (p) => p.last_encounter.date ?? "",
+    sortKey: "last_encounter",
     cell: (p) => <EncounterCell encounter={p.last_encounter} />,
   },
   {
     key: "flags",
     header: "Flags",
-    sortValue: (p) => -p.flags.length,
+    sortKey: "flags",
     cell: (p) => (
       <span className="flex flex-wrap gap-1">
         {p.flags.map((flag) => (
@@ -50,14 +53,30 @@ const columns: Column<PatientListItem>[] = [
   },
 ];
 
-export function PatientTable({ items }: { items: PatientListItem[] }) {
+export const PATIENT_SORTS = [
+  { key: "last_encounter", label: "Last encounter" },
+  { key: "name", label: "Name" },
+  { key: "age", label: "Age" },
+  { key: "flags", label: "Flags" },
+];
+
+export function PatientTable({
+  items,
+  sort,
+  onSort,
+}: {
+  items: PatientListItem[];
+  sort: { key: string; order: SortOrder };
+  onSort: (key: string) => void;
+}) {
   return (
     <DataTable
       caption="Patients"
       columns={columns}
       rows={items}
       rowKey={(p) => p.patient_id}
-      initialSort={{ key: "name", direction: "asc" }}
+      sort={sort}
+      onSort={onSort}
     />
   );
 }

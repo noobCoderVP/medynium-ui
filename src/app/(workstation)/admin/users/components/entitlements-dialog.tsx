@@ -2,16 +2,18 @@
 
 import { useState } from "react";
 import { DataState, SkeletonRows } from "@/components/shared/data-state";
+import { Pagination } from "@/components/shared/pagination";
 import { Button } from "@/components/ui/button";
 import { Dialog } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import type { UserItem } from "@/lib/api/types";
-import { useEntitlementEditor } from "../hooks/use-entitlements";
+import { CHOICES_PAGE, useEntitlementEditor } from "../hooks/use-entitlements";
 
 function Editor({ user, onDone }: { user: UserItem; onDone: () => void }) {
   const [search, setSearch] = useState("");
   const [chosen, setChosen] = useState<Set<string> | null>(null);
-  const { current, choices, save } = useEntitlementEditor(user.user_id, search.trim());
+  const [offset, setOffset] = useState(0);
+  const { current, choices, save } = useEntitlementEditor(user.user_id, search.trim(), offset);
   // Until the user edits, the selection is what the server says they can see now.
   const selected = chosen ?? new Set(current.data?.patient_ids ?? []);
 
@@ -31,7 +33,10 @@ function Editor({ user, onDone }: { user: UserItem; onDone: () => void }) {
         <Input
           id="ent-search"
           value={search}
-          onChange={(e) => setSearch(e.target.value)}
+          onChange={(e) => {
+            setSearch(e.target.value);
+            setOffset(0);
+          }}
           placeholder="Name, id or condition"
           autoComplete="off"
         />
@@ -47,7 +52,7 @@ function Editor({ user, onDone }: { user: UserItem; onDone: () => void }) {
             {(page) => (
               <fieldset className="space-y-2">
                 <legend className="text-sm text-muted-foreground" aria-live="polite">
-                  {selected.size} selected · showing {page.items.length} of {page.total}
+                  {selected.size} selected in total
                 </legend>
                 <div className="flex gap-2">
                   <Button
@@ -58,7 +63,7 @@ function Editor({ user, onDone }: { user: UserItem; onDone: () => void }) {
                       setChosen(new Set([...selected, ...page.items.map((p) => p.patient_id)]))
                     }
                   >
-                    Select all shown
+                    Select this page
                   </Button>
                   <Button
                     type="button"
@@ -74,7 +79,7 @@ function Editor({ user, onDone }: { user: UserItem; onDone: () => void }) {
                       )
                     }
                   >
-                    Clear shown
+                    Clear this page
                   </Button>
                 </div>
                 <ul className="max-h-72 divide-y divide-border overflow-y-auto rounded-lg border border-border">
@@ -95,6 +100,13 @@ function Editor({ user, onDone }: { user: UserItem; onDone: () => void }) {
                     </li>
                   ))}
                 </ul>
+                <Pagination
+                  noun="patients"
+                  total={page.total}
+                  offset={offset}
+                  limit={CHOICES_PAGE}
+                  onOffsetChange={setOffset}
+                />
               </fieldset>
             )}
           </DataState>

@@ -4,10 +4,22 @@ import { describe, expect, it, vi } from "vitest";
 import { SignInForm } from "./sign-in-form";
 
 const signIn = vi.fn();
-const state = { resuming: false, message: null as string | null };
+const verify = vi.fn();
+const state = {
+  resuming: false,
+  message: null as string | null,
+  challenge: null as null | { challenge: string; email_hint: string; expires_in_minutes: number },
+};
 vi.mock("../hooks/use-sign-in", () => ({
   useResumeSession: () => state.resuming,
-  useSignIn: () => ({ signIn, pending: false, message: state.message }),
+  useSignIn: () => ({
+    signIn,
+    verify,
+    challenge: state.challenge,
+    cancel: vi.fn(),
+    pending: false,
+    message: state.message,
+  }),
 }));
 
 describe("SignInForm", () => {
@@ -44,5 +56,29 @@ describe("SignInForm", () => {
     expect(screen.getByRole("status")).toBeInTheDocument();
     expect(screen.queryByLabelText("Email")).not.toBeInTheDocument();
     state.resuming = false;
+  });
+
+  it("asks for the emailed code after the password when the server wants one", async () => {
+    state.challenge = {
+      challenge: "c".repeat(30),
+      email_hint: "s*****@demo.medynium",
+      expires_in_minutes: 10,
+    };
+    render(<SignInForm next="/dashboard" />);
+    expect(screen.getByText("s*****@demo.medynium")).toBeInTheDocument();
+    const submit = screen.getByRole("button", { name: "Verify and sign in" });
+    expect(submit).toBeDisabled();
+    await userEvent.type(screen.getByLabelText("Sign-in code"), "12a3456");
+    await userEvent.click(submit);
+    expect(verify).toHaveBeenCalledWith("123456");
+    state.challenge = null;
+  });
+
+  it("links to the password reset page", () => {
+    render(<SignInForm next="/dashboard" />);
+    expect(screen.getByRole("link", { name: "Forgot your password?" })).toHaveAttribute(
+      "href",
+      "/forgot-password",
+    );
   });
 });

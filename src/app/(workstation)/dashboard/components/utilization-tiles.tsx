@@ -1,3 +1,4 @@
+import { StatGrid } from "@/components/shared/stat-grid";
 import { StatTile } from "@/components/shared/stat-tile";
 import { formatMoney, formatNumber } from "@/lib/format";
 import type { Dashboard } from "@/lib/api/types";
@@ -9,14 +10,14 @@ export function UtilizationTiles({ utilization }: { utilization: Dashboard["util
       <h2 id="util-heading" className="text-sm font-semibold">
         Utilisation{utilization.window ? ` · ${utilization.window}` : ""}
       </h2>
-      <dl className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-6">
+      <StatGrid>
         <StatTile label="Patients" value={formatNumber(utilization.patients)} />
         <StatTile label="Outpatient visits" value={formatNumber(utilization.opd_visits)} />
         <StatTile label="Emergency visits" value={formatNumber(utilization.emergency_visits)} />
         <StatTile label="Hospital stays" value={formatNumber(utilization.hospitalizations)} />
         <StatTile label="Procedures" value={formatNumber(utilization.procedures)} />
         <StatTile label="Approved claims" value={formatMoney(utilization.approved)} />
-      </dl>
+      </StatGrid>
     </section>
   );
 }

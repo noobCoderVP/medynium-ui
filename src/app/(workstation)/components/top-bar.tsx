@@ -1,25 +1,34 @@
+import { HeartPulse } from "lucide-react";
 import Link from "next/link";
 import { ThemeToggle } from "@/components/shared/theme-toggle";
 import { AskForm, PanelToggle } from "@/features/agent-panel";
 import { env } from "@/lib/env";
+import { MobileSearch } from "./mobile-search";
 import { PatientSearch } from "./patient-search";
 import { UserMenu } from "./user-menu";
 
 /** Brand, patient search, the ask-or-do command bar, assistant toggle, theme and user. */
 export function TopBar() {
   return (
-    <header className="flex h-14 shrink-0 items-center gap-3 border-b border-border bg-card px-3 md:px-4">
+    <header className="flex h-14 shrink-0 items-center gap-3 border-b border-border bg-card/90 px-3 backdrop-blur md:px-5">
       <Link
         href="/dashboard"
-        className="shrink-0 text-lg font-semibold tracking-tight text-primary"
+        className="flex shrink-0 items-center gap-2 font-heading text-lg font-bold tracking-tight text-foreground"
       >
-        {env.NEXT_PUBLIC_APP_NAME}
+        <span
+          aria-hidden="true"
+          className="flex size-8 items-center justify-center rounded-lg bg-primary text-primary-foreground"
+        >
+          <HeartPulse className="size-4" />
+        </span>
+        <span className="max-[400px]:sr-only">{env.NEXT_PUBLIC_APP_NAME}</span>
       </Link>
       <div className="hidden min-w-0 flex-1 items-center gap-3 md:flex">
-        <PatientSearch />
+        <PatientSearch className="w-full max-w-64 shrink-0" />
         <AskForm className="w-full max-w-xl" />
       </div>
       <div className="ml-auto flex shrink-0 items-center gap-1">
+        <MobileSearch />
         <PanelToggle />
         <ThemeToggle />
         <UserMenu />
