@@ -24,7 +24,7 @@ export interface ListConfig {
  * URL when something else (the top-bar search, a link) changes `q`.
  */
 export function useListState(config: ListConfig = {}) {
-  const { filters: filterNames = [], defaultSize = 25, defaultSort, defaultOrder = "asc" } = config;
+  const { filters: filterNames = [], defaultSize = 10, defaultSort, defaultOrder = "asc" } = config;
   const { params, update } = useUrlParams();
 
   const q = params.get("q") ?? "";

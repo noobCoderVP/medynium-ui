@@ -112,7 +112,7 @@ export function ListToolbar({ search, sort, activeCount = 0, onClear, children }
   const searchId = useId();
   const sortId = useId();
   return (
-    <div className="flex flex-wrap items-end gap-3 rounded-xl border border-border bg-card p-3 shadow-xs">
+    <div className="flex flex-wrap items-end gap-3 rounded-xl border border-border bg-muted/60 p-3">
       {search ? (
         <div className="relative w-full sm:max-w-xs sm:flex-1">
           <label htmlFor={searchId} className="sr-only">

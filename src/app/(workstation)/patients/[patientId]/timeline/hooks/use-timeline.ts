@@ -15,7 +15,7 @@ export function useTimeline(patientId: string) {
     filters: ["from", "to", "types"],
     defaultSort: "date",
     defaultOrder: "desc",
-    defaultSize: 25,
+    defaultSize: 10,
   });
   const query = useQuery({
     queryKey: patientKeys.timeline(patientId, list.apiParams),

@@ -49,6 +49,10 @@ const textPairs = [
   ["primary", "card"],
   ["destructive", "card"],
   ["accent-foreground", "accent"],
+  ["sidebar-foreground", "sidebar"],
+  ["sidebar-muted", "sidebar"],
+  ["sidebar-accent-foreground", "sidebar-accent"],
+  ["sidebar-primary", "sidebar"],
   ...["agent", "fact", "source", "synth", "warn", "crit", "ok"].flatMap((role) => [
     [role, `${role}-soft`],
     [role, "card"],

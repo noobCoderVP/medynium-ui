@@ -7,6 +7,7 @@ import {
   TrendingUp,
   FileText,
   FlaskConical,
+  ListChecks,
   Pill,
   Siren,
   Sparkles,
@@ -24,9 +25,10 @@ const tagStyle: Record<Tag, { icon: LucideIcon; className: string }> = {
   patient_fact: { icon: UserRound, className: "border-fact/30 bg-fact-soft text-fact" },
   retrieved_source: { icon: BookOpen, className: "border-source/30 bg-source-soft text-source" },
   ai_synthesis: { icon: Sparkles, className: "border-synth/30 bg-synth-soft text-synth" },
+  rule_check: { icon: ListChecks, className: "border-warn/30 bg-warn-soft text-warn" },
 };
 
-/** One of the three evidence tags. Text and icon shape carry the meaning, not colour alone (NFR-10). */
+/** One of the four evidence tags. Text and icon shape carry the meaning, not colour alone (NFR-10). */
 export function TagChip({ tag, className }: { tag: Tag; className?: string }) {
   const { icon: Icon, className: tone } = tagStyle[tag];
   return (
@@ -93,7 +95,7 @@ export function FlagChip({ flag }: { flag: Flag }) {
   const urgent = flag.type === "RECENT_EMERGENCY";
   if (urgent) return <ChangeChip kind="review">{flag.label}</ChangeChip>;
   return (
-    <span className={cn(base, "border-border bg-muted text-foreground")}>
+    <span className={cn(base, "border-transparent bg-muted/70 text-muted-foreground")}>
       <Icon className="size-3" aria-hidden="true" />
       {flag.label}
     </span>

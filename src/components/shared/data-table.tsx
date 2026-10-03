@@ -15,7 +15,12 @@ export interface Column<T> {
   sortValue?: (row: T) => string | number;
   /** Server sort: the key the API accepts for `sort=`. Present when the column can be sorted by the API. */
   sortKey?: string;
-  align?: "right";
+  /** Numbers and money align right, status chips centre, text stays left (default). */
+  align?: "center" | "right";
+  /** Intentional column width, for example "24%" or "9rem". Columns without one share what is left. */
+  width?: string;
+  /** Floor for the column so a narrow window scrolls instead of crushing it. */
+  minWidth?: string;
   className?: string;
   /** On a phone card: "secondary" shows the cell smaller and muted, so the key fields lead. Default is full size. */
   mobile?: "secondary";
@@ -34,7 +39,11 @@ interface Props<T> {
   onSort?: (key: string) => void;
   /** The row whose key matches is marked as current (for example a record opened from the timeline). */
   highlightKey?: string;
+  /** "compact" tightens rows for dense lists such as the audit log. Default is comfortable. */
+  density?: "comfortable" | "compact";
 }
+
+const ALIGN = { center: "text-center", right: "text-right" } as const;
 
 /**
  * A semantic table. Sorting is a real button in the header (keyboard operable, announced through aria-sort).
@@ -52,6 +61,7 @@ export function DataTable<T>({
   sort: serverSort,
   onSort,
   highlightKey,
+  density = "comfortable",
 }: Props<T>) {
   const [localSort, setLocalSort] = useState(initialSort ?? null);
   const server = Boolean(onSort);
@@ -80,16 +90,31 @@ export function DataTable<T>({
         : { key, direction: "asc" },
     );
 
+  const fixed = columns.some((c) => c.width);
+
   return (
-    <div className="overflow-x-auto rounded-xl border border-border bg-card shadow-xs max-md:overflow-visible max-md:border-0 max-md:bg-transparent max-md:shadow-none">
-      <table role="table" className="w-full border-collapse text-sm max-md:block">
+    <div className="overflow-x-auto rounded-xl border border-border bg-card max-md:overflow-visible max-md:border-0 max-md:bg-transparent">
+      <table
+        role="table"
+        className={cn(
+          "w-full border-separate border-spacing-0 text-sm max-md:block",
+          fixed && "md:table-fixed",
+        )}
+      >
         <caption className="sr-only">{caption}</caption>
+        {fixed ? (
+          <colgroup className="max-md:hidden">
+            {columns.map((column) => (
+              <col key={column.key} style={{ width: column.width, minWidth: column.minWidth }} />
+            ))}
+          </colgroup>
+        ) : null}
         <thead
           role="rowgroup"
-          className="bg-muted/50 text-left text-xs font-medium text-muted-foreground max-md:sr-only"
+          className="bg-muted text-left text-xs font-semibold tracking-wider text-foreground/80 uppercase max-md:sr-only"
         >
           <tr role="row">
-            {columns.map((column) => {
+            {columns.map((column, i) => {
               const sortKey = server ? column.sortKey : column.sortValue ? column.key : undefined;
               const isActive = sortKey !== undefined && active?.key === sortKey;
               const Icon = !isActive
@@ -110,8 +135,9 @@ export function DataTable<T>({
                       : undefined
                   }
                   className={cn(
-                    "px-4 py-3 font-semibold whitespace-nowrap",
-                    column.align === "right" && "text-right",
+                    "border-b border-border px-4 py-3 font-semibold whitespace-nowrap",
+                    i > 0 && "border-l border-l-border/50",
+                    column.align && ALIGN[column.align],
                   )}
                 >
                   {sortKey !== undefined ? (
@@ -138,18 +164,20 @@ export function DataTable<T>({
           </tr>
         </thead>
         <tbody role="rowgroup" className="max-md:block max-md:space-y-3">
-          {sorted.map((row, index) => (
+          {sorted.map((row) => (
             <motion.tr
               key={rowKey(row)}
               role="row"
-              initial={{ opacity: 0, y: 4 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ ...easeOut, delay: Math.min(index, 12) * 0.02 }}
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={easeOut}
               aria-current={rowKey(row) === highlightKey ? "true" : undefined}
               className={cn(
-                "h-12 border-t border-border align-middle transition-colors hover:bg-muted/40",
-                "max-md:block max-md:h-auto max-md:rounded-xl max-md:border max-md:bg-card max-md:py-1.5 max-md:shadow-xs",
-                rowKey(row) === highlightKey && "bg-accent hover:bg-accent",
+                "group/row align-middle transition-colors hover:bg-muted/60",
+                density === "compact" ? "h-10" : "h-12",
+                "max-md:block max-md:h-auto max-md:rounded-xl max-md:border max-md:bg-card max-md:py-1.5",
+                rowKey(row) === highlightKey &&
+                  "bg-accent shadow-[inset_3px_0_0_var(--primary)] hover:bg-accent",
               )}
             >
               {columns.map((column, i) => (
@@ -158,8 +186,11 @@ export function DataTable<T>({
                   role="cell"
                   data-label={i === 0 ? undefined : column.header}
                   className={cn(
-                    "px-4 py-2.5",
-                    column.align === "right" && "text-right",
+                    "border-b border-border/60 px-4 group-last/row:border-b-0",
+                    density === "compact" ? "py-1.5" : "py-2.5",
+                    i > 0 && "border-l border-l-border/30",
+                    column.align && ALIGN[column.align],
+                    "max-md:border-0 max-md:border-l-0",
                     column.className,
                     column.mobile === "secondary" && "max-md:text-xs max-md:text-muted-foreground",
                     i === 0

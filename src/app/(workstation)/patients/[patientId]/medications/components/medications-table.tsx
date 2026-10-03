@@ -8,6 +8,8 @@ const columns: Column<Medication>[] = [
   {
     key: "drug",
     header: "Medicine",
+    width: "26%",
+    minWidth: "6rem",
     sortKey: "drug",
     cell: (m) => (
       <div>
@@ -19,10 +21,18 @@ const columns: Column<Medication>[] = [
       </div>
     ),
   },
-  { key: "dose", header: "Dose", cell: (m) => m.dose ?? m.strength ?? "–" },
+  {
+    key: "dose",
+    header: "Dose",
+    width: "12%",
+    minWidth: "6rem",
+    cell: (m) => m.dose ?? m.strength ?? "–",
+  },
   {
     key: "started",
     header: "Started",
+    width: "14%",
+    minWidth: "6rem",
     sortKey: "started",
     mobile: "secondary",
     cell: (m) => formatDate(m.started),
@@ -30,11 +40,15 @@ const columns: Column<Medication>[] = [
   {
     key: "stopped",
     header: "Stopped",
+    width: "14%",
+    minWidth: "6rem",
     cell: (m) => (m.stopped ? formatDate(m.stopped) : <StatusChip tone="ok">current</StatusChip>),
   },
   {
     key: "change",
     header: "Last change",
+    width: "18%",
+    minWidth: "6rem",
     sortKey: "last_change",
     cell: (m) =>
       m.change ? (
@@ -51,6 +65,8 @@ const columns: Column<Medication>[] = [
   {
     key: "label",
     header: "Label",
+    width: "16%",
+    minWidth: "6rem",
     mobile: "secondary",
     cell: (m) =>
       m.in_knowledge_base ? (

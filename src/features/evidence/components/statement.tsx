@@ -1,3 +1,4 @@
+import type { ReactNode } from "react";
 import { TagChip } from "@/components/shared/chips";
 import { copy } from "@/lib/copy";
 import type { StreamAnswer } from "@/lib/api/events";
@@ -9,7 +10,16 @@ type Consideration = StreamAnswer["considerations"][number];
  * One answer statement: its tag (text and shape), the statement, and a button per piece of evidence.
  * The AI-synthesis tag always carries the hedge, so it can never read as a clinical conclusion.
  */
-export function Statement({ answerId, item }: { answerId: string; item: Consideration }) {
+export function Statement({
+  answerId,
+  item,
+  action,
+}: {
+  answerId: string;
+  item: Consideration;
+  /** Optional page-specific control under the statement, such as recording a decision. */
+  action?: ReactNode;
+}) {
   const ids = [...item.patient_evidence, ...item.source_evidence];
   return (
     <li className="space-y-1.5 rounded-lg border border-border bg-card p-3">
@@ -30,6 +40,7 @@ export function Statement({ answerId, item }: { answerId: string; item: Consider
           </RefButton>
         ))}
       </div>
+      {action}
     </li>
   );
 }

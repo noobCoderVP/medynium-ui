@@ -32,6 +32,9 @@ const loaded = {
     sex: "M",
     city: "Pune",
     as_of: "2026-10-02",
+    allergies: [
+      { allergy_id: "ALG-1", substance: "Aspirin", reaction: "Hives", severity: "SEVERE" },
+    ],
     latest_labs: [
       {
         lab_id: "L-1",
@@ -89,6 +92,22 @@ describe("PatientWorkspace", () => {
       "href",
       "/patients/P-1?tab=safety",
     );
+  });
+
+  it("shows allergies under the patient's name, most severe first as given", () => {
+    usePatient.mockReturnValue(loaded);
+    render_();
+    expect(screen.getByRole("region", { name: "Allergies" })).toHaveTextContent(
+      "Aspirin (Hives, severe)",
+    );
+  });
+
+  it("says none are recorded, never that there are none", () => {
+    usePatient.mockReturnValue({ ...loaded, data: { ...loaded.data, allergies: [] } });
+    render_();
+    const note = screen.getByText("No allergies recorded");
+    expect(note).toBeInTheDocument();
+    expect(note).not.toHaveTextContent(/known|nka|safe/i);
   });
 
   it("renders one not-found state for a denied or missing patient, with no header, tabs or content", () => {

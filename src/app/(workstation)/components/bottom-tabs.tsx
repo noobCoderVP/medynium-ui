@@ -11,14 +11,14 @@ import { useNavItems } from "../hooks/use-nav-items";
 import { isActive } from "../lib/nav";
 
 const tabClass =
-  "relative flex min-h-14 flex-1 flex-col items-center justify-center gap-0.5 px-1 text-[0.7rem] font-medium outline-none focus-visible:bg-muted";
+  "relative flex min-h-14 flex-1 flex-col items-center justify-center gap-0.5 px-1 text-[0.7rem] font-medium outline-none focus-visible:bg-sidebar-accent";
 
 function ActiveBar() {
   return (
     <motion.span
       layoutId="tab-active"
       transition={spring}
-      className="absolute inset-x-4 top-0 h-0.5 rounded-full bg-primary"
+      className="absolute inset-x-4 top-0 h-0.5 rounded-full bg-sidebar-primary"
       aria-hidden="true"
     />
   );
@@ -35,7 +35,10 @@ export function BottomTabs() {
   const more = items.filter((item) => !item.primary);
   const moreActive = more.some((item) => isActive(pathname, item.href));
   return (
-    <nav aria-label="Main" className="flex shrink-0 border-t border-border bg-sidebar md:hidden">
+    <nav
+      aria-label="Main"
+      className="flex shrink-0 border-t border-sidebar-border bg-sidebar md:hidden"
+    >
       {tabs.map(({ href, label, icon: Icon }) => {
         const active = isActive(pathname, href);
         return (
@@ -43,7 +46,7 @@ export function BottomTabs() {
             key={href}
             href={href}
             aria-current={active ? "page" : undefined}
-            className={cn(tabClass, active ? "text-primary" : "text-muted-foreground")}
+            className={cn(tabClass, active ? "text-sidebar-foreground" : "text-sidebar-muted")}
           >
             {active ? <ActiveBar /> : null}
             <Icon className="size-5" aria-hidden="true" />
@@ -57,7 +60,10 @@ export function BottomTabs() {
           trigger={
             <button
               type="button"
-              className={cn(tabClass, moreActive ? "text-primary" : "text-muted-foreground")}
+              className={cn(
+                tabClass,
+                moreActive ? "text-sidebar-foreground" : "text-sidebar-muted",
+              )}
             >
               {moreActive ? <ActiveBar /> : null}
               <Ellipsis className="size-5" aria-hidden="true" />

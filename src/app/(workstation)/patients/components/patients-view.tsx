@@ -31,7 +31,10 @@ export function PatientsView() {
 
   return (
     <div className="space-y-4">
-      <PageHeading title="Patients" note="Only patients you are assigned to appear here." />
+      <PageHeading
+        title="Patients"
+        note="Find and review patients in your care. Only patients you are assigned to appear here."
+      />
       <ListToolbar
         search={{
           value: list.text,

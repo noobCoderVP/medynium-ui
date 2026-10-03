@@ -22,6 +22,7 @@ export function UsersView() {
   return (
     <>
       <PageHeading
+        crumbs={[{ label: "Admin", href: "/admin" }, { label: "Users and access" }]}
         title="Users and access"
         note="Disable accounts, set who sees which patients, and issue password-reset links."
       />

@@ -29,7 +29,7 @@ export function RecentChanges({ patient }: { patient: Overview }) {
   return (
     <section
       aria-label="Recent changes"
-      className="space-y-2 rounded-xl border border-border bg-card px-4 py-3 shadow-xs"
+      className="space-y-2 border-t border-border bg-muted/50 px-4 py-3"
     >
       {abnormal.length > 0 ? (
         <div className="flex flex-col gap-2 sm:flex-row sm:flex-wrap sm:items-center">

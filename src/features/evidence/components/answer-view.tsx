@@ -1,4 +1,5 @@
 import { TriangleAlert } from "lucide-react";
+import type { ReactNode } from "react";
 import { RouteChip } from "@/components/shared/chips";
 import { copy } from "@/lib/copy";
 import type { StreamAnswer } from "@/lib/api/events";
@@ -11,19 +12,19 @@ import { Statement } from "./statement";
  * limits. Announced once, when it appears (role="region" with a label, not a live region that re-reads).
  * A safety review with no statements is the honest gap, in the words the copy deck fixes (AI-05).
  */
-export function AnswerView({ answer }: { answer: StreamAnswer }) {
+export function AnswerView({
+  answer,
+  statementAction,
+}: {
+  answer: StreamAnswer;
+  /** A page can add a control under a statement (the Safety tab adds "Add to findings" to conclusions). */
+  statementAction?: (item: StreamAnswer["considerations"][number]) => ReactNode;
+}) {
   // The fixed gap wording is for a safety review that found nothing; other kinds show their own short answer.
   const gap = answer.kind === "SAFETY" && answer.considerations.length === 0;
   return (
     <section aria-label="Answer" className="space-y-3">
       <div className="flex flex-wrap items-center gap-2">
-        {answer.route ? (
-          <RouteChip
-            route={answer.route.route}
-            model={answer.route.model}
-            costNote={answer.route.cost_note}
-          />
-        ) : null}
         <RefButton answerId={answer.answer_id} className="font-sans font-medium">
           Why? Show evidence
         </RefButton>
@@ -35,7 +36,12 @@ export function AnswerView({ answer }: { answer: StreamAnswer }) {
       {answer.considerations.length > 0 ? (
         <ul className="space-y-2">
           {answer.considerations.map((item) => (
-            <Statement key={item.id} answerId={answer.answer_id} item={item} />
+            <Statement
+              key={item.id}
+              answerId={answer.answer_id}
+              item={item}
+              action={statementAction?.(item)}
+            />
           ))}
         </ul>
       ) : null}
@@ -55,6 +61,18 @@ export function AnswerView({ answer }: { answer: StreamAnswer }) {
         </div>
       ) : null}
       <LimitsBlock limits={answer.limits} />
+      {answer.route ? (
+        <details className="text-xs text-muted-foreground">
+          <summary className="cursor-pointer font-medium">How this was answered</summary>
+          <div className="mt-1.5">
+            <RouteChip
+              route={answer.route.route}
+              model={answer.route.model}
+              costNote={answer.route.cost_note}
+            />
+          </div>
+        </details>
+      ) : null}
     </section>
   );
 }

@@ -29,13 +29,24 @@ const columns: Column<AuditItem>[] = [
   {
     key: "when",
     header: "When",
+    width: "14%",
+    minWidth: "6rem",
     sortKey: "when",
     cell: (a) => <span className="whitespace-nowrap">{formatDateTime(a.occurred_at)}</span>,
   },
-  { key: "action", header: "Action", sortKey: "action", cell: (a) => humanize(a.action) },
+  {
+    key: "action",
+    header: "Action",
+    width: "16%",
+    minWidth: "6rem",
+    sortKey: "action",
+    cell: (a) => humanize(a.action),
+  },
   {
     key: "route",
     header: "Route",
+    width: "16%",
+    minWidth: "6rem",
     cell: (a) =>
       a.route ? (
         <RouteChip route={a.route} model={a.model} costNote={a.cost_note} />
@@ -46,7 +57,8 @@ const columns: Column<AuditItem>[] = [
   {
     key: "what",
     header: "Detail",
-    className: "max-w-sm",
+    width: "28%",
+    minWidth: "6rem",
     cell: (a) => (
       <div className="space-y-1">
         {a.question ? <p className="line-clamp-2">{a.question}</p> : null}
@@ -74,6 +86,8 @@ const columns: Column<AuditItem>[] = [
   {
     key: "evidence",
     header: "Evidence",
+    width: "12%",
+    minWidth: "6rem",
     cell: (a) =>
       a.answer_id ? (
         <RefButton answerId={a.answer_id}>{a.answer_id}</RefButton>
@@ -84,6 +98,8 @@ const columns: Column<AuditItem>[] = [
   {
     key: "outcome",
     header: "Outcome",
+    width: "14%",
+    minWidth: "6rem",
     sortKey: "outcome",
     cell: (a) => <StatusChip tone={outcomeTone(a.outcome)}>{humanize(a.outcome)}</StatusChip>,
   },
@@ -106,6 +122,7 @@ export function AuditTable({
 }) {
   return (
     <DataTable
+      density="compact"
       caption="Your activity"
       columns={columns}
       rows={items}

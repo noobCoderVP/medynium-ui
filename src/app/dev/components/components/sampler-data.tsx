@@ -71,6 +71,7 @@ export function SamplerData() {
         <TagChip tag="patient_fact" />
         <TagChip tag="retrieved_source" />
         <TagChip tag="ai_synthesis" />
+        <TagChip tag="rule_check" />
         <FlagChip flag={{ type: "NEW_LAB", label: "New lab" }} />
         <FlagChip flag={{ type: "RECENT_EMERGENCY", label: "ED visit 2 Oct" }} />
         <RouteChip route="lookup" costNote="no model call" />

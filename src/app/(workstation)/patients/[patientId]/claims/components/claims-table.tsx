@@ -11,13 +11,23 @@ const columns: Column<Claim>[] = [
   {
     key: "date",
     header: "Service date",
+    width: "14%",
+    minWidth: "6rem",
     sortKey: "date",
     cell: (c) => formatDate(c.service_date),
   },
-  { key: "service", header: "Service", cell: (c) => c.service ?? "–" },
+  {
+    key: "service",
+    header: "Service",
+    width: "24%",
+    minWidth: "6rem",
+    cell: (c) => c.service ?? "–",
+  },
   {
     key: "encounter",
     header: "Encounter",
+    width: "20%",
+    minWidth: "6rem",
     mobile: "secondary",
     cell: (c) =>
       c.encounter_id ? <span className="font-mono text-xs">{c.encounter_id}</span> : "–",
@@ -25,12 +35,16 @@ const columns: Column<Claim>[] = [
   {
     key: "status",
     header: "Status",
+    width: "14%",
+    minWidth: "6rem",
     sortKey: "status",
     cell: (c) => <StatusChip tone={tone(c.status)}>{c.status.toLowerCase()}</StatusChip>,
   },
   {
     key: "billed",
     header: "Billed",
+    width: "14%",
+    minWidth: "6rem",
     align: "right",
     sortKey: "billed",
     cell: (c) => formatMoney(c.billed),
@@ -38,6 +52,8 @@ const columns: Column<Claim>[] = [
   {
     key: "approved",
     header: "Approved",
+    width: "14%",
+    minWidth: "6rem",
     align: "right",
     sortKey: "approved",
     cell: (c) => formatMoney(c.approved),

@@ -44,6 +44,8 @@ export function LabsTable({
     {
       key: "test",
       header: "Test",
+      width: "22%",
+      minWidth: "6rem",
       sortKey: "test",
       cell: (l) => (
         <Button
@@ -61,6 +63,8 @@ export function LabsTable({
     {
       key: "value",
       header: "Latest",
+      width: "12%",
+      minWidth: "6rem",
       sortKey: "value",
       align: "right",
       cell: (l) => <span className="font-medium">{formatValue(l.value, l.unit)}</span>,
@@ -68,6 +72,8 @@ export function LabsTable({
     {
       key: "change",
       header: "Change",
+      width: "12%",
+      minWidth: "6rem",
       cell: (l) => {
         const kind = labChange(l);
         return kind ? (
@@ -80,6 +86,8 @@ export function LabsTable({
     {
       key: "date",
       header: "Date",
+      width: "14%",
+      minWidth: "6rem",
       sortKey: "date",
       mobile: "secondary",
       cell: (l) => formatDate(l.date),
@@ -87,6 +95,8 @@ export function LabsTable({
     {
       key: "prev",
       header: "Previous",
+      width: "12%",
+      minWidth: "6rem",
       align: "right",
       mobile: "secondary",
       cell: (l) =>
@@ -99,10 +109,19 @@ export function LabsTable({
           "–"
         ),
     },
-    { key: "ref", header: "Reference", mobile: "secondary", cell: range },
+    {
+      key: "ref",
+      header: "Reference",
+      width: "14%",
+      minWidth: "6rem",
+      mobile: "secondary",
+      cell: range,
+    },
     {
       key: "flag",
       header: "Flag",
+      width: "14%",
+      minWidth: "6rem",
       cell: (l) =>
         l.flag && l.flag !== "NORMAL" ? (
           <StatusChip tone="warn">{l.flag.toLowerCase()}</StatusChip>

@@ -14,7 +14,7 @@ export function usePatientList() {
     filters: ["sex", "kind", "flag", "changed"],
     defaultSort: "last_encounter",
     defaultOrder: "desc",
-    defaultSize: 25,
+    defaultSize: 10,
   });
   const params = { ...list.apiParams, changed: list.filters.changed === "1" ? true : undefined };
   const query = useQuery({

@@ -54,6 +54,25 @@ describe("AnswerView", () => {
     expect(screen.getByText("AI synthesis")).toBeInTheDocument();
   });
 
+  it("labels a code-made conclusion as a rule check, never as AI", () => {
+    const answer = {
+      ...base,
+      considerations: [
+        {
+          id: "C1",
+          text: "The record lists an allergy to Aspirin, and Aspirin is a current medicine.",
+          tag: "rule_check" as const,
+          patient_evidence: ["P1", "P3"],
+          source_evidence: [],
+        },
+      ],
+    };
+    render(<AnswerView answer={answer} statementAction={() => <button>Add to findings</button>} />);
+    expect(screen.getByText("Rule check")).toBeInTheDocument();
+    expect(screen.queryByText("AI synthesis")).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Add to findings" })).toBeInTheDocument();
+  });
+
   it("always hedges an AI-synthesis statement", () => {
     render(<AnswerView answer={base} />);
     expect(screen.getByText("May warrant clinician review")).toBeInTheDocument();

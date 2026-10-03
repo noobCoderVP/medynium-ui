@@ -46,27 +46,27 @@ export function TurnView({ turn, onRetry }: { turn: Turn; onRetry: (question: st
       <p className="ml-auto w-fit max-w-[90%] rounded-lg bg-agent-soft px-3 py-2 text-sm text-agent">
         {turn.question}
       </p>
-      {turn.routes.length > 0 ? (
-        <div className="flex flex-wrap gap-1.5">
-          {turn.routes.map((route, index) => (
-            <RouteChip
-              key={index}
-              route={route.route}
-              model={route.model}
-              costNote={route.cost_note}
-            />
-          ))}
-        </div>
-      ) : null}
       {turn.steps.length > 0 ? (
         <details
           open={turn.status === "running"}
           className="rounded-lg border border-border px-3 py-2"
         >
           <summary className="cursor-pointer text-sm font-medium">
-            Steps ({turn.steps.length})
+            How this was answered ({turn.steps.length} steps)
           </summary>
-          <div className="mt-2">
+          <div className="mt-2 space-y-2">
+            {turn.routes.length > 0 ? (
+              <div className="flex flex-wrap gap-1.5">
+                {turn.routes.map((route, index) => (
+                  <RouteChip
+                    key={index}
+                    route={route.route}
+                    model={route.model}
+                    costNote={route.cost_note}
+                  />
+                ))}
+              </div>
+            ) : null}
             <StepsList steps={turn.steps} />
           </div>
         </details>

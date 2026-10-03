@@ -11,10 +11,10 @@ export function PageTransition({ children }: { children: ReactNode }) {
   return (
     <motion.div
       key={pathname}
-      initial={{ opacity: 0, y: 6 }}
-      animate={{ opacity: 1, y: 0 }}
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
       transition={easeOut}
-      className="space-y-6"
+      className="space-y-5"
     >
       {children}
     </motion.div>

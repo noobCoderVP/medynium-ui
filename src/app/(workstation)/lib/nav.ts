@@ -1,6 +1,7 @@
 import {
   BookOpen,
   History,
+  LifeBuoy,
   LayoutDashboard,
   ShieldCheck,
   Users,
@@ -22,6 +23,7 @@ export const NAV_ITEMS: NavItem[] = [
   { href: "/patients", label: "Patients", icon: Users, primary: true },
   { href: "/knowledge", label: "Knowledge", icon: BookOpen },
   { href: "/activity", label: "Activity log", icon: History, primary: true },
+  { href: "/docs", label: "Documentation", icon: LifeBuoy },
   { href: "/admin", label: "Admin", icon: ShieldCheck, adminOnly: true },
 ];
 

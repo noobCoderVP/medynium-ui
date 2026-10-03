@@ -23,7 +23,7 @@ const setup = (props: Partial<Parameters<typeof Pagination>[0]> = {}) => {
 describe("Pagination", () => {
   it("reports the range over the whole filtered total", () => {
     setup();
-    expect(screen.getByText("26 to 50 of 120 patients")).toBeInTheDocument();
+    expect(screen.getByText("Showing 26–50 of 120 patients")).toBeInTheDocument();
     expect(screen.getByText("Page 2 of 5")).toBeInTheDocument();
   });
 
@@ -47,13 +47,13 @@ describe("Pagination", () => {
 
   it("changes the page size", async () => {
     const { onLimitChange } = setup();
-    await userEvent.selectOptions(screen.getByLabelText("Rows"), "50");
+    await userEvent.selectOptions(screen.getByLabelText("Rows per page"), "50");
     expect(onLimitChange).toHaveBeenCalledWith(50);
   });
 
   it("shows only the count when everything fits on one page", () => {
     setup({ total: 7, offset: 0 });
-    expect(screen.getByText("1 to 7 of 7 patients")).toBeInTheDocument();
+    expect(screen.getByText("Showing 1–7 of 7 patients")).toBeInTheDocument();
     expect(screen.queryByRole("button", { name: "Next page" })).not.toBeInTheDocument();
   });
 

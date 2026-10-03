@@ -19,6 +19,8 @@ export const patientKeys = {
   note: (id: string, noteId: string) => ["patients", id, "notes", noteId] as const,
   pins: (id: string) => ["patients", id, "pins"] as const,
   views: (id: string) => ["patients", id, "views"] as const,
+  findings: (id: string) => ["patients", id, "findings"] as const,
+  colleagues: (id: string) => ["patients", id, "colleagues"] as const,
   /** The last safety review run in this session (held in the cache only; the stored evidence is the record). */
   safety: (id: string) => ["patients", id, "safety"] as const,
 };

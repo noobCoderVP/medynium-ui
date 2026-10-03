@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ClampText } from "@/components/shared/clamp-text";
 import { FlagChip } from "@/components/shared/chips";
 import { DataTable, type Column } from "@/components/shared/data-table";
 import { PatientAvatar } from "@/components/shared/patient-avatar";
@@ -11,6 +12,8 @@ const columns: Column<PatientListItem>[] = [
     key: "name",
     header: "Patient",
     sortKey: "name",
+    width: "24%",
+    minWidth: "12rem",
     cell: (p) => (
       <Link
         href={`/patients/${p.patient_id}`}
@@ -21,28 +24,40 @@ const columns: Column<PatientListItem>[] = [
       </Link>
     ),
   },
-  { key: "age", header: "Age, sex", sortKey: "age", cell: (p) => `${p.age}, ${p.sex}` },
+  {
+    key: "age",
+    header: "Age, sex",
+    sortKey: "age",
+    width: "10%",
+    minWidth: "6rem",
+    cell: (p) => `${p.age}, ${p.sex}`,
+  },
   {
     key: "dx",
     header: "Main diagnoses",
+    width: "30%",
+    minWidth: "14rem",
     cell: (p) =>
       p.main_diagnoses.length ? (
-        p.main_diagnoses.join(", ")
+        <ClampText text={p.main_diagnoses.join(", ")} />
       ) : (
         <span className="text-muted-foreground">None recorded</span>
       ),
-    className: "max-w-xs",
   },
   {
     key: "last",
     header: "Last encounter",
     sortKey: "last_encounter",
+    width: "20%",
+    minWidth: "10rem",
     cell: (p) => <EncounterCell encounter={p.last_encounter} />,
   },
   {
     key: "flags",
     header: "Flags",
     sortKey: "flags",
+    width: "16%",
+    minWidth: "8rem",
     cell: (p) => (
       <span className="flex flex-wrap gap-1">
         {p.flags.map((flag) => (

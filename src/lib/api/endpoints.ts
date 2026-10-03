@@ -4,9 +4,13 @@ import type {
   AuditPage,
   Briefing,
   Claims,
+  ColleagueList,
   Dashboard,
   Entitlements,
   EvidenceResponse,
+  Finding,
+  FindingList,
+  FindingUpdate,
   HealthDetails,
   InviteCreate,
   InviteCreated,
@@ -91,6 +95,12 @@ export const endpoints = {
       "Idempotency-Key": `${body.answer_id}:${body.evidence_id}`,
     }),
   removePin: (id: string, pinId: string) => del(`${pid(id)}/pins/${encodeURIComponent(pinId)}`),
+  findings: (id: string) => get<FindingList>(`${pid(id)}/findings`),
+  colleagues: (id: string) => get<ColleagueList>(`${pid(id)}/colleagues`),
+  raiseFinding: (id: string, body: { answer_id: string; consideration_id: string }) =>
+    post<Finding>(`${pid(id)}/findings`, body),
+  decideFinding: (findingId: string, body: FindingUpdate) =>
+    patch<Finding>(`/findings/${encodeURIComponent(findingId)}`, body),
   previewView: (body: {
     kind: "SAVED_VIEW" | "VISIT_BRIEF";
     patient_id: string;

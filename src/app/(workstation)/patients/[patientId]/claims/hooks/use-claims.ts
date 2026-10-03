@@ -15,7 +15,7 @@ export function useClaims(patientId: string) {
     filters: ["status", "from", "to"],
     defaultSort: "date",
     defaultOrder: "desc",
-    defaultSize: 25,
+    defaultSize: 10,
   });
   const { params: url } = useUrlParams();
   const query = useQuery({

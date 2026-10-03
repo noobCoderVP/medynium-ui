@@ -11,7 +11,7 @@ export function useUsers() {
     filters: ["role", "status"],
     defaultSort: "name",
     defaultOrder: "asc",
-    defaultSize: 25,
+    defaultSize: 10,
   });
   const client = useQueryClient();
 

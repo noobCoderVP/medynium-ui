@@ -10,7 +10,7 @@ import { BriefingButton } from "./briefing-button";
 import { BriefingCard } from "./briefing-card";
 import { RecentChanges } from "./recent-changes";
 import { UtilizationTiles } from "./utilization-tiles";
-import { Worklist } from "./worklist";
+import { countUrgent, Worklist } from "./worklist";
 
 function DashboardSkeleton() {
   return (
@@ -32,8 +32,9 @@ export function DashboardView() {
     <>
       <PageHeading
         title="Dashboard"
-        note={query.data ? `As of ${formatDate(query.data.as_of)}` : "Who needs attention today"}
-        actions={<BriefingButton pending={briefing.isPending} onClick={() => briefing.mutate()} />}
+        note={
+          query.data ? `Data updated ${formatDate(query.data.as_of)}` : "Who needs attention today"
+        }
       />
       <BriefingCard
         briefing={briefing.data}
@@ -47,9 +48,17 @@ export function DashboardView() {
             <UtilizationTiles utilization={data.utilization} />
             <div className="grid items-start gap-6 2xl:grid-cols-[minmax(0,1.7fr)_minmax(0,1fr)]">
               <section aria-labelledby="worklist-heading" className="space-y-3">
-                <h2 id="worklist-heading" className="text-sm font-semibold">
-                  Worklist ({data.worklist.length})
-                </h2>
+                <div className="flex flex-wrap items-end justify-between gap-3">
+                  <div>
+                    <h2 id="worklist-heading" className="text-lg font-semibold tracking-tight">
+                      Patients needing attention · {data.worklist.length}
+                    </h2>
+                    <p className="text-sm text-muted-foreground">
+                      {countUrgent(data.worklist)} with a recent emergency visit, most urgent first
+                    </p>
+                  </div>
+                  <BriefingButton pending={briefing.isPending} onClick={() => briefing.mutate()} />
+                </div>
                 <Worklist items={data.worklist} />
               </section>
               <RecentChanges changes={data.recent_changes} />

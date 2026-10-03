@@ -27,12 +27,16 @@ const EvidenceDrawer = dynamic(() => import("@/features/evidence").then((m) => m
 function Frame({ children }: { children: ReactNode }) {
   const { focus } = useFocusMode();
   return (
-    <div className="flex h-dvh flex-col">
+    <div className="fixed inset-0 flex flex-col overflow-hidden">
       {focus ? <FocusBar /> : <TopBar />}
       <div className="flex min-h-0 flex-1">
         {focus ? null : <NavRail />}
-        <main id="main" tabIndex={-1} className="min-w-0 flex-1 overflow-y-auto outline-none">
-          <div className="mx-auto w-full max-w-[112rem] p-4 md:px-6 md:py-8 2xl:px-10">
+        <main
+          id="main"
+          tabIndex={-1}
+          className="min-w-0 flex-1 overflow-x-hidden overflow-y-auto overscroll-contain outline-none"
+        >
+          <div className="mx-auto w-full max-w-[112rem] p-4 md:px-6 md:py-5 2xl:px-8">
             <PageTransition>{children}</PageTransition>
           </div>
         </main>
@@ -40,9 +44,7 @@ function Frame({ children }: { children: ReactNode }) {
       </div>
       {focus ? null : (
         <>
-          <div className="hidden md:block">
-            <AgentActivity />
-          </div>
+          <AgentActivity />
           <BottomTabs />
         </>
       )}

@@ -1,8 +1,10 @@
 # Patient: Safety review
 
-**Purpose:** the manual "Run safety review" (HJ-1, HJ-5). Streams the real steps, then shows tagged statements with evidence buttons, or the honest gap. Also lists the evidence the doctor pinned.
+**Purpose:** the manual "Run safety review" (HJ-1, HJ-5). Streams the real steps, then shows tagged statements with evidence buttons, or the honest gap. Each conclusion has **Add to findings**; the Findings card then records the clinician's decision (acknowledge, follow up with a date, escalate to a colleague who has the patient, or dismiss with a reason). Also lists the evidence the doctor pinned.
 
-**Endpoints:** `POST /patients/{id}/safety-review` (server-sent events), `GET/DELETE /patients/{id}/pins`, `GET /evidence/{answer_id}` (through the Why? drawer).
+**Endpoints:** `POST /patients/{id}/safety-review` (server-sent events), `GET/DELETE /patients/{id}/pins`, `GET/POST /patients/{id}/findings`, `GET /patients/{id}/colleagues`, `PATCH /findings/{id}`, `GET /evidence/{answer_id}` (through the Why? drawer).
+
+**Findings:** only a person raises or changes one; the assistant cannot. The server requires a reason to dismiss, a date to follow up and a colleague to escalate, and writes an audit row for each change. Needs the `FINDING` table (`db.py apply 05`, `06`, `60`).
 
 **Requirement IDs:** FR-06 to FR-09, FR-20, NFR-10, AI-05, AI-07.
 

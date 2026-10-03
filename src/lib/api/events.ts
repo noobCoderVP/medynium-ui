@@ -3,7 +3,7 @@ import { z } from "zod";
 // The stream and the answer object come from a model-adjacent path, so they are validated at the
 // boundary (06 section 2). Plain reads trust the generated types instead.
 
-const tag = z.enum(["patient_fact", "retrieved_source", "ai_synthesis"]);
+const tag = z.enum(["patient_fact", "retrieved_source", "ai_synthesis", "rule_check"]);
 
 export const answerSchema = z.object({
   answer_id: z.string(),

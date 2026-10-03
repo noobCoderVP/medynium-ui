@@ -34,18 +34,20 @@ export function RecentChanges({ changes }: { changes: Dashboard["recent_changes"
                       {lab.test} · {formatDate(lab.date)}
                     </p>
                   </div>
-                  <div className="flex shrink-0 items-center gap-2 tabular-nums">
-                    <span>
-                      {formatValue(lab.latest, lab.unit)}
-                      {lab.previous !== null ? (
-                        <span className="text-xs text-muted-foreground">
-                          {" "}
-                          from {formatValue(lab.previous)}
-                        </span>
+                  <div className="shrink-0 text-right tabular-nums">
+                    <div className="flex items-center justify-end gap-2">
+                      <span className="text-base font-bold">
+                        {formatValue(lab.latest, lab.unit)}
+                      </span>
+                      {lab.abnormal ? (
+                        <StatusChip tone="warn">{lab.abnormal.toLowerCase()}</StatusChip>
                       ) : null}
-                    </span>
-                    {lab.abnormal ? (
-                      <StatusChip tone="warn">{lab.abnormal.toLowerCase()}</StatusChip>
+                    </div>
+                    {lab.previous !== null ? (
+                      <p className="text-xs text-muted-foreground">
+                        {lab.latest > lab.previous ? "↑" : lab.latest < lab.previous ? "↓" : "="}{" "}
+                        from {formatValue(lab.previous)}
+                      </p>
                     ) : null}
                   </div>
                 </Row>

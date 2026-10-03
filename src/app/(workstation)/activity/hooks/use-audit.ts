@@ -11,7 +11,7 @@ export function useAudit() {
     filters: ["action", "outcome", "from", "to"],
     defaultSort: "when",
     defaultOrder: "desc",
-    defaultSize: 25,
+    defaultSize: 10,
   });
   const query = useQuery({
     queryKey: auditKeys.list(list.apiParams),

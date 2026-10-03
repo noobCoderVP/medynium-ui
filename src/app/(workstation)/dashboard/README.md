@@ -1,6 +1,6 @@
 # Dashboard
 
-**Purpose:** "Show me my patients and who changed." Utilisation tiles, the worklist with change flags, and recent lab and medication changes. First screen after sign-in.
+**Purpose:** "Show me my patients and who changed." A compact utilisation strip, "Patients needing attention" (the worklist, urgent changes first, with Brief me beside it), and recent lab and medication changes. First screen after sign-in.
 
 **Endpoints:** `GET /dashboard` (one call). `GET /dashboard/briefing` runs only when Brief me is pressed. It is rules over the dashboard data (no model call) and the card says so, one tagged line per change, each linked to its patient.
 

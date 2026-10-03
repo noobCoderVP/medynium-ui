@@ -6,7 +6,7 @@ import { Stagger } from "@/components/shared/stagger";
 import { StaggerItem } from "@/components/shared/stagger-item";
 import { StatTile } from "@/components/shared/stat-tile";
 import { Skeleton } from "@/components/ui/skeleton";
-import { formatMoney, formatNumber } from "@/lib/format";
+import { formatNumber } from "@/lib/format";
 import { useOverview } from "../hooks/use-overview";
 import { DiagnosesCard } from "./diagnoses-card";
 import { EventsCard } from "./events-card";
@@ -23,7 +23,10 @@ function OverviewSkeleton() {
   );
 }
 
-/** Catch me up on this patient: the essentials, each with its date and source. */
+/**
+ * Catch me up on this patient: the essentials, each with its date and source. Billing is deliberately absent here
+ * (minimum necessary for a clinical view); it lives on the Claims tab.
+ */
 export function OverviewTab({ patientId }: { patientId: string }) {
   const query = useOverview(patientId);
   return (
@@ -42,8 +45,6 @@ export function OverviewTab({ patientId }: { patientId: string }) {
             />
             <StatTile label="Hospital stays" value={formatNumber(p.utilization.hospitalizations)} />
             <StatTile label="Procedures" value={formatNumber(p.utilization.procedures)} />
-            <StatTile label="Billed" value={formatMoney(p.utilization.billed)} />
-            <StatTile label="Approved" value={formatMoney(p.utilization.approved)} />
           </StatGrid>
           <Stagger className="grid gap-4 md:grid-cols-2">
             <StaggerItem className="[&>section]:h-full">

@@ -59,7 +59,7 @@ export function TimelineFilters({ list, selectedTypes, onTypes }: Props) {
       <div
         id={panelId}
         hidden={!opened}
-        className="flex flex-wrap items-end gap-x-6 gap-y-3 rounded-xl border border-border bg-card p-3 shadow-xs"
+        className="flex flex-wrap items-end gap-x-6 gap-y-3 rounded-xl border border-border bg-muted/60 p-3"
       >
         <DateField
           label="From"

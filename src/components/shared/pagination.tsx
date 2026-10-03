@@ -17,6 +17,13 @@ interface Props {
   noun?: string;
 }
 
+/** Page numbers to show: first, last and a window around the current page, with gaps as null. */
+function pageWindow(page: number, pages: number): (number | null)[] {
+  const keep = new Set([1, pages, page - 1, page, page + 1].filter((n) => n >= 1 && n <= pages));
+  const sorted = [...keep].sort((a, b) => a - b);
+  return sorted.flatMap((n, i) => (i > 0 && n - sorted[i - 1] > 1 ? [null, n] : [n]));
+}
+
 /**
  * Range, page-size and page controls for a server-paged list. The total always comes from the API, so "of 312"
  * is the whole filtered set, not the rows in hand. Buttons are 40 px high on phones for thumbs.
@@ -39,22 +46,23 @@ export function Pagination({
     ? PAGE_SIZES
     : [...PAGE_SIZES, limit].sort((a, b) => a - b);
   const button = "max-sm:h-10 max-sm:min-w-10";
+  const ends = "max-sm:hidden";
 
   return (
     <nav
       aria-label={`Pages of ${noun}`}
       className="flex flex-col gap-3 text-sm sm:flex-row sm:items-center sm:justify-between"
     >
-      <p className="text-muted-foreground" aria-live="polite">
+      <p className="font-medium text-foreground" aria-live="polite">
         {total === 0
           ? `No ${noun}`
-          : `${formatNumber(from)} to ${formatNumber(to)} of ${formatNumber(total)} ${noun}`}
+          : `Showing ${formatNumber(from)}–${formatNumber(to)} of ${formatNumber(total)} ${noun}`}
       </p>
       <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
         {onLimitChange && total > PAGE_SIZES[0] ? (
           <div className="flex items-center gap-2">
             <label htmlFor={id} className="text-muted-foreground">
-              Rows
+              Rows per page
             </label>
             <Select
               id={id}
@@ -75,8 +83,9 @@ export function Pagination({
             <Button
               variant="outline"
               size="icon"
-              className={button}
+              className={`${button} ${ends}`}
               aria-label="First page"
+
               disabled={page === 1}
               onClick={() => go(1)}
             >
@@ -92,9 +101,31 @@ export function Pagination({
             >
               <ChevronLeft aria-hidden="true" />
             </Button>
-            <span className="px-2 whitespace-nowrap tabular-nums">
+            <span className="px-2 whitespace-nowrap tabular-nums sm:hidden">
               Page {formatNumber(page)} of {formatNumber(pages)}
             </span>
+            <ol className="hidden items-center gap-1 sm:flex">
+              {pageWindow(page, pages).map((entry, i) =>
+                entry === null ? (
+                  <li key={`gap-${i}`} aria-hidden="true" className="px-1 text-muted-foreground">
+                    …
+                  </li>
+                ) : (
+                  <li key={entry}>
+                    <Button
+                      variant={entry === page ? "default" : "ghost"}
+                      size="icon"
+                      aria-label={`Page ${entry}`}
+                      aria-current={entry === page ? "page" : undefined}
+                      className="tabular-nums"
+                      onClick={() => go(entry)}
+                    >
+                      {entry}
+                    </Button>
+                  </li>
+                ),
+              )}
+            </ol>
             <Button
               variant="outline"
               size="icon"
@@ -108,7 +139,7 @@ export function Pagination({
             <Button
               variant="outline"
               size="icon"
-              className={button}
+              className={`${button} ${ends}`}
               aria-label="Last page"
               disabled={page === pages}
               onClick={() => go(pages)}

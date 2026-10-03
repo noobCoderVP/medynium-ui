@@ -35,6 +35,8 @@ export function UsersTable({
     {
       key: "name",
       header: "User",
+      width: "28%",
+      minWidth: "6rem",
       sortKey: "name",
       cell: (u) => (
         <div>
@@ -46,6 +48,8 @@ export function UsersTable({
     {
       key: "role",
       header: "Role",
+      width: "14%",
+      minWidth: "6rem",
       sortKey: "role",
       cell: (u) => (
         <span>
@@ -57,6 +61,8 @@ export function UsersTable({
     {
       key: "status",
       header: "Status",
+      width: "14%",
+      minWidth: "6rem",
       cell: (u) => (
         <StatusChip tone={u.status === "ACTIVE" ? "ok" : "muted"}>
           {u.status.toLowerCase()}
@@ -66,6 +72,8 @@ export function UsersTable({
     {
       key: "patients",
       header: "Patients",
+      width: "10%",
+      minWidth: "6rem",
       align: "right",
       sortKey: "patients",
       cell: (u) => u.patient_count,
@@ -73,12 +81,16 @@ export function UsersTable({
     {
       key: "login",
       header: "Last sign-in",
+      width: "16%",
+      minWidth: "6rem",
       sortKey: "last_login",
       cell: (u) => formatDateTime(u.last_login_at),
     },
     {
       key: "actions",
       header: "Actions",
+      width: "18%",
+      minWidth: "6rem",
       cell: (u) => (
         <div className="flex flex-wrap gap-1">
           <Button

@@ -4,6 +4,7 @@ import { ShieldCheck } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardBody } from "@/components/ui/card";
 import { useSafetyReview } from "../hooks/use-safety-review";
+import { FindingsCard } from "./findings-card";
 import { PinsCard } from "./pins-card";
 import { RunResult } from "./run-result";
 
@@ -30,9 +31,10 @@ export function SafetyTab({ patientId }: { patientId: string }) {
             <ShieldCheck aria-hidden="true" />
             {running ? "Running…" : state.status === "idle" ? "Run safety review" : "Run again"}
           </Button>
-          <RunResult state={state} onRetry={run} />
+          <RunResult patientId={patientId} state={state} onRetry={run} />
         </CardBody>
       </Card>
+      <FindingsCard patientId={patientId} />
       <PinsCard patientId={patientId} />
     </div>
   );

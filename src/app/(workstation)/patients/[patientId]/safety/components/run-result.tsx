@@ -3,12 +3,21 @@ import { StepsList } from "@/components/shared/steps-list";
 import { AnswerView } from "@/features/evidence";
 import { copy } from "@/lib/copy";
 import type { RunState } from "../hooks/use-safety-review";
+import { RaiseFindingButton } from "./raise-finding-button";
 
 /**
  * The result of a manual run: live steps while running, then the tagged answer; or, on failure, an honest
  * message. A failed or unavailable assistant leaves the rest of the patient record fully usable.
  */
-export function RunResult({ state, onRetry }: { state: RunState; onRetry: () => void }) {
+export function RunResult({
+  patientId,
+  state,
+  onRetry,
+}: {
+  patientId: string;
+  state: RunState;
+  onRetry: () => void;
+}) {
   if (state.status === "idle") return null;
   const error = state.error;
   return (
@@ -30,7 +39,20 @@ export function RunResult({ state, onRetry }: { state: RunState; onRetry: () => 
           {copy.agent.thinking}…
         </p>
       ) : null}
-      {state.answer ? <AnswerView answer={state.answer} /> : null}
+      {state.answer ? (
+        <AnswerView
+          answer={state.answer}
+          statementAction={(item) =>
+            item.tag === "ai_synthesis" || item.tag === "rule_check" ? (
+              <RaiseFindingButton
+                patientId={patientId}
+                answerId={state.answer?.answer_id ?? ""}
+                considerationId={item.id}
+              />
+            ) : null
+          }
+        />
+      ) : null}
       {error?.code === "rate_limited" ? (
         <RateLimited seconds={error.retryAfter} onRetry={onRetry} />
       ) : error?.code === "not_found" ? (

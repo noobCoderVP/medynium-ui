@@ -13,7 +13,7 @@ export function NoteList({
   onOpen: (id: string) => void;
 }) {
   return (
-    <ul className="divide-y divide-border overflow-hidden rounded-xl border border-border bg-card shadow-xs">
+    <ul className="divide-y divide-border overflow-hidden rounded-xl border border-border bg-card">
       {notes.map((note) => (
         <li key={note.note_id}>
           <button

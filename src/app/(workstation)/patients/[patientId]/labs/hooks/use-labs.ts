@@ -17,7 +17,7 @@ export function useLabs(patientId: string) {
     filters: ["flag"],
     defaultSort: "test",
     defaultOrder: "asc",
-    defaultSize: 25,
+    defaultSize: 10,
   });
   const list = useQuery({
     queryKey: patientKeys.labs(patientId, state.apiParams),

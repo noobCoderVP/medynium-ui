@@ -73,7 +73,9 @@ describe("DashboardView", () => {
     expect(links.length).toBeGreaterThanOrEqual(1);
     expect(links[0]).toHaveAttribute("href", "/patients/P-1");
     expect(screen.getByText("ED visit 2 Oct")).toBeInTheDocument();
-    expect(screen.getByText("₹1,23,456")).toBeInTheDocument();
+    // Billing is not shown on the clinical dashboard (minimum necessary).
+    expect(screen.queryByText("₹1,23,456")).not.toBeInTheDocument();
+    expect(screen.queryByText("Approved claims")).not.toBeInTheDocument();
     expect(screen.getByText(/42 mL\/min/)).toBeInTheDocument();
   });
 

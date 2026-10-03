@@ -14,6 +14,7 @@ export function InvitesView() {
   return (
     <>
       <PageHeading
+        crumbs={[{ label: "Admin", href: "/admin" }, { label: "Invites" }]}
         title="Invites"
         note="Invite a doctor or a clinic assistant. You share the link; they set their own password."
       />

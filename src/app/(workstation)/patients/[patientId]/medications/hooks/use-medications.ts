@@ -14,7 +14,7 @@ export function useMedications(patientId: string) {
     filters: ["status"],
     defaultSort: "started",
     defaultOrder: "desc",
-    defaultSize: 25,
+    defaultSize: 10,
   });
   const query = useQuery({
     queryKey: patientKeys.medications(patientId, list.apiParams),
