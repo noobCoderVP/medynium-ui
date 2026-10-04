@@ -15,6 +15,9 @@ export const answerSchema = z.object({
       id: z.string(),
       text: z.string(),
       tag,
+      /** Set on panel answers ("my patients"): the patient this line is about, and the group it belongs to. */
+      patient_id: z.string().nullish(),
+      group: z.string().nullish(),
       patient_evidence: z.array(z.string()).default([]),
       source_evidence: z.array(z.string()).default([]),
     }),

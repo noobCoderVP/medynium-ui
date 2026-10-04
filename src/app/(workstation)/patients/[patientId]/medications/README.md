@@ -2,7 +2,7 @@
 
 **Purpose:** current and past medicines with dose, start, last change note, Indian brand names and whether the drug's label is in the knowledge corpus.
 
-**Endpoints:** `GET /patients/{id}/medications?status=active|all`.
+**Endpoints:** `GET /patients/{id}/medications?status=active|all`, `POST /patients/{id}/medications` (doctors; the Add medicine dialog, with an idempotency key).
 
 **Requirement IDs:** FR-03, FR-05, FR-12, NFR-10.
 

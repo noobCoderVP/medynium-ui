@@ -65,10 +65,18 @@ export async function request(path: string, options: RequestOptions = {}): Promi
       method,
       credentials: "same-origin",
       signal: options.signal,
-      body: options.body === undefined ? undefined : JSON.stringify(options.body),
+      // A file goes up as its own bytes (the type and name travel in headers); everything else is JSON.
+      body:
+        options.body === undefined
+          ? undefined
+          : options.body instanceof Blob
+            ? options.body
+            : JSON.stringify(options.body),
       headers: {
         Accept: options.accept ?? "application/json",
-        ...(options.body === undefined ? {} : { "Content-Type": "application/json" }),
+        ...(options.body === undefined || options.body instanceof Blob
+          ? {}
+          : { "Content-Type": "application/json" }),
         ...(method === "GET" ? {} : { "X-Medynium-Client": "web" }),
         ...options.headers,
       },

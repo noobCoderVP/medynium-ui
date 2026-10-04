@@ -40,7 +40,7 @@ export function PatientWorkspace({
     <DataState query={query} skeleton={<WorkspaceSkeleton />} notFound={<NotFoundState />}>
       {(patient) => (
         <div className="space-y-4">
-          <div className="overflow-hidden rounded-xl border border-border bg-card">
+          <div className="overflow-hidden rounded-xl border border-border bg-card shadow-xs">
             <PatientHeader
               patient={patient}
               tabLabel={tab === "overview" ? undefined : TABS.find((t) => t.id === tab)?.label}

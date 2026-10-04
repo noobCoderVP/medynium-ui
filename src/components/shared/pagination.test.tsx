@@ -47,7 +47,8 @@ describe("Pagination", () => {
 
   it("changes the page size", async () => {
     const { onLimitChange } = setup();
-    await userEvent.selectOptions(screen.getByLabelText("Rows per page"), "50");
+    await userEvent.click(screen.getByLabelText("Rows per page"));
+    await userEvent.click(await screen.findByRole("option", { name: "50" }));
     expect(onLimitChange).toHaveBeenCalledWith(50);
   });
 

@@ -44,7 +44,7 @@ export function ShareDialog({
 
   return (
     <>
-      <Button variant="outline" size="sm" onClick={() => setOpen(true)}>
+      <Button size="sm" onClick={() => setOpen(true)}>
         <Mail aria-hidden="true" />
         Email summary
       </Button>

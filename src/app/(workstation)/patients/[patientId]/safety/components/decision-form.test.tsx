@@ -1,4 +1,5 @@
 import { fireEvent, render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 import type { Finding } from "@/lib/api/types";
 import { DecisionForm } from "./decision-form";
@@ -67,11 +68,12 @@ describe("DecisionForm", () => {
     expect(onDecide).toHaveBeenCalledWith({ status: "FLAGGED", follow_up_on: "2099-01-02" });
   });
 
-  it("escalates only to a chosen colleague", () => {
+  it("escalates only to a chosen colleague", async () => {
     const onDecide = setup();
     fireEvent.click(screen.getByRole("button", { name: "Escalate…" }));
     expect(screen.getByRole("button", { name: "Save decision" })).toBeDisabled();
-    fireEvent.change(screen.getByLabelText("Escalate to"), { target: { value: "u-2" } });
+    await userEvent.click(screen.getByLabelText("Escalate to"));
+    await userEvent.click(await screen.findByRole("option", { name: /Dr Rao/ }));
     fireEvent.click(screen.getByRole("button", { name: "Save decision" }));
     expect(onDecide).toHaveBeenCalledWith({ status: "ESCALATED", assigned_to: "u-2" });
   });

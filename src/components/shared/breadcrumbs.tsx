@@ -20,7 +20,7 @@ export function Breadcrumbs({ crumbs }: { crumbs: Crumb[] }) {
                 {crumb.label}
               </Link>
             ) : (
-              <span aria-current="page" className="truncate font-medium text-foreground/80">
+              <span aria-current="page" className="truncate font-semibold text-foreground">
                 {crumb.label}
               </span>
             )}

@@ -4,7 +4,7 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useId } from "react";
-import { Select } from "@/components/ui/input";
+import { Select } from "@/components/ui/select";
 import { spring } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 import { TABS, type TabId } from "../lib/tabs";
@@ -27,15 +27,10 @@ export function TabBar({ patientId, active }: { patientId: string; active: TabId
         <Select
           id={id}
           value={active}
-          onChange={(e) => router.push(href(e.target.value as TabId))}
+          onValueChange={(v) => router.push(href(v as TabId))}
+          options={TABS.map((tab) => ({ value: tab.id, label: tab.label }))}
           className="h-11 text-base font-medium"
-        >
-          {TABS.map((tab) => (
-            <option key={tab.id} value={tab.id}>
-              {tab.label}
-            </option>
-          ))}
-        </Select>
+        />
       </div>
       <nav
         aria-label="Patient sections"
@@ -48,9 +43,9 @@ export function TabBar({ patientId, active }: { patientId: string; active: TabId
                 href={href(tab.id)}
                 aria-current={tab.id === active ? "page" : undefined}
                 className={cn(
-                  "relative inline-flex min-h-10 items-center px-3.5 text-sm font-medium transition-colors",
+                  "relative inline-flex min-h-10 items-center rounded-t-md px-3.5 text-sm font-medium transition-colors",
                   tab.id === active
-                    ? "text-primary"
+                    ? "bg-accent/60 font-semibold text-primary"
                     : "text-muted-foreground hover:text-foreground",
                 )}
               >
@@ -59,7 +54,7 @@ export function TabBar({ patientId, active }: { patientId: string; active: TabId
                   <motion.span
                     layoutId="patient-tab"
                     transition={spring}
-                    className="absolute inset-x-2 -bottom-px h-0.5 rounded-full bg-primary"
+                    className="absolute inset-x-1 -bottom-px h-[3px] rounded-full bg-primary"
                     aria-hidden="true"
                   />
                 ) : null}

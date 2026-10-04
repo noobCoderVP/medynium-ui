@@ -41,6 +41,9 @@ const ratio = (a, b) => {
 const textPairs = [
   ["foreground", "background"],
   ["foreground", "card"],
+  ["foreground", "surface"],
+  ["muted-foreground", "surface"],
+  ["primary", "surface"],
   ["muted-foreground", "background"],
   ["muted-foreground", "card"],
   ["muted-foreground", "muted"],

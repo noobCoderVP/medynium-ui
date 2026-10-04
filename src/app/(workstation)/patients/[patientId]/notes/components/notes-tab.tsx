@@ -49,19 +49,24 @@ export function NotesTab({ patientId }: { patientId: string }) {
         empty={<EmptyState title={copy.empty.notes} />}
       >
         {(page) => (
-          <div className="grid gap-4 md:grid-cols-[minmax(0,22rem)_1fr] md:items-start">
-            <div className="space-y-3">
+          <div className="grid gap-4 lg:grid-cols-[minmax(0,23rem)_minmax(0,1fr)] lg:items-start">
+            <section
+              aria-label="Notes"
+              className="overflow-hidden rounded-xl border border-border bg-card shadow-xs"
+            >
               <NoteList notes={page.items} selected={noteId} onOpen={open} />
-              <Pagination
-                noun="notes"
-                total={page.total}
-                offset={notes.offset}
-                limit={notes.limit}
-                onOffsetChange={notes.setOffset}
-                onLimitChange={notes.setLimit}
-              />
-            </div>
-            <div aria-live="polite">
+              <div className="border-t border-border bg-muted/40 px-3 py-2.5">
+                <Pagination
+                  noun="notes"
+                  total={page.total}
+                  offset={notes.offset}
+                  limit={notes.limit}
+                  onOffsetChange={notes.setOffset}
+                  onLimitChange={notes.setLimit}
+                />
+              </div>
+            </section>
+            <div aria-live="polite" className="lg:sticky lg:top-0">
               {noteId ? (
                 <DataState query={note} skeleton={<SkeletonRows rows={4} />}>
                   {(detail) => <NoteReader note={detail} />}

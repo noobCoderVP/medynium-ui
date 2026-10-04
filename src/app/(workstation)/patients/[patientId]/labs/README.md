@@ -13,3 +13,5 @@
 **States handled:** loading skeletons for the list and for the trend separately, empty, error with retry for each, rate limited. A lab code that does not belong to the patient returns the standard not-found.
 
 **Keyboard:** test names are buttons (`aria-pressed`); data points tab-focus; Close trend is a button.
+
+**Layout:** a compact toolbar (search, quick flag filters All/Abnormal/High/Low/Normal, sort menu on phones), a one-line summary (results, abnormal, trending up; scoped to the page when paged), then the table: Test, Latest (right-aligned, red when out of range), Trend (arrow, previous value and date), Date, Reference (muted), Flag (High/Low only; normal rows show no badge, screen readers hear "Normal").

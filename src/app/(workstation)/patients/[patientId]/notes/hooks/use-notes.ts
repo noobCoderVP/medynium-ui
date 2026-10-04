@@ -21,10 +21,19 @@ export function useNotes(patientId: string) {
     queryFn: () => endpoints.notes(patientId, state.apiParams),
     placeholderData: keepPreviousData,
   });
+  // With nothing chosen the newest note opens, so the reader pane is never an empty box beside a full list.
+  const firstId = list.data?.items[0]?.note_id ?? "";
+  const openId = noteId || firstId;
   const note = useQuery({
-    queryKey: patientKeys.note(patientId, noteId),
-    queryFn: () => endpoints.note(patientId, noteId),
-    enabled: Boolean(noteId),
+    queryKey: patientKeys.note(patientId, openId),
+    queryFn: () => endpoints.note(patientId, openId),
+    enabled: Boolean(openId),
   });
-  return { ...state, list, note, noteId, open: (id: string | null) => update({ note: id }) };
+  return {
+    ...state,
+    list,
+    note,
+    noteId: openId,
+    open: (id: string | null) => update({ note: id }),
+  };
 }

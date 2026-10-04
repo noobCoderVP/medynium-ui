@@ -1,6 +1,7 @@
 import {
   BookOpen,
   History,
+  ListChecks,
   LifeBuoy,
   LayoutDashboard,
   ShieldCheck,
@@ -21,6 +22,7 @@ export interface NavItem {
 export const NAV_ITEMS: NavItem[] = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard, primary: true },
   { href: "/patients", label: "Patients", icon: Users, primary: true },
+  { href: "/pending", label: "Pending work", icon: ListChecks, primary: true },
   { href: "/knowledge", label: "Knowledge", icon: BookOpen },
   { href: "/activity", label: "Activity log", icon: History, primary: true },
   { href: "/docs", label: "Documentation", icon: LifeBuoy },

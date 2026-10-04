@@ -130,7 +130,7 @@ export function InviteForm({ token }: { token: string }) {
               </p>
             ) : null}
           </div>
-          <Button type="submit" size="lg" className="w-full" disabled={pending}>
+          <Button type="submit" size="lg" className="w-full" loading={pending}>
             {pending ? "Saving…" : reset ? "Set password" : "Create my account"}
           </Button>
         </form>

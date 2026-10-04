@@ -11,3 +11,5 @@
 **States handled:** loading skeletons, error with retry, rate limited, "your role can't open this page" for non-admins.
 
 **Keyboard:** sub-navigation is links with `aria-current`.
+
+**Golden report card:** shows the latest stored run from `GET /admin/golden-runs` (pass rate and every failure). Runs are stored by `scripts/eval_golden.py --store` in `medynium-apis`.

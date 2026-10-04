@@ -10,6 +10,8 @@ const WITH_PATIENT = [
   "What changed since the last visit?",
 ];
 const WITHOUT_PATIENT = [
+  "Who are my patients and what is pending?",
+  "Which of my patients have an abnormal lab result?",
   "Open the kidney patient and run the safety review",
   "What does the label say about metformin and kidney function?",
 ];

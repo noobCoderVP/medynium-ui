@@ -6,12 +6,16 @@ import { Pagination } from "@/components/shared/pagination";
 import { EmptyState } from "@/components/shared/state-panels";
 import { copy } from "@/lib/copy";
 import { useMedications } from "../hooks/use-medications";
+import { AddMedicationDialog } from "./add-medication-dialog";
 import { MEDICATION_SORTS, MedicationsTable } from "./medications-table";
 
 export function MedicationsTab({ patientId }: { patientId: string }) {
   const list = useMedications(patientId);
   return (
     <div className="space-y-3">
+      <div className="flex justify-end">
+        <AddMedicationDialog patientId={patientId} />
+      </div>
       <ListToolbar
         search={{ value: list.text, onChange: list.setText, label: "Search medicines" }}
         sort={{

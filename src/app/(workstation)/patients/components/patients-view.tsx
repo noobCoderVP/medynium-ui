@@ -6,6 +6,7 @@ import { PageHeading } from "@/components/shared/page-heading";
 import { Pagination } from "@/components/shared/pagination";
 import { EmptyState } from "@/components/shared/state-panels";
 import { copy } from "@/lib/copy";
+import { NewPatientDialog } from "./new-patient-dialog";
 import { usePatientList } from "../hooks/use-patients";
 import { PATIENT_SORTS, PatientTable } from "./patient-table";
 
@@ -34,6 +35,7 @@ export function PatientsView() {
       <PageHeading
         title="Patients"
         note="Find and review patients in your care. Only patients you are assigned to appear here."
+        actions={<NewPatientDialog />}
       />
       <ListToolbar
         search={{

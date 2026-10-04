@@ -1,3 +1,4 @@
+import Link from "next/link";
 import type { ReactNode } from "react";
 import { TagChip } from "@/components/shared/chips";
 import { copy } from "@/lib/copy";
@@ -29,7 +30,20 @@ export function Statement({
           <span className="text-xs text-synth">{copy.synthesisHedge}</span>
         ) : null}
       </div>
+      {item.group ? (
+        <p className="text-xs font-medium tracking-wide text-muted-foreground uppercase">
+          {item.group}
+        </p>
+      ) : null}
       <p className="text-sm leading-relaxed">{item.text}</p>
+      {item.patient_id ? (
+        <Link
+          href={`/patients/${item.patient_id}`}
+          className="inline-block text-xs underline underline-offset-2"
+        >
+          Open {item.patient_id}
+        </Link>
+      ) : null}
       <div className="flex flex-wrap items-center gap-1.5">
         <RefButton answerId={answerId} statementId={item.id} className="font-sans font-medium">
           Why?

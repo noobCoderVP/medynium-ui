@@ -4,7 +4,9 @@ import { useId, useState, type FormEvent } from "react";
 import { CopyLink } from "@/components/shared/copy-link";
 import { Button } from "@/components/ui/button";
 import { Card, CardBody, CardHeader, CardTitle } from "@/components/ui/card";
-import { Input, Select } from "@/components/ui/input";
+import { Combobox } from "@/components/ui/combobox";
+import { Input } from "@/components/ui/input";
+import { Select } from "@/components/ui/select";
 import { ApiError } from "@/lib/api/errors";
 import { formatDateTime } from "@/lib/format";
 import { useInvites } from "../hooks/use-invites";
@@ -102,30 +104,29 @@ export function InviteForm({ invites }: { invites: ReturnType<typeof useInvites>
             <Select
               id={ids.role}
               value={role}
-              onChange={(e) => setRole(e.target.value as "DOCTOR" | "ASSISTANT")}
-            >
-              <option value="ASSISTANT">Clinic assistant</option>
-              <option value="DOCTOR">Doctor</option>
-            </Select>
+              onValueChange={(v) => setRole(v as "DOCTOR" | "ASSISTANT")}
+              options={[
+                { value: "ASSISTANT", label: "Clinic assistant" },
+                { value: "DOCTOR", label: "Doctor" },
+              ]}
+            />
           </div>
           {role === "ASSISTANT" ? (
             <div className="space-y-1">
               <label htmlFor={ids.sup} className="text-sm font-medium">
                 Supervising doctor
               </label>
-              <Select
+              <Combobox
                 id={ids.sup}
                 value={supervisor}
-                onChange={(e) => setSupervisor(e.target.value)}
-                aria-invalid={touched && !supervisor}
-              >
-                <option value="">Choose a doctor</option>
-                {(doctors.data?.items ?? []).map((d) => (
-                  <option key={d.user_id} value={d.user_id}>
-                    {d.display_name}
-                  </option>
-                ))}
-              </Select>
+                onValueChange={setSupervisor}
+                invalid={touched && !supervisor}
+                placeholder="Search for a doctor"
+                options={(doctors.data?.items ?? []).map((d) => ({
+                  value: d.user_id,
+                  label: d.display_name,
+                }))}
+              />
             </div>
           ) : (
             <label className="flex items-center gap-2 self-end pb-2 text-sm">
@@ -139,7 +140,7 @@ export function InviteForm({ invites }: { invites: ReturnType<typeof useInvites>
             </label>
           )}
           <div className="md:col-span-2">
-            <Button type="submit" disabled={create.isPending}>
+            <Button type="submit" loading={create.isPending}>
               {create.isPending ? "Creating…" : "Create invite"}
             </Button>
           </div>

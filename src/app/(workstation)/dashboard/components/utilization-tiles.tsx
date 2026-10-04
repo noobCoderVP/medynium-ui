@@ -26,7 +26,7 @@ export function UtilizationTiles({ utilization }: { utilization: Dashboard["util
       >
         Utilisation{utilization.window ? ` · ${windowLabel(utilization.window)}` : ""}
       </h2>
-      <dl className="grid grid-cols-2 divide-x divide-y divide-border overflow-hidden rounded-xl border border-border bg-card md:grid-cols-3 xl:grid-cols-5 xl:divide-y-0 [&>*]:border-border max-xl:[&>*:nth-child(n+3)]:border-t-0">
+      <dl className="grid grid-cols-2 divide-x divide-y divide-border overflow-hidden rounded-xl border border-border bg-card shadow-xs md:grid-cols-3 xl:grid-cols-5 xl:divide-y-0 [&>*]:border-border max-xl:[&>*:nth-child(n+3)]:border-t-0">
         <Figure label="Patients" value={formatNumber(utilization.patients)} />
         <Figure label="Outpatient visits" value={formatNumber(utilization.opd_visits)} />
         <Figure label="Emergency visits" value={formatNumber(utilization.emergency_visits)} />

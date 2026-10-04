@@ -4,8 +4,8 @@ import { Button } from "@/components/ui/button";
 /** On request only: the briefing is never generated unless this is pressed. */
 export function BriefingButton({ pending, onClick }: { pending: boolean; onClick: () => void }) {
   return (
-    <Button variant="outline" size="sm" onClick={onClick} disabled={pending}>
-      <Sparkles aria-hidden="true" />
+    <Button variant="outline" size="sm" onClick={onClick} loading={pending}>
+      {pending ? null : <Sparkles aria-hidden="true" />}
       {pending ? "Preparing…" : "Brief me"}
     </Button>
   );

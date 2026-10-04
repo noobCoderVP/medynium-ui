@@ -23,10 +23,10 @@ export function RaiseFindingButton({
       <Button
         size="sm"
         variant="outline"
-        disabled={raise.isPending}
+        loading={raise.isPending}
         onClick={() => raise.mutate({ answer_id: answerId, consideration_id: considerationId })}
       >
-        <ClipboardCheck aria-hidden="true" />
+        {raise.isPending ? null : <ClipboardCheck aria-hidden="true" />}
         {raise.isPending ? "Adding…" : "Add to findings"}
       </Button>
       {raise.isError ? (

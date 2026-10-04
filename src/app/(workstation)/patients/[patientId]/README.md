@@ -29,3 +29,5 @@
 **Keyboard:** the tab bar is a `<nav>` of links with `aria-current="page"`; every tab control is native or a named button.
 
 **Needs attention and what changed:** `components/recent-changes.tsx` sits under the header and lists labs outside their reference range (Requires review) and the latest medicine, lab and visit events from the overview already loaded (no extra call), each as a `ChangeChip` (icon and word, never colour alone) linking to its record, plus a Review safety link. Hidden when there are none.
+
+**Tabs added in the production-readiness work:** Reports (upload, review, approve), Similar patients. See `reports/README.md` and `similar/README.md`. The Medications tab has an Add medicine dialog (doctors).

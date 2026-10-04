@@ -3,6 +3,7 @@
 import { MotionConfig } from "framer-motion";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useState, type ReactNode } from "react";
+import { RouteProgress } from "@/components/shared/route-progress";
 import { ThemeProvider } from "@/components/shared/theme-provider";
 import { shouldRetry } from "@/lib/api/errors";
 
@@ -17,7 +18,10 @@ export function Providers({ children }: { children: ReactNode }) {
   return (
     <ThemeProvider>
       <QueryClientProvider client={client}>
-        <MotionConfig reducedMotion="user">{children}</MotionConfig>
+        <MotionConfig reducedMotion="user">
+          <RouteProgress />
+          {children}
+        </MotionConfig>
       </QueryClientProvider>
     </ThemeProvider>
   );

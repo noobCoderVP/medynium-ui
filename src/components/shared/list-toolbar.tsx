@@ -3,7 +3,8 @@
 import { Search, X } from "lucide-react";
 import { useId, type ReactNode } from "react";
 import { Button } from "@/components/ui/button";
-import { Input, Select } from "@/components/ui/input";
+import { Input } from "@/components/ui/input";
+import { Select } from "@/components/ui/select";
 import type { SortOrder } from "@/lib/use-list-state";
 import { cn } from "@/lib/utils";
 
@@ -57,16 +58,10 @@ export function FilterField({
       <Select
         id={id}
         value={value}
-        onChange={(e) => onChange(e.target.value)}
+        onValueChange={onChange}
+        options={[{ value: "", label: anyLabel }, ...options]}
         className="sm:min-w-36"
-      >
-        <option value="">{anyLabel}</option>
-        {options.map((option) => (
-          <option key={option.value} value={option.value}>
-            {option.label}
-          </option>
-        ))}
-      </Select>
+      />
     </div>
   );
 }
@@ -144,20 +139,15 @@ export function ListToolbar({ search, sort, activeCount = 0, onClear, children }
           <Select
             id={sortId}
             value={`${sort.value}:${sort.order}`}
-            onChange={(e) => {
-              const [key, order] = e.target.value.split(":");
+            onValueChange={(v) => {
+              const [key, order] = v.split(":");
               sort.onChange(key, order as SortOrder);
             }}
-          >
-            {sort.options.flatMap((option) => [
-              <option key={`${option.key}:asc`} value={`${option.key}:asc`}>
-                {option.label}, ascending
-              </option>,
-              <option key={`${option.key}:desc`} value={`${option.key}:desc`}>
-                {option.label}, descending
-              </option>,
+            options={sort.options.flatMap((option) => [
+              { value: `${option.key}:asc`, label: `${option.label}, ascending` },
+              { value: `${option.key}:desc`, label: `${option.label}, descending` },
             ])}
-          </Select>
+          />
         </div>
       ) : null}
       {activeCount > 0 && onClear ? (

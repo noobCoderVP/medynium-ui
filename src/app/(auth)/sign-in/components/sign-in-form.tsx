@@ -104,7 +104,7 @@ export function SignInForm({ next }: { next: string }) {
               </p>
             ) : null}
           </div>
-          <Button type="submit" size="lg" className="w-full" disabled={pending}>
+          <Button type="submit" size="lg" className="w-full" loading={pending}>
             {pending ? "Signing in…" : "Sign in"}
           </Button>
           <p className="text-center text-sm">

@@ -93,7 +93,7 @@ export function DataTable<T>({
   const fixed = columns.some((c) => c.width);
 
   return (
-    <div className="overflow-x-auto rounded-xl border border-border bg-card max-md:overflow-visible max-md:border-0 max-md:bg-transparent">
+    <div className="overflow-x-auto rounded-xl border border-border bg-card shadow-xs max-md:overflow-visible max-md:border-0 max-md:bg-transparent max-md:shadow-none">
       <table
         role="table"
         className={cn(

@@ -9,7 +9,7 @@ import { GoldenReportCard } from "./golden-report-card";
 import { HealthCard } from "./health-card";
 
 export function AdminLanding() {
-  const { health, corpus } = useAdminOverview();
+  const { health, corpus, golden } = useAdminOverview();
   return (
     <>
       <PageHeading
@@ -24,7 +24,9 @@ export function AdminLanding() {
           {(data) => <CorpusStatusCard status={data} />}
         </DataState>
       </div>
-      <GoldenReportCard />
+      <DataState query={golden} skeleton={<Skeleton className="h-40" />}>
+        {(data) => <GoldenReportCard runs={data} />}
+      </DataState>
     </>
   );
 }

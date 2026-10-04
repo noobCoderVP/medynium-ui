@@ -13,3 +13,5 @@
 **Keyboard:** header buttons sort (`aria-sort`); names are links; Previous and Next are buttons; the range text is a polite live region.
 
 **Note:** the patient workspace lives in `[patientId]/` with its own README. Searching never reveals patients outside the entitled set; the server decides what is in the list.
+
+**New patient (doctors):** the "New patient" dialog posts `POST /patients` with an idempotency key; a possible duplicate (same name and birth date) comes back as a 409 and the form offers an explicit confirmation. The new patient is assigned to the signed-in doctor.

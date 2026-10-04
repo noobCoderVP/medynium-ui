@@ -1,16 +1,32 @@
-import { ChangeChip, StatusChip, type ChangeKind } from "@/components/shared/chips";
+import { ArrowDown, ArrowUp, Minus } from "lucide-react";
+import { StatusChip, type ChangeKind } from "@/components/shared/chips";
 import { DataTable, type Column } from "@/components/shared/data-table";
 import { Button } from "@/components/ui/button";
-import { formatDate, formatValue } from "@/lib/format";
+import { formatDate, formatShortDate, formatValue } from "@/lib/format";
 import type { LabLatest } from "@/lib/api/types";
 import type { SortOrder } from "@/lib/use-list-state";
+import { cn } from "@/lib/utils";
+import { isAbnormal } from "../lib/summary";
 
-function range(lab: LabLatest): string {
+/** Muted reference range with an en dash; the symbols are hidden from screen readers, which get words instead. */
+function Range({ lab }: { lab: LabLatest }) {
   const { low, high } = lab.ref;
-  if (low === null && high === null) return "–";
-  if (low === null) return `up to ${formatValue(high)}`;
-  if (high === null) return `${formatValue(low)} or more`;
-  return `${formatValue(low)} to ${formatValue(high)}`;
+  if (low === null && high === null) return <span className="text-muted-foreground">–</span>;
+  const [visible, spoken] =
+    low === null
+      ? [`≤ ${formatValue(high)}`, `up to ${formatValue(high)}`]
+      : high === null
+        ? [`≥ ${formatValue(low)}`, `${formatValue(low)} or more`]
+        : [
+            `${formatValue(low)}–${formatValue(high)}`,
+            `${formatValue(low)} to ${formatValue(high)}`,
+          ];
+  return (
+    <span className="text-muted-foreground tabular-nums">
+      <span aria-hidden="true">{visible}</span>
+      <span className="sr-only">{spoken}</span>
+    </span>
+  );
 }
 
 /** Which way the latest value moved from the previous one; null when there is nothing to compare. */
@@ -44,8 +60,8 @@ export function LabsTable({
     {
       key: "test",
       header: "Test",
-      width: "22%",
-      minWidth: "6rem",
+      width: "26%",
+      minWidth: "7rem",
       sortKey: "test",
       cell: (l) => (
         <Button
@@ -63,70 +79,68 @@ export function LabsTable({
     {
       key: "value",
       header: "Latest",
-      width: "12%",
-      minWidth: "6rem",
+      width: "17%",
+      minWidth: "7rem",
       sortKey: "value",
       align: "right",
-      cell: (l) => <span className="font-medium">{formatValue(l.value, l.unit)}</span>,
+      cell: (l) => (
+        <span className={cn("tabular-nums", isAbnormal(l) ? "font-bold text-crit" : "font-medium")}>
+          {formatValue(l.value, l.unit)}
+        </span>
+      ),
     },
     {
-      key: "change",
-      header: "Change",
-      width: "12%",
+      key: "trend",
+      header: "Trend",
+      width: "15%",
       minWidth: "6rem",
       cell: (l) => {
         const kind = labChange(l);
-        return kind ? (
-          <ChangeChip kind={kind} />
-        ) : (
-          <span className="text-muted-foreground">{l.previous ? "No change" : "–"}</span>
+        if (!l.previous) return <span className="text-muted-foreground">–</span>;
+        const Icon = kind === "increased" ? ArrowUp : kind === "decreased" ? ArrowDown : Minus;
+        const word =
+          kind === "increased" ? "Increased" : kind === "decreased" ? "Decreased" : "No change";
+        return (
+          <span className="inline-flex flex-col leading-tight tabular-nums">
+            <span className="inline-flex items-center gap-1">
+              <Icon className="size-3.5" aria-hidden="true" />
+              <span className="sr-only">{word} from </span>
+              {formatValue(l.previous.value)}
+            </span>
+            <span className="text-xs whitespace-nowrap text-muted-foreground">
+              {formatShortDate(l.previous.date)}
+            </span>
+          </span>
         );
       },
     },
     {
       key: "date",
       header: "Date",
-      width: "14%",
-      minWidth: "6rem",
+      width: "15%",
+      minWidth: "7rem",
       sortKey: "date",
       mobile: "secondary",
-      cell: (l) => formatDate(l.date),
-    },
-    {
-      key: "prev",
-      header: "Previous",
-      width: "12%",
-      minWidth: "6rem",
-      align: "right",
-      mobile: "secondary",
-      cell: (l) =>
-        l.previous ? (
-          <span>
-            {formatValue(l.previous.value, l.unit)}
-            <span className="text-xs text-muted-foreground"> · {formatDate(l.previous.date)}</span>
-          </span>
-        ) : (
-          "–"
-        ),
+      cell: (l) => <span className="whitespace-nowrap tabular-nums">{formatDate(l.date)}</span>,
     },
     {
       key: "ref",
       header: "Reference",
-      width: "14%",
+      width: "15%",
       minWidth: "6rem",
       mobile: "secondary",
-      cell: range,
+      cell: (l) => <Range lab={l} />,
     },
     {
       key: "flag",
       header: "Flag",
-      width: "14%",
-      minWidth: "6rem",
+      width: "12%",
+      minWidth: "5rem",
       cell: (l) =>
         l.flag && l.flag !== "NORMAL" ? (
-          <StatusChip tone="warn">{l.flag.toLowerCase()}</StatusChip>
+          <StatusChip tone="crit">{l.flag === "HIGH" ? "High" : "Low"}</StatusChip>
         ) : (
-          <span className="text-muted-foreground">Normal</span>
+          <span className="sr-only">Normal</span>
         ),
     },
   ];

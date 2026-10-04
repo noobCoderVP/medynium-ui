@@ -27,8 +27,8 @@ export function SafetyTab({ patientId }: { patientId: string }) {
               recommend treatment.
             </p>
           </div>
-          <Button onClick={run} disabled={running}>
-            <ShieldCheck aria-hidden="true" />
+          <Button onClick={run} loading={running}>
+            {running ? null : <ShieldCheck aria-hidden="true" />}
             {running ? "Running…" : state.status === "idle" ? "Run safety review" : "Run again"}
           </Button>
           <RunResult patientId={patientId} state={state} onRetry={run} />

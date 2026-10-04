@@ -1,3 +1,4 @@
+import { FileText } from "lucide-react";
 import { formatDate } from "@/lib/format";
 import type { NoteSummary } from "@/lib/api/types";
 import { cn } from "@/lib/utils";
@@ -13,26 +14,38 @@ export function NoteList({
   onOpen: (id: string) => void;
 }) {
   return (
-    <ul className="divide-y divide-border overflow-hidden rounded-xl border border-border bg-card">
-      {notes.map((note) => (
-        <li key={note.note_id}>
-          <button
-            type="button"
-            aria-current={note.note_id === selected ? "true" : undefined}
-            onClick={() => onOpen(note.note_id)}
-            className={cn(
-              "block w-full border-l-2 border-transparent px-4 py-3 text-left text-sm transition-colors hover:bg-muted/60",
-              note.note_id === selected && "border-primary bg-accent hover:bg-accent",
-            )}
-          >
-            <span className="block font-medium">{note.title}</span>
-            <span className="block text-xs text-muted-foreground">
-              {formatDate(note.date)}
-              {note.type ? ` · ${note.type}` : ""}
-            </span>
-          </button>
-        </li>
-      ))}
+    <ul className="divide-y divide-border">
+      {notes.map((note) => {
+        const on = note.note_id === selected;
+        return (
+          <li key={note.note_id}>
+            <button
+              type="button"
+              aria-current={on ? "true" : undefined}
+              onClick={() => onOpen(note.note_id)}
+              className={cn(
+                "flex w-full items-start gap-3 border-l-[3px] border-transparent px-4 py-3 text-left text-sm transition-colors hover:bg-muted/60 focus-visible:bg-muted/60",
+                on && "border-primary bg-accent hover:bg-accent",
+              )}
+            >
+              <FileText
+                className={cn(
+                  "mt-0.5 size-4 shrink-0",
+                  on ? "text-primary" : "text-muted-foreground",
+                )}
+                aria-hidden="true"
+              />
+              <span className="min-w-0">
+                <span className="block truncate font-medium">{note.title}</span>
+                <span className="block text-xs text-muted-foreground">
+                  {formatDate(note.date)}
+                  {note.type ? ` · ${note.type}` : ""}
+                </span>
+              </span>
+            </button>
+          </li>
+        );
+      })}
     </ul>
   );
 }

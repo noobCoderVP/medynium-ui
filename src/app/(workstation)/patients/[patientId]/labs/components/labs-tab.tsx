@@ -2,22 +2,34 @@
 
 import { X } from "lucide-react";
 import { DataState, SkeletonRows } from "@/components/shared/data-state";
-import { FilterField, ListToolbar } from "@/components/shared/list-toolbar";
 import { Pagination } from "@/components/shared/pagination";
 import { EmptyState } from "@/components/shared/state-panels";
 import { Button } from "@/components/ui/button";
 import { Card, CardBody, CardHeader, CardTitle } from "@/components/ui/card";
+import type { LabLatest } from "@/lib/api/types";
 import { copy } from "@/lib/copy";
 import { useLabs } from "../hooks/use-labs";
 import { LabTrendChart } from "./lab-trend-chart";
-import { LAB_SORTS, LabsTable } from "./labs-table";
+import { summarize } from "../lib/summary";
+import { LabsTable } from "./labs-table";
+import { LabsToolbar } from "./labs-toolbar";
 
-const FLAGS = [
-  { value: "abnormal", label: "Abnormal (low or high)" },
-  { value: "LOW", label: "Low" },
-  { value: "HIGH", label: "High" },
-  { value: "NORMAL", label: "Normal" },
-];
+/** "7 results · 4 abnormal · 2 trending up". Counts cover the rows in hand, so a paged list says so. */
+function LabsSummary({ rows, total }: { rows: LabLatest[]; total: number }) {
+  const { abnormal, rising } = summarize(rows);
+  const scope = rows.length < total ? " on this page" : "";
+  return (
+    <p className="text-sm font-medium text-muted-foreground" aria-live="polite">
+      {total} {total === 1 ? "result" : "results"}
+      <span aria-hidden="true"> · </span>
+      <span className={abnormal > 0 ? "font-semibold text-crit" : undefined}>
+        {abnormal} abnormal{scope}
+      </span>
+      <span aria-hidden="true"> · </span>
+      {rising} trending up{scope}
+    </p>
+  );
+}
 
 export function LabsTab({ patientId }: { patientId: string }) {
   const labs = useLabs(patientId);
@@ -40,24 +52,17 @@ export function LabsTab({ patientId }: { patientId: string }) {
           </CardBody>
         </Card>
       ) : null}
-      <ListToolbar
-        search={{ value: labs.text, onChange: labs.setText, label: "Search tests" }}
-        sort={{
-          options: LAB_SORTS,
-          value: labs.sort,
-          order: labs.order,
-          onChange: labs.setSort,
-        }}
+      <LabsToolbar
+        text={labs.text}
+        onText={labs.setText}
+        flag={labs.filters.flag}
+        onFlag={(v) => labs.setFilter("flag", v)}
+        sort={labs.sort}
+        order={labs.order}
+        onSort={labs.setSort}
         activeCount={labs.activeCount}
         onClear={labs.clear}
-      >
-        <FilterField
-          label="Flag"
-          value={labs.filters.flag}
-          onChange={(v) => labs.setFilter("flag", v)}
-          options={FLAGS}
-        />
-      </ListToolbar>
+      />
       <DataState
         query={list}
         skeleton={<SkeletonRows rows={6} />}
@@ -66,6 +71,7 @@ export function LabsTab({ patientId }: { patientId: string }) {
       >
         {(page) => (
           <div className="space-y-3">
+            <LabsSummary rows={page.items} total={page.total} />
             <LabsTable
               rows={page.items}
               selected={code}

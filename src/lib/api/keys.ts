@@ -25,11 +25,25 @@ export const patientKeys = {
   safety: (id: string) => ["patients", id, "safety"] as const,
 };
 
+export const pendingKeys = {
+  all: ["pending"] as const,
+  list: (params: object) => ["pending", "list", params] as const,
+  summary: ["pending", "summary"] as const,
+};
+
+export const reportKeys = {
+  list: (id: string) => ["patients", id, "reports"] as const,
+  one: (id: string, reportId: string) => ["patients", id, "reports", reportId] as const,
+};
+
+export const similarKeys = { one: (id: string) => ["patients", id, "similar"] as const };
+
 export const evidenceKeys = { one: (answerId: string) => ["evidence", answerId] as const };
 
 export const knowledgeKeys = {
-  search: (q: string, drug: string, section: string) =>
-    ["knowledge", "search", { q, drug, section }] as const,
+  search: (q: string, drug: string, section: string, limit: number) =>
+    ["knowledge", "search", { q, drug, section, limit }] as const,
+  drugs: ["knowledge", "drugs"] as const,
   status: ["knowledge", "status"] as const,
 };
 
@@ -39,6 +53,7 @@ export const auditKeys = {
 
 export const adminKeys = {
   health: ["admin", "health"] as const,
+  golden: ["admin", "golden-runs"] as const,
   users: (params: object) => ["admin", "users", params] as const,
   entitlements: (id: string) => ["admin", "users", id, "entitlements"] as const,
   invites: ["admin", "invites"] as const,

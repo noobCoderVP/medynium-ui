@@ -3,7 +3,7 @@
 import { ChevronLeft, ChevronRight, ChevronsLeft, ChevronsRight } from "lucide-react";
 import { useId } from "react";
 import { Button } from "@/components/ui/button";
-import { Select } from "@/components/ui/input";
+import { Select } from "@/components/ui/select";
 import { formatNumber } from "@/lib/format";
 import { PAGE_SIZES } from "@/lib/use-list-state";
 
@@ -66,16 +66,11 @@ export function Pagination({
             </label>
             <Select
               id={id}
-              className="h-8 w-auto py-0 max-sm:h-10"
-              value={limit}
-              onChange={(e) => onLimitChange(Number(e.target.value))}
-            >
-              {sizes.map((size) => (
-                <option key={size} value={size}>
-                  {size}
-                </option>
-              ))}
-            </Select>
+              className="h-8 w-20 py-0 max-sm:h-10"
+              value={String(limit)}
+              onValueChange={(v) => onLimitChange(Number(v))}
+              options={sizes.map((size) => ({ value: String(size), label: String(size) }))}
+            />
           </div>
         ) : null}
         {pages > 1 ? (

@@ -55,7 +55,13 @@ export function ForgotForm() {
                 onChange={(e) => setEmail(e.target.value)}
               />
             </div>
-            <Button type="submit" size="lg" className="w-full" disabled={pending || !email.trim()}>
+            <Button
+              type="submit"
+              size="lg"
+              className="w-full"
+              loading={pending}
+              disabled={!email.trim()}
+            >
               {pending ? "Sending…" : "Send reset link"}
             </Button>
             <p className="text-center text-sm">

@@ -1,10 +1,12 @@
 import { del, get, patch, post, put } from "./client";
 import type {
   ActionResponse,
+  ArchiveBody,
   AuditPage,
   Briefing,
   Claims,
   ColleagueList,
+  Coverage,
   Dashboard,
   Entitlements,
   EvidenceResponse,
@@ -12,6 +14,21 @@ import type {
   FindingList,
   FindingUpdate,
   HealthDetails,
+  DrugDirectory,
+  DrugRequest,
+  DrugRequestList,
+  GoldenRunList,
+  MedicationIn,
+  PatientCreate,
+  PatientUpdate,
+  PendingPage,
+  PendingSummary,
+  ReportDetail,
+  ReportList,
+  ReportSummary,
+  RowResult,
+  SimilarResponse,
+  WriteResult,
   InviteCreate,
   InviteCreated,
   InvitePage,
@@ -117,10 +134,54 @@ export const endpoints = {
     post<ActionResponse>("/agent/actions", { action, params }),
 
   // knowledge and audit
-  knowledgeSearch: (params: { q: string; drug?: string; section?: string; limit?: number }) =>
+  knowledgeSearch: (params: { q?: string; drug?: string; section?: string; limit?: number }) =>
     get<SearchResponse>(`/knowledge/search${qs(params)}`),
+  knowledgeDrugs: () => get<DrugDirectory>("/knowledge/drugs"),
   knowledgeStatus: () => get<KnowledgeStatus>("/knowledge/status"),
   audit: (params: Params) => get<AuditPage>(`/audit${qs(params)}`),
+
+  // writes (doctors only; the API re-checks the entitlement and the record version)
+  createPatient: (body: PatientCreate, key: string) =>
+    post<WriteResult>("/patients", body, { "Idempotency-Key": key }),
+  updatePatient: (id: string, body: PatientUpdate) => put<WriteResult>(pid(id), body),
+  archivePatient: (id: string, body: ArchiveBody) => post<WriteResult>(`${pid(id)}/archive`, body),
+  addMedication: (id: string, body: MedicationIn, key: string) =>
+    post<WriteResult>(`${pid(id)}/medications`, body, { "Idempotency-Key": key }),
+  archiveRecord: (id: string, kind: string, recordId: string, body: ArchiveBody) =>
+    post<WriteResult>(`${pid(id)}/${kind}/${encodeURIComponent(recordId)}/archive`, body),
+  syncStatus: (id: string) => get<{ pending: boolean }>(`${pid(id)}/sync`),
+
+  // pending work across the clinician's own patients, and similar patients
+  pending: (params: Params) => get<PendingPage>(`/pending${qs(params)}`),
+  pendingSummary: () => get<PendingSummary>("/pending/summary"),
+  similar: (id: string, params: Params) => get<SimilarResponse>(`${pid(id)}/similar${qs(params)}`),
+
+  // reports: upload, review, approve
+  reports: (id: string) => get<ReportList>(`${pid(id)}/reports`),
+  report: (id: string, reportId: string) =>
+    get<ReportDetail>(`${pid(id)}/reports/${encodeURIComponent(reportId)}`),
+  uploadReport: (id: string, file: File) =>
+    post<ReportSummary>(`${pid(id)}/reports`, file, {
+      "Content-Type": file.type || "application/octet-stream",
+      "X-Filename": encodeURIComponent(file.name),
+    }),
+  decideRow: (id: string, rowId: string, decision: "accept" | "reject", version: number) =>
+    post<RowResult>(`${pid(id)}/reports/rows/${encodeURIComponent(rowId)}/${decision}`, {
+      version,
+    }),
+  approveReport: (id: string, reportId: string, confirm_identity: boolean) =>
+    post<ReportDetail>(`${pid(id)}/reports/${encodeURIComponent(reportId)}/approve`, {
+      confirm_identity,
+    }),
+  rejectReport: (id: string, reportId: string) =>
+    post<ReportSummary>(`${pid(id)}/reports/${encodeURIComponent(reportId)}/reject`),
+
+  // drug coverage
+  requestDrug: (drug: string, note?: string) =>
+    post<DrugRequest>("/knowledge/requests", { drug, note: note || null }),
+  myDrugRequests: () => get<DrugRequestList>("/knowledge/requests"),
+  coverage: () => get<Coverage>("/admin/knowledge/coverage"),
+  goldenRuns: () => get<GoldenRunList>("/admin/golden-runs"),
 
   // admin
   healthDetails: () => get<HealthDetails>("/health/details"),

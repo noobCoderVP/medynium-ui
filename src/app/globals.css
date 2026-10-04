@@ -52,6 +52,7 @@
   --color-primary: var(--primary);
   --color-popover-foreground: var(--popover-foreground);
   --color-popover: var(--popover);
+  --color-surface: var(--surface);
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
   --radius-sm: calc(var(--radius) * 0.6);
@@ -64,7 +65,8 @@
 }
 
 /*
- * Design tokens (X-3). Roles, not hex values: the approved direction may change the numbers but not
+ * Design tokens (X-3). Surfaces, back to front: background (the app canvas behind the frame), surface (the
+ * workspace panel), card (content on the panel). Roles, not hex values: the approved direction may change the numbers but not
  * the roles. Every text/background pair is checked for 4.5:1 by scripts/check-contrast.mjs.
  *   brand  = primary actions and focus        agent  = the assistant's surfaces
  *   fact   = "Patient fact" tag               source = "Retrieved source" tag
@@ -72,7 +74,8 @@
  */
 :root {
   color-scheme: light;
-  --background: oklch(0.965 0.012 250);
+  --background: oklch(0.935 0.018 252);
+  --surface: oklch(0.982 0.006 250);
   --foreground: oklch(0.22 0.03 260);
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.22 0.03 260);
@@ -123,7 +126,8 @@
 
 .dark {
   color-scheme: dark;
-  --background: oklch(0.16 0.02 262);
+  --background: oklch(0.13 0.02 262);
+  --surface: oklch(0.17 0.022 262);
   --foreground: oklch(0.95 0.008 255);
   --card: oklch(0.2 0.024 262);
   --card-foreground: oklch(0.95 0.008 255);
@@ -219,22 +223,8 @@
     accent-color: var(--primary);
     @apply size-4 cursor-pointer;
   }
-  option {
-    background-color: var(--popover);
-    color: var(--popover-foreground);
-  }
   ::selection {
     background-color: color-mix(in oklch, var(--primary) 28%, transparent);
-  }
-  /* Select chevron: an SVG background cannot read currentColor, so one per theme. */
-  .select-chevron {
-    background-repeat: no-repeat;
-    background-position: right 0.65rem center;
-    background-size: 1rem;
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23596072' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
-  }
-  .dark .select-chevron {
-    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23b4bccd' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
   }
   input[type="search"]::-webkit-search-cancel-button {
     cursor: pointer;
@@ -254,5 +244,15 @@
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
+  }
+}
+
+/* The route progress bar creeps toward 90% and holds until the new page arrives. */
+@keyframes route-progress {
+  from {
+    transform: scaleX(0.02);
+  }
+  to {
+    transform: scaleX(0.9);
   }
 }

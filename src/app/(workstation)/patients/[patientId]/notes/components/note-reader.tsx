@@ -1,4 +1,4 @@
-import { Card, CardBody, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card } from "@/components/ui/card";
 import { formatDate } from "@/lib/format";
 import type { NoteDetail } from "@/lib/api/types";
 
@@ -7,22 +7,29 @@ import type { NoteDetail } from "@/lib/api/types";
  * inside a note (for example the S5 test note) is just words on the page (SEC-12, AI-06).
  */
 export function NoteReader({ note }: { note: NoteDetail }) {
+  const meta = [
+    formatDate(note.date),
+    note.type,
+    note.author,
+    note.encounter_id ? `Encounter ${note.encounter_id}` : null,
+  ].filter(Boolean);
   return (
-    <Card aria-labelledby="note-title">
-      <CardHeader>
-        <CardTitle>
-          <span id="note-title">{note.title}</span>
-        </CardTitle>
-      </CardHeader>
-      <CardBody>
-        <p className="mb-3 text-xs text-muted-foreground">
-          {formatDate(note.date)}
-          {note.type ? ` · ${note.type}` : ""}
-          {note.author ? ` · ${note.author}` : ""}
-          {note.encounter_id ? ` · encounter ${note.encounter_id}` : ""}
+    <Card aria-labelledby="note-title" className="overflow-hidden">
+      <header className="space-y-1.5 border-b border-border bg-muted/40 px-5 py-4">
+        <h2 id="note-title" className="text-base font-semibold">
+          {note.title}
+        </h2>
+        <p className="flex flex-wrap gap-x-2 text-xs text-muted-foreground">
+          {meta.map((item, i) => (
+            <span key={i} className="after:ml-2 after:content-['·'] last:after:content-none">
+              {item}
+            </span>
+          ))}
         </p>
-        <div className="text-sm leading-relaxed whitespace-pre-wrap">{note.body}</div>
-      </CardBody>
+      </header>
+      <div className="max-w-prose px-5 py-5 text-sm leading-relaxed whitespace-pre-wrap">
+        {note.body}
+      </div>
     </Card>
   );
 }

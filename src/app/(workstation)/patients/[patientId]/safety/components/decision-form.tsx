@@ -2,7 +2,8 @@
 
 import { useId, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { Input, Select, Textarea } from "@/components/ui/input";
+import { Combobox } from "@/components/ui/combobox";
+import { Input, Textarea } from "@/components/ui/input";
 import { ApiError } from "@/lib/api/errors";
 import type { Finding, FindingUpdate } from "@/lib/api/types";
 import { useColleagues } from "../hooks/use-findings";
@@ -110,18 +111,16 @@ export function DecisionForm({
           <label htmlFor={ids.colleague} className="text-xs font-medium">
             Escalate to
           </label>
-          <Select
+          <Combobox
             id={ids.colleague}
             value={colleague}
-            onChange={(e) => setColleague(e.target.value)}
-          >
-            <option value="">Choose a colleague</option>
-            {(colleagues.data?.items ?? []).map((c) => (
-              <option key={c.user_id} value={c.user_id}>
-                {c.name} ({c.role.toLowerCase()})
-              </option>
-            ))}
-          </Select>
+            onValueChange={setColleague}
+            placeholder="Search for a colleague"
+            options={(colleagues.data?.items ?? []).map((c) => ({
+              value: c.user_id,
+              label: `${c.name} (${c.role.toLowerCase()})`,
+            }))}
+          />
           {colleagues.data && colleagues.data.items.length === 0 ? (
             <p className="text-xs text-muted-foreground">
               No one else has this patient. Ask an administrator to assign a colleague.
@@ -131,7 +130,7 @@ export function DecisionForm({
       ) : null}
       {mode ? (
         <div className="flex gap-2">
-          <Button size="sm" disabled={pending || !ready} onClick={send}>
+          <Button size="sm" loading={pending} disabled={!ready} onClick={send}>
             Save decision
           </Button>
           <Button size="sm" variant="ghost" onClick={() => setMode(null)}>

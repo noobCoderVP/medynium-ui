@@ -124,7 +124,8 @@ function Editor({ user, onDone }: { user: UserItem; onDone: () => void }) {
       ) : null}
       <div className="flex gap-2">
         <Button
-          disabled={save.isPending || chosen === null}
+          loading={save.isPending}
+          disabled={chosen === null}
           onClick={() => save.mutate([...selected])}
         >
           Save access

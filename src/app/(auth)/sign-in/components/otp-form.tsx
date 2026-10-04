@@ -58,7 +58,7 @@ export function OtpForm({ challenge, pending, message, onVerify, onCancel }: Pro
               autoFocus
             />
           </div>
-          <Button type="submit" size="lg" className="w-full" disabled={pending || !valid}>
+          <Button type="submit" size="lg" className="w-full" loading={pending} disabled={!valid}>
             {pending ? "Checking…" : "Verify and sign in"}
           </Button>
           <Button type="button" variant="ghost" size="lg" className="w-full" onClick={onCancel}>

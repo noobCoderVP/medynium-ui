@@ -61,7 +61,7 @@ export function ViewsDialog({ patientId }: { patientId: string }) {
               <div className="flex gap-2">
                 <Button
                   size="sm"
-                  disabled={save.isPending}
+                  loading={save.isPending}
                   onClick={() => save.mutate(pending.preview_id)}
                 >
                   Approve and save
@@ -96,7 +96,7 @@ export function ViewsDialog({ patientId }: { patientId: string }) {
                   maxLength={120}
                 />
               </div>
-              <Button type="submit" disabled={preview.isPending}>
+              <Button type="submit" loading={preview.isPending}>
                 Preview
               </Button>
             </form>

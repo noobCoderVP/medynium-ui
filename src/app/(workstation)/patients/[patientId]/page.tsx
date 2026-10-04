@@ -7,7 +7,9 @@ import { LabsTab } from "./labs/components/labs-tab";
 import { MedicationsTab } from "./medications/components/medications-tab";
 import { NotesTab } from "./notes/components/notes-tab";
 import { OverviewTab } from "./overview/components/overview-tab";
+import { ReportsTab } from "./reports/components/reports-tab";
 import { SafetyTab } from "./safety/components/safety-tab";
+import { SimilarTab } from "./similar/components/similar-tab";
 import { TimelineTab } from "./timeline/components/timeline-tab";
 
 export const metadata: Metadata = { title: "Patient" };
@@ -26,6 +28,10 @@ function tabContent(tab: TabId, patientId: string): ReactNode {
       return <ClaimsTab patientId={patientId} />;
     case "notes":
       return <NotesTab patientId={patientId} />;
+    case "reports":
+      return <ReportsTab patientId={patientId} />;
+    case "similar":
+      return <SimilarTab patientId={patientId} />;
     case "safety":
       return <SafetyTab patientId={patientId} />;
   }
