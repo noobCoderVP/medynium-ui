@@ -41,6 +41,12 @@ interface Props<T> {
   highlightKey?: string;
   /** "compact" tightens rows for dense lists such as the audit log. Default is comfortable. */
   density?: "comfortable" | "compact";
+  /** Scroll inside the parent instead of growing the page: the header stays pinned. From 1024 px; the parent needs a bounded height. */
+  fill?: boolean;
+  /** The parent supplies the box (a panel), so the table draws no border or shadow of its own. */
+  bare?: boolean;
+  /** Extra classes for one row, for example a left-border marker. */
+  rowClassName?: (row: T) => string | undefined;
 }
 
 const ALIGN = { center: "text-center", right: "text-right" } as const;
@@ -62,6 +68,9 @@ export function DataTable<T>({
   onSort,
   highlightKey,
   density = "comfortable",
+  fill,
+  bare,
+  rowClassName,
 }: Props<T>) {
   const [localSort, setLocalSort] = useState(initialSort ?? null);
   const server = Boolean(onSort);
@@ -93,7 +102,13 @@ export function DataTable<T>({
   const fixed = columns.some((c) => c.width);
 
   return (
-    <div className="overflow-x-auto rounded-xl border border-border bg-card shadow-xs max-md:overflow-visible max-md:border-0 max-md:bg-transparent max-md:shadow-none">
+    <div
+      className={cn(
+        "overflow-x-auto bg-card max-md:overflow-visible max-md:border-0 max-md:bg-transparent max-md:shadow-none",
+        bare ? "md:rounded-b-xl" : "rounded-xl border border-border shadow-sm",
+        fill && "lg:max-h-full lg:overflow-y-auto",
+      )}
+    >
       <table
         role="table"
         className={cn(
@@ -111,7 +126,7 @@ export function DataTable<T>({
         ) : null}
         <thead
           role="rowgroup"
-          className="bg-muted text-left text-xs font-semibold tracking-wider text-foreground/80 uppercase max-md:sr-only"
+          className="bg-table-head text-left text-xs font-semibold tracking-wider text-table-head-foreground uppercase max-md:sr-only"
         >
           <tr role="row">
             {columns.map((column, i) => {
@@ -135,8 +150,9 @@ export function DataTable<T>({
                       : undefined
                   }
                   className={cn(
-                    "border-b border-border px-4 py-3 font-semibold whitespace-nowrap",
-                    i > 0 && "border-l border-l-border/50",
+                    "border-b-2 border-b-border bg-table-head px-4 py-3 font-semibold whitespace-nowrap",
+                    fill && "lg:sticky lg:top-0 lg:z-10",
+                    i > 0 && "border-l border-l-border/60",
                     column.align && ALIGN[column.align],
                   )}
                 >
@@ -145,8 +161,8 @@ export function DataTable<T>({
                       type="button"
                       onClick={() => (server ? onSort?.(sortKey) : toggle(column.key))}
                       className={cn(
-                        "-mx-1.5 inline-flex min-h-7 items-center gap-1 rounded-md px-1.5 transition-colors hover:bg-muted hover:text-foreground",
-                        isActive && "text-foreground",
+                        "-mx-1.5 inline-flex min-h-7 items-center gap-1 rounded-md px-1.5 transition-colors hover:bg-foreground/10",
+                        isActive && "text-heading",
                       )}
                     >
                       {column.header}
@@ -173,11 +189,12 @@ export function DataTable<T>({
               transition={easeOut}
               aria-current={rowKey(row) === highlightKey ? "true" : undefined}
               className={cn(
-                "group/row align-middle transition-colors hover:bg-muted/60",
+                "group/row align-middle transition-colors even:bg-muted/40 hover:bg-accent/50 max-md:even:bg-card",
                 density === "compact" ? "h-10" : "h-12",
                 "max-md:block max-md:h-auto max-md:rounded-xl max-md:border max-md:bg-card max-md:py-1.5",
                 rowKey(row) === highlightKey &&
-                  "bg-accent shadow-[inset_3px_0_0_var(--primary)] hover:bg-accent",
+                  "bg-accent shadow-[inset_3px_0_0_var(--primary)] even:bg-accent hover:bg-accent",
+                rowClassName?.(row),
               )}
             >
               {columns.map((column, i) => (
@@ -186,9 +203,9 @@ export function DataTable<T>({
                   role="cell"
                   data-label={i === 0 ? undefined : column.header}
                   className={cn(
-                    "border-b border-border/60 px-4 group-last/row:border-b-0",
+                    "border-b border-border px-4 group-last/row:border-b-0",
                     density === "compact" ? "py-1.5" : "py-2.5",
-                    i > 0 && "border-l border-l-border/30",
+                    i > 0 && "border-l border-l-border/40",
                     column.align && ALIGN[column.align],
                     "max-md:border-0 max-md:border-l-0",
                     column.className,

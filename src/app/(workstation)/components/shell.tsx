@@ -34,9 +34,9 @@ function Frame({ children }: { children: ReactNode }) {
         <main
           id="main"
           tabIndex={-1}
-          className="min-w-0 flex-1 overflow-x-hidden overflow-y-auto overscroll-contain bg-surface outline-none md:m-2 md:rounded-xl md:border md:border-border md:shadow-sm"
+          className="relative min-w-0 flex-1 overflow-x-hidden overflow-y-auto overscroll-contain bg-surface outline-none md:m-2 md:rounded-xl md:border md:border-border md:shadow-sm"
         >
-          <div className="mx-auto w-full max-w-[112rem] p-4 md:px-6 md:py-5 2xl:px-8">
+          <div className="mx-auto w-full max-w-[112rem] p-4 md:px-6 md:py-5 lg:has-[[data-fit]]:h-full 2xl:px-8">
             <PageTransition>{children}</PageTransition>
           </div>
         </main>

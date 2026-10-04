@@ -1,6 +1,6 @@
 "use client";
 
-import { DataState, SkeletonRows } from "@/components/shared/data-state";
+import { DataState } from "@/components/shared/data-state";
 import { FilterField, ListToolbar } from "@/components/shared/list-toolbar";
 import { Pagination } from "@/components/shared/pagination";
 import { EmptyState } from "@/components/shared/state-panels";
@@ -37,7 +37,6 @@ export function MedicationsTab({ patientId }: { patientId: string }) {
       </ListToolbar>
       <DataState
         query={list.query}
-        skeleton={<SkeletonRows rows={5} />}
         isEmpty={(page) => page.total === 0}
         empty={<EmptyState title={copy.empty.medications} />}
       >

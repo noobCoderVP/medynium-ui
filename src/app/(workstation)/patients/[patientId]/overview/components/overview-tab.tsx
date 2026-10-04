@@ -5,7 +5,6 @@ import { StatGrid } from "@/components/shared/stat-grid";
 import { Stagger } from "@/components/shared/stagger";
 import { StaggerItem } from "@/components/shared/stagger-item";
 import { StatTile } from "@/components/shared/stat-tile";
-import { Skeleton } from "@/components/ui/skeleton";
 import { formatNumber } from "@/lib/format";
 import { useOverview } from "../hooks/use-overview";
 import { ClinicalSummaryCard } from "./clinical-summary-card";
@@ -15,16 +14,6 @@ import { LabsCard } from "./labs-card";
 import { MedicationsCard } from "./medications-card";
 import { OverviewSection } from "./overview-section";
 
-function OverviewSkeleton() {
-  return (
-    <div className="grid gap-4 md:grid-cols-2">
-      {Array.from({ length: 4 }, (_, i) => (
-        <Skeleton key={i} className="h-48" />
-      ))}
-    </div>
-  );
-}
-
 /**
  * Catch me up on this patient, in order: snapshot counts, then the clinical overview (summary beside latest
  * results), then medications and recent activity, each with its date and source. Billing is deliberately absent
@@ -33,7 +22,7 @@ function OverviewSkeleton() {
 export function OverviewTab({ patientId }: { patientId: string }) {
   const query = useOverview(patientId);
   return (
-    <DataState query={query} skeleton={<OverviewSkeleton />}>
+    <DataState query={query}>
       {(p) => (
         <div className="space-y-4">
           <OverviewSection title="Patient snapshot">

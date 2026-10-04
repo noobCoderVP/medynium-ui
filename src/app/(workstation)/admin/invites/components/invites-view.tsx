@@ -1,6 +1,6 @@
 "use client";
 
-import { DataState, SkeletonRows } from "@/components/shared/data-state";
+import { DataState } from "@/components/shared/data-state";
 import { FilterField, ListToolbar } from "@/components/shared/list-toolbar";
 import { PageHeading } from "@/components/shared/page-heading";
 import { Pagination } from "@/components/shared/pagination";
@@ -62,7 +62,6 @@ export function InvitesView() {
         </ListToolbar>
         <DataState
           query={invites.list}
-          skeleton={<SkeletonRows rows={3} />}
           isEmpty={(page) => page.total === 0}
           empty={<EmptyState title="No invites match." />}
         >

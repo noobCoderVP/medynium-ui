@@ -1,6 +1,6 @@
 "use client";
 
-import { DataState, SkeletonRows } from "@/components/shared/data-state";
+import { DataState } from "@/components/shared/data-state";
 import { DateField, FilterField, ListToolbar } from "@/components/shared/list-toolbar";
 import { Pagination } from "@/components/shared/pagination";
 import { EmptyState } from "@/components/shared/state-panels";
@@ -19,7 +19,7 @@ export function ClaimsTab({ patientId }: { patientId: string }) {
   const list = useClaims(patientId);
   return (
     <div className="space-y-4">
-      <DataState query={list.query} skeleton={<SkeletonRows rows={6} />}>
+      <DataState query={list.query}>
         {({ utilization: u, claims, total }) => (
           <>
             <dl className="grid grid-cols-2 gap-3 md:grid-cols-3 xl:grid-cols-6">

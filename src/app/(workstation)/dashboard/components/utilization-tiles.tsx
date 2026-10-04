@@ -9,28 +9,30 @@ function windowLabel(window: string): string {
 
 function Figure({ label, value }: { label: string; value: string }) {
   return (
-    <div className="min-w-0 px-4 py-2.5">
+    <div className="flex min-w-0 items-baseline gap-2 px-4 py-2">
+      <dd className="font-heading text-lg font-bold tracking-tight tabular-nums">{value}</dd>
       <dt className="truncate text-xs font-medium text-muted-foreground">{label}</dt>
-      <dd className="mt-0.5 font-heading text-xl font-bold tracking-tight tabular-nums">{value}</dd>
     </div>
   );
 }
 
-/** Utilisation across the caller's patients over the stated window: context, so one compact strip. */
+/** Utilisation across the caller's patients over the stated window: context, so one slim strip. */
 export function UtilizationTiles({ utilization }: { utilization: Dashboard["utilization"] }) {
   return (
-    <section aria-labelledby="util-heading" className="space-y-2">
-      <h2
-        id="util-heading"
-        className="text-xs font-semibold tracking-wider text-muted-foreground uppercase"
-      >
-        Utilisation{utilization.window ? ` · ${windowLabel(utilization.window)}` : ""}
-      </h2>
-      <dl className="grid grid-cols-2 divide-x divide-y divide-border overflow-hidden rounded-xl border border-border bg-card shadow-xs md:grid-cols-3 xl:grid-cols-5 xl:divide-y-0 [&>*]:border-border max-xl:[&>*:nth-child(n+3)]:border-t-0">
+    <section
+      aria-label={`Utilisation${utilization.window ? ` · ${windowLabel(utilization.window)}` : ""}`}
+      className="flex flex-wrap items-center gap-x-4 overflow-hidden rounded-xl border border-border bg-card shadow-sm"
+    >
+      {utilization.window ? (
+        <p className="border-r border-border px-4 py-2 text-xs font-semibold tracking-wider text-muted-foreground uppercase max-sm:w-full max-sm:border-r-0 max-sm:border-b">
+          {windowLabel(utilization.window)}
+        </p>
+      ) : null}
+      <dl className="grid min-w-0 flex-1 grid-cols-2 divide-x divide-border sm:grid-cols-3 xl:grid-cols-5 [&>*]:border-border">
         <Figure label="Patients" value={formatNumber(utilization.patients)} />
-        <Figure label="Outpatient visits" value={formatNumber(utilization.opd_visits)} />
-        <Figure label="Emergency visits" value={formatNumber(utilization.emergency_visits)} />
-        <Figure label="Hospital stays" value={formatNumber(utilization.hospitalizations)} />
+        <Figure label="Outpatient" value={formatNumber(utilization.opd_visits)} />
+        <Figure label="Emergency" value={formatNumber(utilization.emergency_visits)} />
+        <Figure label="Stays" value={formatNumber(utilization.hospitalizations)} />
         <Figure label="Procedures" value={formatNumber(utilization.procedures)} />
       </dl>
     </section>

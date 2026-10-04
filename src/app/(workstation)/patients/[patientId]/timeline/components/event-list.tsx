@@ -19,7 +19,7 @@ export function EventList({ patientId, events }: { patientId: string; events: Ti
             aria-hidden="true"
             className="absolute top-5 left-0 size-[0.9375rem] rounded-full border-[3px] border-background bg-primary ring-1 ring-border"
           />
-          <div className="flex flex-wrap items-start justify-between gap-3 rounded-xl border border-border bg-card px-4 py-3 text-sm shadow-xs transition-shadow hover:shadow-sm">
+          <div className="flex flex-wrap items-start justify-between gap-3 rounded-xl border border-border bg-card px-4 py-3 text-sm shadow-sm transition-shadow hover:shadow-md">
             <div className="min-w-0">
               <p className="text-xs text-muted-foreground">
                 <time dateTime={event.date}>{formatDate(event.date)}</time> ·{" "}

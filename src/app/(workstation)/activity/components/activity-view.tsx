@@ -1,6 +1,6 @@
 "use client";
 
-import { DataState, SkeletonRows } from "@/components/shared/data-state";
+import { DataState } from "@/components/shared/data-state";
 import { DateField, FilterField, ListToolbar } from "@/components/shared/list-toolbar";
 import { PageHeading } from "@/components/shared/page-heading";
 import { Pagination } from "@/components/shared/pagination";
@@ -17,7 +17,7 @@ export function ActivityView() {
   const audit = useAudit();
   const { from, to } = audit.filters;
   return (
-    <div className="space-y-4">
+    <div data-fit className="flex flex-col gap-4 lg:min-h-0 lg:flex-1">
       <PageHeading
         title="Activity log"
         note="What you and the assistant did on your behalf. Only your own entries appear."
@@ -66,17 +66,18 @@ export function ActivityView() {
       </ListToolbar>
       <DataState
         query={audit.query}
-        skeleton={<SkeletonRows rows={6} />}
         isEmpty={(page) => page.total === 0}
         empty={<EmptyState title={copy.empty.audit} />}
       >
         {(page) => (
-          <div className="space-y-3">
-            <AuditTable
-              items={page.items}
-              sort={{ key: audit.sort, order: audit.order }}
-              onSort={audit.toggleSort}
-            />
+          <div className="flex min-h-0 flex-col gap-3 lg:flex-1">
+            <div className="min-h-0">
+              <AuditTable
+                items={page.items}
+                sort={{ key: audit.sort, order: audit.order }}
+                onSort={audit.toggleSort}
+              />
+            </div>
             <Pagination
               noun="entries"
               total={page.total}

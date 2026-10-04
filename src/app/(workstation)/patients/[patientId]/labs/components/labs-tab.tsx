@@ -65,7 +65,6 @@ export function LabsTab({ patientId }: { patientId: string }) {
       />
       <DataState
         query={list}
-        skeleton={<SkeletonRows rows={6} />}
         isEmpty={(page) => page.total === 0}
         empty={<EmptyState title={copy.empty.labs} />}
       >

@@ -5,7 +5,7 @@ import { AdminNav } from "./components/admin-nav";
 export default function AdminLayout({ children }: LayoutProps<"/admin">) {
   return (
     <AdminGate>
-      <div className="space-y-4">
+      <div className="flex flex-col gap-4 lg:has-[[data-fit]]:h-full">
         <AdminNav />
         {children}
       </div>

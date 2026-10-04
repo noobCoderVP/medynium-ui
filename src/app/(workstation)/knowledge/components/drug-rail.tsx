@@ -25,8 +25,11 @@ export function DrugRail({ drugs, selected, onSelect }: Props) {
       )
     : drugs;
   return (
-    <nav aria-label="Indexed drugs" className="rounded-xl border border-border bg-card shadow-xs">
-      <div className="space-y-2 border-b border-border p-3">
+    <nav
+      aria-label="Indexed drugs"
+      className="flex h-full min-h-0 flex-col overflow-hidden rounded-xl border border-border bg-card shadow-sm"
+    >
+      <div className="shrink-0 space-y-2 border-b border-border p-3">
         <h2 className="text-sm font-semibold">Drugs ({drugs.length})</h2>
         <label htmlFor="kfilter" className="sr-only">
           Filter drugs
@@ -39,7 +42,7 @@ export function DrugRail({ drugs, selected, onSelect }: Props) {
           autoComplete="off"
         />
       </div>
-      <ul ref={list} className="max-h-[calc(100vh-18rem)] min-h-40 overflow-y-auto p-1.5">
+      <ul ref={list} className="min-h-40 flex-1 overflow-y-auto p-1.5">
         {shown.length === 0 ? (
           <li className="px-2 py-3 text-sm text-muted-foreground">No indexed drug matches.</li>
         ) : null}

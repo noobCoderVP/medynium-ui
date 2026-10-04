@@ -14,13 +14,13 @@ export function PageHeading({
   crumbs?: Crumb[];
 }) {
   return (
-    <div className="flex flex-wrap items-end justify-between gap-3 border-b border-border pb-4">
+    <div className="flex shrink-0 flex-wrap items-center justify-between gap-x-4 gap-y-2">
       <div className="min-w-0">
         {crumbs ? <Breadcrumbs crumbs={crumbs} /> : null}
-        <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">{title}</h1>
-        {note ? <p className="mt-1.5 text-sm text-muted-foreground">{note}</p> : null}
+        <h1>{title}</h1>
+        {note ? <p className="mt-0.5 text-sm text-muted-foreground">{note}</p> : null}
       </div>
-      {actions ? <div className="flex items-center gap-2">{actions}</div> : null}
+      {actions ? <div className="flex shrink-0 items-center gap-2">{actions}</div> : null}
     </div>
   );
 }

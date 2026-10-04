@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { DataState, SkeletonRows } from "@/components/shared/data-state";
+import { DataState } from "@/components/shared/data-state";
 import { EmptyState } from "@/components/shared/state-panels";
 import type { SimilarPatient } from "@/lib/api/types";
 import { useSimilar } from "../hooks/use-similar";
@@ -66,7 +66,6 @@ export function SimilarTab({ patientId }: { patientId: string }) {
   return (
     <DataState
       query={query}
-      skeleton={<SkeletonRows rows={3} />}
       isEmpty={(data) => data.items.length === 0}
       empty={
         <EmptyState title="No similar patients found.">

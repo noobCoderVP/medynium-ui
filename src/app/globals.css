@@ -53,6 +53,9 @@
   --color-popover-foreground: var(--popover-foreground);
   --color-popover: var(--popover);
   --color-surface: var(--surface);
+  --color-heading: var(--heading);
+  --color-table-head: var(--table-head);
+  --color-table-head-foreground: var(--table-head-foreground);
   --color-card-foreground: var(--card-foreground);
   --color-card: var(--card);
   --radius-sm: calc(var(--radius) * 0.6);
@@ -74,8 +77,11 @@
  */
 :root {
   color-scheme: light;
-  --background: oklch(0.935 0.018 252);
-  --surface: oklch(0.982 0.006 250);
+  --background: oklch(0.925 0.02 255);
+  --surface: oklch(0.962 0.01 252);
+  --heading: oklch(0.3 0.1 262);
+  --table-head: oklch(0.9 0.03 258);
+  --table-head-foreground: oklch(0.3 0.06 262);
   --foreground: oklch(0.22 0.03 260);
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.22 0.03 260);
@@ -90,7 +96,7 @@
   --accent: oklch(0.93 0.05 258);
   --accent-foreground: oklch(0.3 0.1 262);
   --destructive: oklch(0.5 0.2 27);
-  --border: oklch(0.9 0.015 255);
+  --border: oklch(0.85 0.02 256);
   --input: oklch(0.6 0.025 258);
   --ring: oklch(0.58 0.17 260);
   --agent: oklch(0.47 0.17 295);
@@ -126,10 +132,13 @@
 
 .dark {
   color-scheme: dark;
-  --background: oklch(0.13 0.02 262);
-  --surface: oklch(0.17 0.022 262);
+  --background: oklch(0.12 0.02 262);
+  --surface: oklch(0.165 0.022 262);
+  --heading: oklch(0.96 0.02 255);
+  --table-head: oklch(0.29 0.04 262);
+  --table-head-foreground: oklch(0.93 0.015 255);
   --foreground: oklch(0.95 0.008 255);
-  --card: oklch(0.2 0.024 262);
+  --card: oklch(0.215 0.024 262);
   --card-foreground: oklch(0.95 0.008 255);
   --popover: oklch(0.22 0.026 262);
   --popover-foreground: oklch(0.95 0.008 255);
@@ -142,7 +151,7 @@
   --accent: oklch(0.31 0.06 262);
   --accent-foreground: oklch(0.95 0.008 255);
   --destructive: oklch(0.74 0.17 22);
-  --border: oklch(1 0 0 / 13%);
+  --border: oklch(1 0 0 / 17%);
   --input: oklch(0.6 0.025 258);
   --ring: oklch(0.72 0.13 255);
   --agent: oklch(0.8 0.12 295);
@@ -194,19 +203,20 @@
   h3,
   h4 {
     font-family: var(--font-heading);
+    color: var(--heading);
     @apply tracking-tight text-balance;
   }
   h1 {
-    @apply text-2xl leading-tight font-bold sm:text-[1.75rem];
+    @apply text-xl leading-tight font-bold sm:text-2xl;
   }
   h2 {
-    @apply text-lg leading-snug font-semibold;
-  }
-  h3 {
     @apply text-base leading-snug font-semibold;
   }
-  h4 {
+  h3 {
     @apply text-sm leading-snug font-semibold;
+  }
+  h4 {
+    @apply text-sm leading-snug font-medium;
   }
   .font-mono,
   code,
@@ -244,6 +254,91 @@
     animation-iteration-count: 1 !important;
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
+  }
+}
+
+/* Thin, theme-matched scrollbars and smooth scrolling everywhere. The standard properties win where supported;
+   the WebKit rules cover older Safari. */
+html,
+* {
+  scroll-behavior: smooth;
+}
+* {
+  scrollbar-width: thin;
+  scrollbar-color: color-mix(in oklch, var(--muted-foreground) 40%, transparent) transparent;
+}
+@supports not (scrollbar-color: auto) {
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background-color: color-mix(in oklch, var(--muted-foreground) 40%, transparent);
+    background-clip: content-box;
+    border: 2px solid transparent;
+    border-radius: 9999px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background-color: color-mix(in oklch, var(--primary) 70%, transparent);
+  }
+}
+
+/* Heartbeat loader: the heart is traced in a loop, a pulse line sweeps through it, and the heart beats as the
+   spike passes (spike sits at roughly 36-50% of the sweep). */
+.hb-chase {
+  stroke-dasharray: 32 68;
+  animation: hb-chase 2.4s linear infinite;
+}
+.hb-pulse {
+  stroke-dasharray: 40 100;
+  animation: hb-sweep 2.4s linear infinite;
+  filter: drop-shadow(0 0 3px color-mix(in oklch, currentColor 70%, transparent));
+}
+.hb-beat {
+  animation: hb-beat 2.4s ease-out infinite;
+  transform-origin: center;
+}
+@keyframes hb-chase {
+  from {
+    stroke-dashoffset: 100;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+@keyframes hb-sweep {
+  from {
+    stroke-dashoffset: 40;
+  }
+  to {
+    stroke-dashoffset: -100;
+  }
+}
+@keyframes hb-beat {
+  0%,
+  34%,
+  60%,
+  100% {
+    transform: scale(1);
+  }
+  42% {
+    transform: scale(1.07);
+  }
+  50% {
+    transform: scale(0.98);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hb-chase,
+  .hb-beat {
+    animation: none;
+  }
+  .hb-pulse {
+    animation: none;
+    stroke-dasharray: none;
   }
 }
 

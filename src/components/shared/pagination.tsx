@@ -51,7 +51,7 @@ export function Pagination({
   return (
     <nav
       aria-label={`Pages of ${noun}`}
-      className="flex flex-col gap-3 text-sm sm:flex-row sm:items-center sm:justify-between"
+      className="flex shrink-0 flex-col gap-3 text-sm sm:flex-row sm:items-center sm:justify-between"
     >
       <p className="font-medium text-foreground" aria-live="polite">
         {total === 0

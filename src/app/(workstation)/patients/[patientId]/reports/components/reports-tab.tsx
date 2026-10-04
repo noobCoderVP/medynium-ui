@@ -2,7 +2,7 @@
 
 import { FileUp } from "lucide-react";
 import { useRef, useState } from "react";
-import { DataState, SkeletonRows } from "@/components/shared/data-state";
+import { DataState } from "@/components/shared/data-state";
 import { EmptyState } from "@/components/shared/state-panels";
 import { Button } from "@/components/ui/button";
 import { errorText, useReportActions, useReports } from "../hooks/use-reports";
@@ -58,7 +58,6 @@ export function ReportsTab({ patientId }: { patientId: string }) {
       ) : null}
       <DataState
         query={query}
-        skeleton={<SkeletonRows rows={3} />}
         isEmpty={(data) => data.items.length === 0}
         empty={<EmptyState title="No reports uploaded for this patient yet." />}
       >

@@ -19,7 +19,7 @@ function Fact({ label, children }: { label: string; children: string }) {
 export function CitationCard({ citation: c, query }: { citation: Citation; query: string }) {
   const hasMore = c.text.length > c.snippet.replace(/^\.\.\.|\.\.\.$/g, "").length + 8;
   return (
-    <li className="rounded-xl border border-border bg-card shadow-xs">
+    <li className="rounded-xl border border-border bg-card shadow-sm">
       <div className="flex flex-wrap items-center gap-x-2 gap-y-1 px-4 pt-3.5">
         <h2 className="text-base font-semibold">{c.drug ?? "Drug not stated"}</h2>
         <span className="rounded-md bg-muted px-1.5 py-0.5 text-xs font-medium">{c.section}</span>

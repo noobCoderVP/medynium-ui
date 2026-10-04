@@ -1,10 +1,10 @@
-import { Spinner } from "@/components/ui/spinner";
+import { HeartbeatLoader } from "@/components/shared/heartbeat-loader";
 
 export default function AuthLoading() {
   return (
-    <p role="status" className="flex items-center gap-2 text-sm text-muted-foreground">
-      <Spinner />
-      Loading…
-    </p>
+    <div role="status" aria-busy="true" aria-live="polite">
+      <span className="sr-only">Loading</span>
+      <HeartbeatLoader compact />
+    </div>
   );
 }

@@ -14,7 +14,7 @@ export function PageTransition({ children }: { children: ReactNode }) {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={easeOut}
-      className="space-y-5"
+      className="flex flex-col gap-4 lg:has-[[data-fit]]:h-full"
     >
       {children}
     </motion.div>

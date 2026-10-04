@@ -1,4 +1,4 @@
-import { DataState, SkeletonRows, type QueryLike } from "@/components/shared/data-state";
+import { DataState, type QueryLike } from "@/components/shared/data-state";
 import { EmptyState } from "@/components/shared/state-panels";
 import { Button } from "@/components/ui/button";
 import { copy } from "@/lib/copy";
@@ -50,7 +50,6 @@ export function ResultsPanel({ query, text, settling, canShowMore, onShowMore, o
   return (
     <DataState
       query={query}
-      skeleton={<SkeletonRows rows={3} />}
       isEmpty={(r) => r.items.length === 0}
       empty={
         <EmptyState title={query.data?.message ?? copy.empty.knowledge}>

@@ -35,7 +35,7 @@ export function DocsView() {
                 {section.title}
               </h2>
               <p className="mt-1 text-sm text-muted-foreground">{section.summary}</p>
-              <dl className="mt-4 divide-y divide-border rounded-xl border border-border bg-card shadow-xs">
+              <dl className="mt-4 divide-y divide-border rounded-xl border border-border bg-card shadow-sm">
                 {section.topics.map((topic) => (
                   <div key={topic.title} className="px-4 py-3.5">
                     <dt className="text-sm font-semibold">{topic.title}</dt>

@@ -2,6 +2,8 @@
 
 **Purpose:** "Show me my patients and who changed." A compact utilisation strip, "Patients needing attention" (the worklist, urgent changes first, with Brief me beside it), and recent lab and medication changes. First screen after sign-in.
 
+**Layout:** titled "Clinical overview". Slim utilisation strip, then worklist, lab card and medication card side by side (from 1280 px; two columns from 1024 px). The worklist has an explicit Priority column derived only from the API flags (`lib/priority.ts`): emergency visit is High, new lab or medication is Needs review, other flags Informational, none Stable. High rows carry a left border, and priority is always an icon plus a word. The header line explains why patients are listed (emergency, abnormal lab and medication change counts). Labs and medication changes are grouped by patient.
+
 **Endpoints:** `GET /dashboard` (one call). `GET /dashboard/briefing` runs only when Brief me is pressed. It is rules over the dashboard data (no model call) and the card says so, one tagged line per change, each linked to its patient.
 
 **Requirement IDs:** FR-17, FR-18, NFR-01, SEC-08.

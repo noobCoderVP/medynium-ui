@@ -17,7 +17,7 @@ export function StatTile({
   return (
     <motion.div
       variants={staggerItem}
-      className="rounded-xl border border-border bg-card px-3.5 py-2.5 shadow-xs"
+      className="rounded-xl border border-border bg-card px-3.5 py-2.5 shadow-sm"
     >
       <dt className="text-xs font-medium text-muted-foreground">{label}</dt>
       <dd className="mt-0.5 font-heading text-xl font-bold tracking-tight tabular-nums">{value}</dd>

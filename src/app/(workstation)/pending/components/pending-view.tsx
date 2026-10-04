@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { DataState, SkeletonRows } from "@/components/shared/data-state";
+import { DataState } from "@/components/shared/data-state";
 import { PageHeading } from "@/components/shared/page-heading";
 import { Pagination } from "@/components/shared/pagination";
 import { EmptyState } from "@/components/shared/state-panels";
@@ -66,7 +66,6 @@ export function PendingView() {
       </div>
       <DataState
         query={list.query}
-        skeleton={<SkeletonRows rows={6} />}
         isEmpty={(page) => page.total === 0}
         empty={<EmptyState title="Nothing is waiting on you." />}
       >

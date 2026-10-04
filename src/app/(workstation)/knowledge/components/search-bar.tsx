@@ -27,7 +27,7 @@ export function SearchBar(p: Props) {
       onSubmit={p.onSubmit}
       role="search"
       aria-label="Search drug labels"
-      className="space-y-3 rounded-xl border border-border bg-card p-4 shadow-xs"
+      className="space-y-3 rounded-xl border border-border bg-card p-4 shadow-sm"
     >
       <div className="relative">
         <label htmlFor="kq" className="sr-only">

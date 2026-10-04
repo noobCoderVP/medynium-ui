@@ -14,16 +14,16 @@ export function KnowledgeView() {
   const k = useKnowledgeSearch();
   const drugs = k.drugs.data?.items ?? [];
   return (
-    <>
+    <div data-fit className="flex flex-col gap-4 lg:min-h-0 lg:flex-1">
       <PageHeading
         title="Knowledge"
         note="Search the indexed drug labels by generic name, Indian brand or topic. Every result shows where it came from."
       />
-      <div className="grid items-start gap-6 lg:grid-cols-[17rem_minmax(0,1fr)]">
-        <aside className="hidden lg:sticky lg:top-4 lg:block">
+      <div className="grid gap-6 lg:min-h-0 lg:flex-1 lg:grid-cols-[17rem_minmax(0,1fr)] lg:grid-rows-[minmax(0,1fr)]">
+        <aside className="hidden min-h-0 lg:block">
           <DrugRail drugs={drugs} selected={k.drug} onSelect={k.setDrug} />
         </aside>
-        <div className="min-w-0 space-y-5">
+        <div className="min-w-0 space-y-5 lg:min-h-0 lg:overflow-y-auto lg:p-1">
           <SearchBar
             text={k.text}
             onText={k.setText}
@@ -67,6 +67,6 @@ export function KnowledgeView() {
           </DataState>
         </div>
       </div>
-    </>
+    </div>
   );
 }

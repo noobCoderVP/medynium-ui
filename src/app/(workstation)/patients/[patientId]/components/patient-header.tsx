@@ -29,7 +29,7 @@ export function PatientHeader({ patient, tabLabel }: { patient: Overview; tabLab
           ) : null}
           <div className="flex flex-wrap items-baseline gap-x-3 gap-y-0.5">
             <h1 className="truncate text-xl font-bold tracking-tight">{patient.name}</h1>
-            <p className="flex flex-wrap items-center gap-x-1.5 gap-y-1 text-sm text-muted-foreground">
+            <div className="flex flex-wrap items-center gap-x-1.5 gap-y-1 text-sm text-muted-foreground">
               <span>
                 {patient.age} {patient.sex}
                 {patient.city ? ` · ${patient.city}` : ""} ·{" "}
@@ -37,7 +37,7 @@ export function PatientHeader({ patient, tabLabel }: { patient: Overview; tabLab
               </span>
               <span aria-hidden="true">·</span>
               <AllergyBanner allergies={patient.allergies} />
-            </p>
+            </div>
           </div>
           <p className="mt-1 flex flex-wrap items-center gap-1.5">
             <StatusChip tone={attention > 0 ? "crit" : "ok"}>

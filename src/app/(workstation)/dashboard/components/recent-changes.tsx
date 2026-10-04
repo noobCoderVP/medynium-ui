@@ -1,84 +1,126 @@
 import Link from "next/link";
-import { RowList, Row } from "@/components/shared/row-list";
+import { ChangeChip, StatusChip } from "@/components/shared/chips";
 import { Card, CardBody, CardHeader, CardTitle } from "@/components/ui/card";
-import { StatusChip } from "@/components/shared/chips";
 import { formatDate, formatValue } from "@/lib/format";
 import type { Dashboard } from "@/lib/api/types";
+import { groupByPatient, medicationKind } from "../lib/priority";
 
-/** The newest lab and medication changes across the caller's patients, abnormal labs first. */
+type Lab = Dashboard["recent_changes"]["labs"][number];
+type Medication = Dashboard["recent_changes"]["medications"][number];
+
+function PatientLink({ id, name, tab }: { id: string; name: string; tab: string }) {
+  return (
+    <Link
+      href={`/patients/${id}?tab=${tab}`}
+      className="text-sm font-semibold text-primary hover:underline"
+    >
+      {name}
+    </Link>
+  );
+}
+
+function LabLine({ lab }: { lab: Lab }) {
+  const arrow =
+    lab.previous === null
+      ? null
+      : lab.latest > lab.previous
+        ? "↑"
+        : lab.latest < lab.previous
+          ? "↓"
+          : "=";
+  return (
+    <li className="flex items-center justify-between gap-2 py-1">
+      <div className="min-w-0">
+        <p className="truncate text-sm">{lab.test}</p>
+        <p className="text-xs text-muted-foreground">{formatDate(lab.date)}</p>
+      </div>
+      <div className="flex shrink-0 items-center gap-2 text-right tabular-nums">
+        <div>
+          <p className="text-sm font-bold">{formatValue(lab.latest, lab.unit)}</p>
+          {arrow ? (
+            <p className="text-xs text-muted-foreground">
+              {arrow} {formatValue(lab.previous!)}
+            </p>
+          ) : null}
+        </div>
+        {lab.abnormal ? <StatusChip tone="warn">{lab.abnormal.toUpperCase()}</StatusChip> : null}
+      </div>
+    </li>
+  );
+}
+
+function MedicationLine({ medication: m }: { medication: Medication }) {
+  return (
+    <li className="flex items-center justify-between gap-2 py-1">
+      <div className="min-w-0">
+        <p className="truncate text-sm">{m.drug}</p>
+        <p className="text-xs text-muted-foreground">{formatDate(m.date)}</p>
+      </div>
+      <ChangeChip kind={medicationKind(m.change)}>{m.change.toUpperCase()}</ChangeChip>
+    </li>
+  );
+}
+
+function Group({
+  id,
+  name,
+  tab,
+  children,
+}: {
+  id: string;
+  name: string;
+  tab: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <li className="py-2.5 first:pt-0 last:pb-0">
+      <PatientLink id={id} name={name} tab={tab} />
+      <ul className="mt-0.5 divide-y divide-border/60">{children}</ul>
+    </li>
+  );
+}
+
+/** The newest lab and medication changes across the caller's patients, grouped by patient, abnormal labs first. */
 export function RecentChanges({ changes }: { changes: Dashboard["recent_changes"] }) {
   return (
-    <div className="grid gap-4 lg:grid-cols-2 2xl:grid-cols-1">
-      <Card>
-        <CardHeader>
+    <div className="grid gap-4 md:grid-cols-2 lg:min-h-0 lg:grid-cols-1 lg:grid-rows-2 xl:contents">
+      <Card className="flex min-h-0 flex-col">
+        <CardHeader className="px-4 py-3">
           <CardTitle>Recent lab results</CardTitle>
         </CardHeader>
-        <CardBody>
+        <CardBody className="min-h-0 flex-1 overflow-y-auto p-4">
           {changes.labs.length === 0 ? (
             <p className="text-sm text-muted-foreground">No new results.</p>
           ) : (
-            <RowList>
-              {changes.labs.map((lab) => (
-                <Row
-                  key={`${lab.patient_id}-${lab.test}-${lab.date}`}
-                  className="flex items-center justify-between gap-3"
-                >
-                  <div className="min-w-0">
-                    <Link
-                      href={`/patients/${lab.patient_id}?tab=labs`}
-                      className="font-medium text-primary hover:underline"
-                    >
-                      {lab.name}
-                    </Link>
-                    <p className="truncate text-xs text-muted-foreground">
-                      {lab.test} · {formatDate(lab.date)}
-                    </p>
-                  </div>
-                  <div className="shrink-0 text-right tabular-nums">
-                    <div className="flex items-center justify-end gap-2">
-                      <span className="text-base font-bold">
-                        {formatValue(lab.latest, lab.unit)}
-                      </span>
-                      {lab.abnormal ? (
-                        <StatusChip tone="warn">{lab.abnormal.toLowerCase()}</StatusChip>
-                      ) : null}
-                    </div>
-                    {lab.previous !== null ? (
-                      <p className="text-xs text-muted-foreground">
-                        {lab.latest > lab.previous ? "↑" : lab.latest < lab.previous ? "↓" : "="}{" "}
-                        from {formatValue(lab.previous)}
-                      </p>
-                    ) : null}
-                  </div>
-                </Row>
+            <ul className="divide-y divide-border">
+              {groupByPatient(changes.labs).map((g) => (
+                <Group key={g.patient_id} id={g.patient_id} name={g.name} tab="labs">
+                  {g.rows.map((lab) => (
+                    <LabLine key={`${lab.test}-${lab.date}`} lab={lab} />
+                  ))}
+                </Group>
               ))}
-            </RowList>
+            </ul>
           )}
         </CardBody>
       </Card>
-      <Card>
-        <CardHeader>
+      <Card className="flex min-h-0 flex-col">
+        <CardHeader className="px-4 py-3">
           <CardTitle>Recent medication changes</CardTitle>
         </CardHeader>
-        <CardBody>
+        <CardBody className="min-h-0 flex-1 overflow-y-auto p-4">
           {changes.medications.length === 0 ? (
             <p className="text-sm text-muted-foreground">No new changes.</p>
           ) : (
-            <RowList>
-              {changes.medications.map((m) => (
-                <Row key={`${m.patient_id}-${m.drug}-${m.date}`}>
-                  <Link
-                    href={`/patients/${m.patient_id}?tab=medications`}
-                    className="font-medium text-primary hover:underline"
-                  >
-                    {m.name}
-                  </Link>
-                  <p className="text-xs text-muted-foreground">
-                    {m.drug}: {m.change} · {formatDate(m.date)}
-                  </p>
-                </Row>
+            <ul className="divide-y divide-border">
+              {groupByPatient(changes.medications).map((g) => (
+                <Group key={g.patient_id} id={g.patient_id} name={g.name} tab="medications">
+                  {g.rows.map((m) => (
+                    <MedicationLine key={`${m.drug}-${m.date}`} medication={m} />
+                  ))}
+                </Group>
               ))}
-            </RowList>
+            </ul>
           )}
         </CardBody>
       </Card>

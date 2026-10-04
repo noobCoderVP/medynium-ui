@@ -129,6 +129,7 @@ export function AuditTable({
       rowKey={(a) => a.audit_id}
       sort={sort}
       onSort={onSort}
+      fill
     />
   );
 }

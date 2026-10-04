@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { DataState, SkeletonRows } from "@/components/shared/data-state";
+import { DataState } from "@/components/shared/data-state";
 import { Button } from "@/components/ui/button";
 import type { ReportRow } from "@/lib/api/types";
 import { errorText, useReport, useReportActions } from "../hooks/use-reports";
@@ -72,7 +72,7 @@ export function ReportReview({ patientId, reportId }: { patientId: string; repor
   const error = decide.error ?? approve.error ?? reject.error;
   return (
     <div className="border-t border-border">
-      <DataState query={query} skeleton={<SkeletonRows rows={3} />}>
+      <DataState query={query}>
         {(report) => (
           <div>
             {report.status === "FAILED" || report.status_detail ? (

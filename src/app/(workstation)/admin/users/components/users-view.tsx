@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { CopyLink } from "@/components/shared/copy-link";
-import { DataState, SkeletonRows } from "@/components/shared/data-state";
+import { DataState } from "@/components/shared/data-state";
 import { FilterField, ListToolbar } from "@/components/shared/list-toolbar";
 import { PageHeading } from "@/components/shared/page-heading";
 import { Pagination } from "@/components/shared/pagination";
@@ -20,7 +20,7 @@ export function UsersView() {
   const [link, setLink] = useState<InviteCreated | null>(null);
 
   return (
-    <>
+    <div data-fit className="flex flex-col gap-4 lg:min-h-0 lg:flex-1">
       <PageHeading
         crumbs={[{ label: "Admin", href: "/admin" }, { label: "Users and access" }]}
         title="Users and access"
@@ -60,27 +60,28 @@ export function UsersView() {
       ) : null}
       <DataState
         query={u.query}
-        skeleton={<SkeletonRows rows={4} />}
         isEmpty={(p) => p.total === 0}
         empty={<EmptyState title="No users match." />}
       >
         {(page) => (
-          <div className="space-y-3">
-            <UsersTable
-              users={page.items}
-              sort={{ key: u.sort, order: u.order }}
-              onSort={u.toggleSort}
-              actions={{
-                busy: u.setStatus.isPending || u.reset.isPending,
-                onAccess: setAccess,
-                onToggle: (user) =>
-                  u.setStatus.mutate({
-                    id: user.user_id,
-                    next: user.status === "ACTIVE" ? "DISABLED" : "ACTIVE",
-                  }),
-                onReset: (user) => u.reset.mutate(user.user_id, { onSuccess: setLink }),
-              }}
-            />
+          <div className="flex min-h-0 flex-col gap-3 lg:flex-1">
+            <div className="min-h-0">
+              <UsersTable
+                users={page.items}
+                sort={{ key: u.sort, order: u.order }}
+                onSort={u.toggleSort}
+                actions={{
+                  busy: u.setStatus.isPending || u.reset.isPending,
+                  onAccess: setAccess,
+                  onToggle: (user) =>
+                    u.setStatus.mutate({
+                      id: user.user_id,
+                      next: user.status === "ACTIVE" ? "DISABLED" : "ACTIVE",
+                    }),
+                  onReset: (user) => u.reset.mutate(user.user_id, { onSuccess: setLink }),
+                }}
+              />
+            </div>
             <Pagination
               noun="users"
               total={page.total}
@@ -112,6 +113,6 @@ export function UsersView() {
           </div>
         ) : null}
       </Dialog>
-    </>
+    </div>
   );
 }

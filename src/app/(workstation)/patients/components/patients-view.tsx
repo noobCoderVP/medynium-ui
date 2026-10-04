@@ -1,6 +1,6 @@
 "use client";
 
-import { DataState, SkeletonRows } from "@/components/shared/data-state";
+import { DataState } from "@/components/shared/data-state";
 import { FilterField, ListToolbar } from "@/components/shared/list-toolbar";
 import { PageHeading } from "@/components/shared/page-heading";
 import { Pagination } from "@/components/shared/pagination";
@@ -31,7 +31,7 @@ export function PatientsView() {
   const { query } = list;
 
   return (
-    <div className="space-y-4">
+    <div data-fit className="flex flex-col gap-4 lg:min-h-0 lg:flex-1">
       <PageHeading
         title="Patients"
         note="Find and review patients in your care. Only patients you are assigned to appear here."
@@ -82,17 +82,18 @@ export function PatientsView() {
       </ListToolbar>
       <DataState
         query={query}
-        skeleton={<SkeletonRows rows={8} />}
         isEmpty={(page) => page.total === 0}
         empty={<EmptyState title={copy.empty.patients} />}
       >
         {(page) => (
-          <div className="space-y-3">
-            <PatientTable
-              items={page.items}
-              sort={{ key: list.sort, order: list.order }}
-              onSort={list.toggleSort}
-            />
+          <div className="flex min-h-0 flex-col gap-3 lg:flex-1">
+            <div className="min-h-0">
+              <PatientTable
+                items={page.items}
+                sort={{ key: list.sort, order: list.order }}
+                onSort={list.toggleSort}
+              />
+            </div>
             <Pagination
               noun="patients"
               total={page.total}

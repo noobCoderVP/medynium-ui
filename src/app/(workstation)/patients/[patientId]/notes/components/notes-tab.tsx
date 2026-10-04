@@ -44,7 +44,6 @@ export function NotesTab({ patientId }: { patientId: string }) {
       </ListToolbar>
       <DataState
         query={list}
-        skeleton={<SkeletonRows rows={5} />}
         isEmpty={(page) => page.total === 0}
         empty={<EmptyState title={copy.empty.notes} />}
       >
@@ -52,7 +51,7 @@ export function NotesTab({ patientId }: { patientId: string }) {
           <div className="grid gap-4 lg:grid-cols-[minmax(0,23rem)_minmax(0,1fr)] lg:items-start">
             <section
               aria-label="Notes"
-              className="overflow-hidden rounded-xl border border-border bg-card shadow-xs"
+              className="overflow-hidden rounded-xl border border-border bg-card shadow-sm"
             >
               <NoteList notes={page.items} selected={noteId} onOpen={open} />
               <div className="border-t border-border bg-muted/40 px-3 py-2.5">

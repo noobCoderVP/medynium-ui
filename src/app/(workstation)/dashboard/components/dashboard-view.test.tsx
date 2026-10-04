@@ -69,10 +69,12 @@ describe("DashboardView", () => {
     useDashboard.mockReturnValue(result({}));
     render(<DashboardView />);
     // The patient is linked from the worklist and from the recent lab results.
-    const links = screen.getAllByRole("link", { name: "Rahul Patel" });
-    expect(links.length).toBeGreaterThanOrEqual(1);
-    expect(links[0]).toHaveAttribute("href", "/patients/P-1");
+    const links = screen.getAllByRole("link", { name: /Rahul Patel/ });
+    expect(links.map((l) => l.getAttribute("href"))).toContain("/patients/P-1");
     expect(screen.getByText("ED visit 2 Oct")).toBeInTheDocument();
+    // Priority is spelled out in words, and the header says why the patient is listed.
+    expect(screen.getByText("High")).toBeInTheDocument();
+    expect(screen.getByText(/1 recent emergency visit · 1 abnormal lab/)).toBeInTheDocument();
     // Billing is not shown on the clinical dashboard (minimum necessary).
     expect(screen.queryByText("₹1,23,456")).not.toBeInTheDocument();
     expect(screen.queryByText("Approved claims")).not.toBeInTheDocument();

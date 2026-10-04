@@ -92,6 +92,7 @@ export function PatientTable({
       rowKey={(p) => p.patient_id}
       sort={sort}
       onSort={onSort}
+      fill
     />
   );
 }

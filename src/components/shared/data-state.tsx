@@ -4,6 +4,7 @@ import { useEffect, useState, type ReactNode } from "react";
 import { isAgentUnavailable, isNotFound, isRateLimited, ApiError } from "@/lib/api/errors";
 import { copy } from "@/lib/copy";
 import { Skeleton } from "@/components/ui/skeleton";
+import { HeartbeatLoader } from "./heartbeat-loader";
 import {
   AgentUnavailable,
   EmptyState,
@@ -23,7 +24,7 @@ export interface QueryLike<T> {
 
 interface Props<T> {
   query: QueryLike<T>;
-  /** Skeleton that matches the final layout. */
+  /** Only for small cards and dialogs; leave it out on a page so the loader fills the window. */
   skeleton?: ReactNode;
   isEmpty?: (data: T) => boolean;
   empty?: ReactNode;
@@ -42,8 +43,11 @@ export function SkeletonRows({ rows = 5 }: { rows?: number }) {
   );
 }
 
-/** A progress note after 3 seconds, so a slow warehouse does not look like a hang (05 section 7.3). */
-function Loading({ skeleton }: { skeleton: ReactNode }) {
+/**
+ * With no skeleton the heartbeat loader fills the content window; a caller with a small card or dialog passes a
+ * skeleton instead. The slow-load note is announced to screen readers only.
+ */
+function Loading({ skeleton }: { skeleton?: ReactNode }) {
   const [slow, setSlow] = useState(false);
   useEffect(() => {
     const timer = setTimeout(() => setSlow(true), 3000);
@@ -51,9 +55,8 @@ function Loading({ skeleton }: { skeleton: ReactNode }) {
   }, []);
   return (
     <div role="status" aria-busy="true" aria-live="polite">
-      <span className="sr-only">Loading</span>
-      {skeleton}
-      {slow ? <p className="mt-3 text-sm text-muted-foreground">{copy.loadingSlow}</p> : null}
+      <span className="sr-only">{slow ? copy.loadingSlow : "Loading"}</span>
+      {skeleton ?? <HeartbeatLoader />}
     </div>
   );
 }
@@ -63,7 +66,7 @@ function Loading({ skeleton }: { skeleton: ReactNode }) {
  * and error with retry. Screens render their populated view as children.
  */
 export function DataState<T>({ query, skeleton, isEmpty, empty, notFound, children }: Props<T>) {
-  if (query.isPending) return <Loading skeleton={skeleton ?? <SkeletonRows />} />;
+  if (query.isPending) return <Loading skeleton={skeleton} />;
   if (query.isError) {
     const retry = () => void query.refetch();
     if (isNotFound(query.error))

@@ -131,6 +131,7 @@ export function UsersTable({
       rowKey={(u) => u.user_id}
       sort={sort}
       onSort={onSort}
+      fill
     />
   );
 }

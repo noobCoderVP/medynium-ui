@@ -1,6 +1,6 @@
 "use client";
 
-import { DataState, SkeletonRows } from "@/components/shared/data-state";
+import { DataState } from "@/components/shared/data-state";
 import { Pagination } from "@/components/shared/pagination";
 import { EmptyState } from "@/components/shared/state-panels";
 import { copy } from "@/lib/copy";
@@ -19,7 +19,6 @@ export function TimelineTab({ patientId }: { patientId: string }) {
       />
       <DataState
         query={timeline.query}
-        skeleton={<SkeletonRows rows={6} />}
         isEmpty={(t) => t.total === 0}
         empty={<EmptyState title={copy.empty.timeline} />}
       >
