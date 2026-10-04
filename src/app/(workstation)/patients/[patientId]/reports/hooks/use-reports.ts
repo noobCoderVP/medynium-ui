@@ -28,6 +28,19 @@ export function useReport(patientId: string, reportId: string | null) {
   });
 }
 
+/** The original file as an object URL, fetched only while the preview is open. */
+export function useReportFile(patientId: string, reportId: string, enabled: boolean) {
+  return useQuery({
+    queryKey: [...reportKeys.one(patientId, reportId), "file"],
+    queryFn: async () => {
+      const blob = await (await endpoints.reportFile(patientId, reportId)).blob();
+      return { url: URL.createObjectURL(blob), isImage: blob.type.startsWith("image/") };
+    },
+    enabled,
+    staleTime: 5 * 60_000,
+  });
+}
+
 /** Upload, row decisions, approve and reject. Nothing reaches the record until a doctor approves. */
 export function useReportActions(patientId: string) {
   const queryClient = useQueryClient();

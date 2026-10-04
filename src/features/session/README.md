@@ -6,7 +6,7 @@
 
 **Requirement IDs:** FR-01, FR-02, SEC-01, SEC-04.
 
-**Public surface (`index.ts`):** `useMe`, `useSignOut`, `AdminGate` (doctor with `is_admin` only).
+**Public surface (`index.ts`):** `useMe`, `useIsDoctor` (hides doctor-only write controls from clinic assistants), `useSignOut`, `AdminGate` (doctor with `is_admin` only).
 
 **States handled:** loading skeleton, error with retry, and a plain "your role can't open this page" for non-admins. The server enforces admin access too; the gate is a courtesy, not the boundary.
 

@@ -19,3 +19,5 @@
 **States handled:** nothing searched yet (example searches), loading, empty (the API's message, the snapshot date and "Did you mean" drug buttons), error with retry, rate limited. The index status card shows what is covered, so an empty result is read against real coverage. The search makes no model call, so there is no agent-unavailable state.
 
 **Keyboard:** native form controls; the drug rail is a list of toggle buttons (`aria-pressed`); the whole-section disclosure is a native `<details>`.
+
+**Ask AI card (drug copilot):** above the search, a box that opens the assistant and asks about a medicine or about medicines for a condition ("share details of amoxicillin", "which medicines are used for high blood pressure"). On this screen every assistant question goes to the API's `drug` route (`POST /copilot/ask` with `screen: "knowledge"`), which reads the indexed labels and answers with cited statements. It describes what the labels document and never instructs; the search below stays the manual way to the same sections (FR-20). The card is absent when the assistant is unavailable.

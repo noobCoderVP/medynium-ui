@@ -1,7 +1,8 @@
 "use client";
 
-import { Trash2 } from "lucide-react";
+import { Pin, Trash2 } from "lucide-react";
 import { DataState, SkeletonRows } from "@/components/shared/data-state";
+import { EmptyState } from "@/components/shared/state-panels";
 import { Button } from "@/components/ui/button";
 import { Tooltip } from "@/components/ui/tooltip";
 import { Card, CardBody, CardHeader, CardTitle } from "@/components/ui/card";
@@ -16,27 +17,31 @@ export function PinsCard({ patientId }: { patientId: string }) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>Pinned evidence</CardTitle>
+        <CardTitle>Pinned evidence{query.data ? ` · ${query.data.items.length}` : ""}</CardTitle>
       </CardHeader>
       <CardBody>
         <DataState
           query={query}
           skeleton={<SkeletonRows rows={2} />}
           isEmpty={(list) => list.items.length === 0}
-          empty={<p className="text-sm text-muted-foreground">{copy.empty.pins}</p>}
+          empty={
+            <EmptyState icon={<Pin className="size-6" />} title="No pinned evidence">
+              {copy.empty.pins}
+            </EmptyState>
+          }
         >
           {(list) => (
-            <ul className="divide-y divide-border">
+            <ul className="space-y-2">
               {list.items.map((pin) => (
                 <li
                   key={pin.pin_id}
-                  className="flex items-center justify-between gap-3 py-2 text-sm"
+                  className="flex items-start justify-between gap-3 rounded-lg border border-border bg-surface-2 p-3 text-sm"
                 >
                   <div className="min-w-0">
-                    <p className="font-medium">{pin.label ?? pin.evidence_id}</p>
-                    <p className="text-xs text-muted-foreground">
+                    <p className="font-semibold">{pin.label ?? pin.evidence_id}</p>
+                    {pin.note ? <p className="text-muted-foreground">{pin.note}</p> : null}
+                    <p className="mt-1 text-xs text-muted-foreground">
                       Pinned {formatDateTime(pin.created_at)}
-                      {pin.note ? ` · ${pin.note}` : ""}
                     </p>
                   </div>
                   <div className="flex shrink-0 items-center gap-1">

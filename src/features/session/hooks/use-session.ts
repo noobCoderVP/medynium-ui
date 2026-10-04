@@ -14,6 +14,11 @@ export function useMe() {
   });
 }
 
+/** True only once we know the caller is a doctor; record changes and approvals are doctor-only (the API re-checks). */
+export function useIsDoctor() {
+  return useMe().data?.role === "DOCTOR";
+}
+
 /** Revokes the session, drops every cached read (including answers) and returns to sign-in. */
 export function useSignOut() {
   const client = useQueryClient();

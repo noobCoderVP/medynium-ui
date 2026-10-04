@@ -82,7 +82,13 @@ describe("AgentProvider", () => {
     expect(streamPost).toHaveBeenCalledWith(
       "/copilot/ask",
       expect.objectContaining({
-        body: { question: "What changed?", screen: "patient", patient_id: "P-1", history: [] },
+        body: {
+          question: "What changed?",
+          screen: "patient",
+          patient_id: "P-1",
+          history: [],
+          last_answer_id: null,
+        },
       }),
     );
   });

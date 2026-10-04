@@ -6,7 +6,7 @@ import { DateField, ListToolbar } from "@/components/shared/list-toolbar";
 import { Button } from "@/components/ui/button";
 import type { ListState } from "@/lib/use-list-state";
 import { cn } from "@/lib/utils";
-import { EVENT_LABELS, EVENT_TYPES, type EventType } from "../lib/event-types";
+import { EVENT_LABELS, EVENT_TYPES, type EventType } from "@/lib/event-types";
 
 interface Props {
   list: ListState;

@@ -1,10 +1,12 @@
 import type { DocSection } from "../types";
+import { PLATFORM_SECTIONS } from "./sections-platform";
 import { TRUST_SECTIONS } from "./sections-trust";
 
 /** User-facing guide, written for clinicians. Keep it in step with the screens; it is not developer documentation. */
 export const DOC_SECTIONS: DocSection[] = [
   {
     id: "getting-started",
+    group: "guide",
     title: "Getting started",
     summary: "What Medynium is and how the workspace is laid out.",
     topics: [
@@ -14,7 +16,7 @@ export const DOC_SECTIONS: DocSection[] = [
       },
       {
         title: "Understanding the workspace",
-        body: "The sidebar switches between Dashboard, Patients, Knowledge, Activity log and Documentation (Admin appears for administrators). The assistant panel can be collapsed, and everything it does can also be done by hand.",
+        body: "The sidebar switches between Dashboard, Patients, Pending work, Knowledge, Activity log and Documentation (Admin appears for administrators). Pending work lists what is waiting on you across your patients, most urgent first. The assistant panel can be collapsed, and everything it does can also be done by hand.",
       },
       {
         title: "Your first patient review",
@@ -24,6 +26,7 @@ export const DOC_SECTIONS: DocSection[] = [
   },
   {
     id: "dashboard",
+    group: "guide",
     title: "Dashboard",
     summary: "Your worklist and utilisation at a glance.",
     topics: [
@@ -39,6 +42,7 @@ export const DOC_SECTIONS: DocSection[] = [
   },
   {
     id: "patients",
+    group: "guide",
     title: "Patients",
     summary: "Finding a patient and reading the record.",
     topics: [
@@ -48,7 +52,7 @@ export const DOC_SECTIONS: DocSection[] = [
       },
       {
         title: "Patient 360 and its tabs",
-        body: "Overview, Timeline, Medications, Labs, Claims, Notes and Safety review each show one slice of the record. The header always names the patient and the date the record is current to.",
+        body: "Overview, Timeline, Medications, Labs, Safety, Claims, Notes, Reports and Similar patients each show one slice of the record. On Reports you can upload a lab report or prescription, check what was read from it, and approve the rows that are right; nothing reaches the record until a doctor approves it. The header always names the patient and the date the record is current to.",
       },
       {
         title: "A patient you cannot find",
@@ -58,6 +62,7 @@ export const DOC_SECTIONS: DocSection[] = [
   },
   {
     id: "assistant",
+    group: "guide",
     title: "AI assistant",
     summary: "Asking questions, and what the answers mean.",
     topics: [
@@ -81,6 +86,7 @@ export const DOC_SECTIONS: DocSection[] = [
   },
   {
     id: "knowledge",
+    group: "guide",
     title: "Knowledge",
     summary: "Searching drug labels.",
     topics: [
@@ -96,6 +102,7 @@ export const DOC_SECTIONS: DocSection[] = [
   },
   {
     id: "activity",
+    group: "guide",
     title: "Activity log",
     summary: "Who looked at what, and when.",
     topics: [
@@ -107,6 +114,7 @@ export const DOC_SECTIONS: DocSection[] = [
   },
   {
     id: "admin",
+    group: "guide",
     title: "Administration",
     summary: "For administrators only.",
     topics: [
@@ -116,9 +124,11 @@ export const DOC_SECTIONS: DocSection[] = [
       },
     ],
   },
+  ...PLATFORM_SECTIONS,
   ...TRUST_SECTIONS,
   {
     id: "interface",
+    group: "reference",
     title: "Interface and accessibility",
     summary: "Shortcuts and display options.",
     topics: [

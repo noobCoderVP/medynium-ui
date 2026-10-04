@@ -1,5 +1,5 @@
 import { render, screen } from "@testing-library/react";
-import { describe, expect, it, vi } from "vitest";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { ApiError } from "@/lib/api/errors";
 import { PatientWorkspace } from "./patient-workspace";
 
@@ -10,6 +10,8 @@ vi.mock("next/navigation", () => ({
   usePathname: () => "/patients/P-1",
   useSearchParams: () => new URLSearchParams(),
 }));
+const useBrief = vi.fn();
+vi.mock("../overview/hooks/use-brief", () => ({ useBrief: (id: string) => useBrief(id) }));
 vi.mock("./views-dialog", () => ({ ViewsDialog: () => null }));
 vi.mock("./history-dialog", () => ({ HistoryDialog: () => null }));
 vi.mock("./share-dialog", () => ({ ShareDialog: () => null }));
@@ -74,6 +76,8 @@ const loaded = {
 };
 
 describe("PatientWorkspace", () => {
+  beforeEach(() => useBrief.mockReturnValue({ data: undefined }));
+
   it("shows the header, the tabs and the tab content for an entitled patient", () => {
     usePatient.mockReturnValue(loaded);
     render_();
@@ -86,21 +90,35 @@ describe("PatientWorkspace", () => {
     expect(screen.getByText("tab content")).toBeInTheDocument();
   });
 
-  it("lists the latest medicine, lab and visit changes, with a way into the safety review", () => {
+  it("counts attention from the clinical brief so the two never disagree", () => {
+    usePatient.mockReturnValue(loaded);
+    useBrief.mockReturnValue({
+      data: {
+        attention: {
+          items: [1, 2, 3].map((n) => ({
+            severity: "high",
+            kind: `k${n}`,
+            title: `Item ${n}`,
+            detail: null,
+            date: null,
+            source: { type: "lab", id: null, tab: "labs", query: {} },
+          })),
+        },
+      },
+    });
+    render_();
+    expect(screen.getByRole("button", { name: /3 attention items/ })).toBeInTheDocument();
+  });
+
+  it("shows attention as one compact chip and keeps More for the secondary tabs", () => {
     usePatient.mockReturnValue(loaded);
     render_();
-    const strip = screen.getByRole("region", { name: "Recent changes" });
-    expect(strip).toHaveTextContent("Updated: Metformin dose raised");
-    expect(strip).not.toHaveTextContent("Claim");
-    const attention = screen.getByRole("region", { name: "Needs attention" });
-    expect(attention).toHaveTextContent("1 item needs attention");
-    expect(attention).toHaveTextContent("HbA1c");
-    expect(attention).toHaveTextContent("Ref 4–5.6");
-    expect(attention).not.toHaveTextContent("Sodium");
-    expect(screen.getByRole("link", { name: /Review safety/ })).toHaveAttribute(
-      "href",
-      "/patients/P-1?tab=safety",
-    );
+    expect(screen.getByRole("button", { name: /1 attention item/ })).toBeInTheDocument();
+    expect(screen.queryByRole("region", { name: "Needs attention" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("region", { name: "Recent changes" })).not.toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /More/ })).toBeInTheDocument();
+    // Below lg the secondary tabs sit under More (hidden by class); from lg up every section is a tab.
+    expect(screen.getByRole("link", { name: "Claims" }).closest("li")).toHaveClass("hidden");
   });
 
   it("shows allergies on the patient identity line, most severe first as given", () => {

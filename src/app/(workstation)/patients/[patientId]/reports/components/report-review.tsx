@@ -1,8 +1,11 @@
 "use client";
 
+import { Check, X } from "lucide-react";
 import { useState } from "react";
+import { StatusChip } from "@/components/shared/chips";
 import { DataState } from "@/components/shared/data-state";
 import { Button } from "@/components/ui/button";
+import { useIsDoctor } from "@/features/session";
 import type { ReportRow } from "@/lib/api/types";
 import { errorText, useReport, useReportActions } from "../hooks/use-reports";
 
@@ -14,6 +17,22 @@ const FLAGS: Record<string, string> = {
   already_listed: "Already on the medicine list",
 };
 
+const ROW_LABEL: Record<string, string> = {
+  PENDING: "Needs review",
+  ACCEPTED: "Accepted",
+  EDITED: "Edited",
+  REJECTED: "Rejected",
+  APPROVED: "Approved",
+};
+
+const ROW_TONE: Record<string, "ok" | "warn" | "crit" | "info" | "muted"> = {
+  PENDING: "warn",
+  ACCEPTED: "ok",
+  EDITED: "info",
+  REJECTED: "crit",
+  APPROVED: "ok",
+};
+
 const show = (fields: ReportRow["fields"]) =>
   Object.entries(fields)
     .filter(([, v]) => v !== null && v !== "")
@@ -23,10 +42,12 @@ const show = (fields: ReportRow["fields"]) =>
 function Row({
   row,
   busy,
+  canDecide,
   onDecide,
 }: {
   row: ReportRow;
   busy: boolean;
+  canDecide: boolean;
   onDecide: (decision: "accept" | "reject") => void;
 }) {
   const done = row.status === "APPROVED" || row.status === "REJECTED";
@@ -47,17 +68,32 @@ function Row({
       {row.flags.length > 0 ? (
         <p className="text-warn">{row.flags.map((f) => FLAGS[f] ?? f).join("; ")}</p>
       ) : null}
-      <div className="flex items-center gap-2">
-        <span className="text-xs tracking-wide text-muted-foreground uppercase">{row.status}</span>
-        {done ? null : (
-          <>
-            <Button size="xs" variant="outline" disabled={busy} onClick={() => onDecide("accept")}>
-              Accept
+      <div className="flex flex-wrap items-center gap-2 pt-1">
+        <StatusChip tone={ROW_TONE[row.status] ?? "muted"}>
+          {ROW_LABEL[row.status] ?? row.status}
+        </StatusChip>
+        {done || !canDecide ? null : (
+          <div className="ml-auto flex gap-2">
+            <Button
+              size="sm"
+              variant="outline"
+              disabled={busy || row.status === "ACCEPTED"}
+              onClick={() => onDecide("accept")}
+              className="border-ok/30 bg-ok-soft text-ok hover:bg-ok/20 hover:text-ok dark:bg-ok-soft dark:hover:bg-ok/20"
+            >
+              <Check aria-hidden="true" />
+              {row.status === "ACCEPTED" ? "Accepted" : "Accept"}
             </Button>
-            <Button size="xs" variant="outline" disabled={busy} onClick={() => onDecide("reject")}>
+            <Button
+              size="sm"
+              variant="destructive"
+              disabled={busy}
+              onClick={() => onDecide("reject")}
+            >
+              <X aria-hidden="true" />
               Reject
             </Button>
-          </>
+          </div>
         )}
       </div>
     </li>
@@ -68,6 +104,7 @@ function Row({
 export function ReportReview({ patientId, reportId }: { patientId: string; reportId: string }) {
   const query = useReport(patientId, reportId);
   const { decide, approve, reject } = useReportActions(patientId);
+  const isDoctor = useIsDoctor();
   const [confirm, setConfirm] = useState(false);
   const error = decide.error ?? approve.error ?? reject.error;
   return (
@@ -98,6 +135,7 @@ export function ReportReview({ patientId, reportId }: { patientId: string; repor
                   key={row.row_id}
                   row={row}
                   busy={decide.isPending}
+                  canDecide={isDoctor}
                   onDecide={(decision) =>
                     decide.mutate({ reportId, rowId: row.row_id, decision, version: row.version })
                   }
@@ -109,18 +147,24 @@ export function ReportReview({ patientId, reportId }: { patientId: string; repor
                 {errorText(error)}
               </p>
             ) : null}
-            {report.status === "EXTRACTED" ? (
-              <div className="flex gap-2 p-3">
+            {report.status === "EXTRACTED" && !isDoctor ? (
+              <p role="note" className="p-3 text-sm text-muted-foreground">
+                Only a doctor can accept rows and approve this report. You can read what was
+                extracted.
+              </p>
+            ) : null}
+            {report.status === "EXTRACTED" && isDoctor ? (
+              <div className="flex flex-wrap gap-2 border-t border-border bg-muted/30 p-3">
                 <Button
                   size="sm"
-                  disabled={approve.isPending}
+                  loading={approve.isPending}
                   onClick={() => approve.mutate({ reportId, confirmIdentity: confirm })}
                 >
                   {approve.isPending ? "Saving…" : "Approve accepted rows"}
                 </Button>
                 <Button
                   size="sm"
-                  variant="outline"
+                  variant="destructive"
                   disabled={reject.isPending}
                   onClick={() => reject.mutate(reportId)}
                 >

@@ -1,5 +1,6 @@
 export { AgentActivity } from "./components/agent-activity";
 export { AgentPanel } from "./components/agent-panel";
+export { AskButton } from "./components/ask-button";
 export { AskForm } from "./components/ask-form";
 export { PanelToggle } from "./components/panel-toggle";
-export { AgentProvider, useAgent } from "./hooks/agent-context";
+export { AgentProvider, useAgent, useOptionalAgent } from "./hooks/agent-context";

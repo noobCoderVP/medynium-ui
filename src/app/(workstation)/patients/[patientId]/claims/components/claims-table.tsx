@@ -1,3 +1,4 @@
+import { DoctorLine } from "@/components/shared/doctor-line";
 import { StatusChip } from "@/components/shared/chips";
 import { DataTable, type Column } from "@/components/shared/data-table";
 import { formatDate, formatMoney } from "@/lib/format";
@@ -19,14 +20,22 @@ const columns: Column<Claim>[] = [
   {
     key: "service",
     header: "Service",
-    width: "24%",
+    width: "22%",
     minWidth: "6rem",
     cell: (c) => c.service ?? "–",
   },
   {
+    key: "doctor",
+    header: "Doctor",
+    width: "16%",
+    minWidth: "6rem",
+    mobile: "secondary",
+    cell: (c) => (c.doctor ? <DoctorLine doctor={c.doctor} /> : "–"),
+  },
+  {
     key: "encounter",
     header: "Encounter",
-    width: "20%",
+    width: "12%",
     minWidth: "6rem",
     mobile: "secondary",
     cell: (c) =>
@@ -81,6 +90,7 @@ export function ClaimsTable({
 }) {
   return (
     <DataTable
+      fill
       caption="Claims"
       columns={columns}
       rows={claims}

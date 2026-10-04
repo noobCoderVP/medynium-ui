@@ -48,10 +48,23 @@ function Panel({
 }
 
 /** Says why it is empty and what to do next (state matrix, 05 section 7.3). */
-export function EmptyState({ title, children }: { title: string; children?: ReactNode }) {
+export function EmptyState({
+  title,
+  children,
+  icon,
+  action,
+}: {
+  title: string;
+  children?: ReactNode;
+  /** Defaults to an inbox; pass the page's own icon (for example a file for reports). */
+  icon?: ReactNode;
+  /** The one next step, usually a button. */
+  action?: ReactNode;
+}) {
   return (
-    <Panel icon={<Inbox className="size-6" />} title={title}>
+    <Panel icon={icon ?? <Inbox className="size-6" />} title={title}>
       {children}
+      {action ? <div className="mt-3">{action}</div> : null}
     </Panel>
   );
 }

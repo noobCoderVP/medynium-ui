@@ -15,7 +15,7 @@ export function NoteReader({ note }: { note: NoteDetail }) {
   ].filter(Boolean);
   return (
     <Card aria-labelledby="note-title" className="overflow-hidden">
-      <header className="space-y-1.5 border-b border-border bg-muted/40 px-5 py-4">
+      <header className="space-y-1.5 border-b border-border bg-surface-2 px-5 py-4">
         <h2 id="note-title" className="text-base font-semibold">
           {note.title}
         </h2>
@@ -27,9 +27,7 @@ export function NoteReader({ note }: { note: NoteDetail }) {
           ))}
         </p>
       </header>
-      <div className="max-w-prose px-5 py-5 text-sm leading-relaxed whitespace-pre-wrap">
-        {note.body}
-      </div>
+      <div className="px-5 py-5 text-sm leading-relaxed whitespace-pre-wrap">{note.body}</div>
     </Card>
   );
 }

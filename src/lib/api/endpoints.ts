@@ -1,9 +1,15 @@
-import { del, get, patch, post, put } from "./client";
+import { del, get, patch, post, put, request } from "./client";
 import type {
   ActionResponse,
   ArchiveBody,
   AuditPage,
   Briefing,
+  AiMetrics,
+  Brief,
+  PatientSummary,
+  ProposalResult,
+  BriefSummary,
+  ChangeSet,
   Claims,
   ColleagueList,
   HistoryList,
@@ -36,6 +42,7 @@ import type {
   InvitePreview,
   KnowledgeStatus,
   LabPage,
+  LabReviewed,
   LabTrend,
   LoginResponse,
   Me,
@@ -95,9 +102,16 @@ export const endpoints = {
   briefing: () => get<Briefing>("/dashboard/briefing"),
   patients: (params: Params) => get<PatientPage>(`/patients${qs(params)}`),
   patient: (id: string) => get<Overview>(pid(id)),
+  patientSummary: (id: string) => get<PatientSummary>(`${pid(id)}/summary`),
+  refreshPatientSummary: (id: string) => post<PatientSummary>(`${pid(id)}/summary/refresh`),
+  brief: (id: string) => get<Brief>(`${pid(id)}/brief`),
+  briefSummary: (id: string) => get<BriefSummary>(`${pid(id)}/brief/summary`),
+  changes: (id: string, from: string) => get<ChangeSet>(`${pid(id)}/changes${qs({ from })}`),
   medications: (id: string, params: Params) =>
     get<MedicationPage>(`${pid(id)}/medications${qs(params)}`),
   labs: (id: string, params: Params) => get<LabPage>(`${pid(id)}/labs${qs(params)}`),
+  reviewLab: (id: string, labId: string) =>
+    post<LabReviewed>(`${pid(id)}/labs/${encodeURIComponent(labId)}/review`),
   labTrend: (id: string, code: string) =>
     get<LabTrend>(`${pid(id)}/labs/${encodeURIComponent(code)}/trend`),
   timeline: (id: string, params: Params) => get<Timeline>(`${pid(id)}/timeline${qs(params)}`),
@@ -107,6 +121,7 @@ export const endpoints = {
     post<{ sent: boolean }>(`${pid(id)}/share`, body),
   note: (id: string, noteId: string) =>
     get<NoteDetail>(`${pid(id)}/notes/${encodeURIComponent(noteId)}`),
+  aiMetrics: (days: number) => get<AiMetrics>(`/audit/summary${qs({ days })}`),
   history: (id: string) => get<HistoryList>(`${pid(id)}/history${qs({ limit: 50 })}`),
   pins: (id: string) => get<PinList>(`${pid(id)}/pins`),
   addPin: (id: string, body: { answer_id: string; evidence_id: string; note?: string }) =>
@@ -132,6 +147,10 @@ export const endpoints = {
   // agent and evidence
   evidence: (answerId: string) =>
     get<EvidenceResponse>(`/evidence/${encodeURIComponent(answerId)}`),
+  approveProposal: (id: string) =>
+    post<ProposalResult>(`/agent/proposals/${encodeURIComponent(id)}/approve`),
+  discardProposal: (id: string) =>
+    post<{ status: string }>(`/agent/proposals/${encodeURIComponent(id)}/discard`),
   action: (action: string, params: Record<string, unknown>) =>
     post<ActionResponse>("/agent/actions", { action, params }),
 
@@ -158,10 +177,11 @@ export const endpoints = {
   pendingSummary: () => get<PendingSummary>("/pending/summary"),
   similar: (id: string, params: Params) => get<SimilarResponse>(`${pid(id)}/similar${qs(params)}`),
 
-  // reports: upload, review, approve
   reports: (id: string) => get<ReportList>(`${pid(id)}/reports`),
   report: (id: string, reportId: string) =>
     get<ReportDetail>(`${pid(id)}/reports/${encodeURIComponent(reportId)}`),
+  reportFile: (id: string, reportId: string) =>
+    request(`${pid(id)}/reports/${encodeURIComponent(reportId)}/file`, { accept: "*/*" }),
   uploadReport: (id: string, file: File) =>
     post<ReportSummary>(`${pid(id)}/reports`, file, {
       "Content-Type": file.type || "application/octet-stream",
@@ -184,7 +204,6 @@ export const endpoints = {
   myDrugRequests: () => get<DrugRequestList>("/knowledge/requests"),
   coverage: () => get<Coverage>("/admin/knowledge/coverage"),
   goldenRuns: () => get<GoldenRunList>("/admin/golden-runs"),
-
   // admin
   healthDetails: () => get<HealthDetails>("/health/details"),
   users: (params: Params) => get<UserPage>(`/admin/users${qs(params)}`),

@@ -38,6 +38,11 @@ export function useAgent(): Agent {
   return value;
 }
 
+/** For optional entry points (an Ask button): null outside the provider, so the host page never depends on it. */
+export function useOptionalAgent(): Agent | null {
+  return useContext(Context);
+}
+
 function readOpen(): boolean {
   try {
     const stored = localStorage.getItem(STORAGE_KEY);
@@ -93,6 +98,7 @@ export function AgentProvider({ children }: { children: ReactNode }) {
       if (!text || controller.current) return;
       const id = `t${++counter.current}`;
       const history = turns.slice(-2).map((t) => t.question);
+      const lastAnswerId = turns.at(-1)?.answers.at(-1)?.answer_id ?? null;
       const abort = new AbortController();
       controller.current = abort;
       setRunning(true);
@@ -116,6 +122,7 @@ export function AgentProvider({ children }: { children: ReactNode }) {
           screen: scope.current.screen,
           patient_id: scope.current.patientId,
           history,
+          last_answer_id: lastAnswerId,
         },
         signal: abort.signal,
         onEvent,

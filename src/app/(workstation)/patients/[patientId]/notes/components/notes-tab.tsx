@@ -1,5 +1,6 @@
 "use client";
 
+import { TableSkeleton } from "@/components/shared/skeletons";
 import { DataState, SkeletonRows } from "@/components/shared/data-state";
 import { FilterField, ListToolbar } from "@/components/shared/list-toolbar";
 import { Pagination } from "@/components/shared/pagination";
@@ -19,7 +20,7 @@ export function NotesTab({ patientId }: { patientId: string }) {
   const notes = useNotes(patientId);
   const { list, note, noteId, open } = notes;
   return (
-    <div className="space-y-3">
+    <div data-fit className="flex flex-col gap-3 lg:min-h-0 lg:flex-1">
       <ListToolbar
         search={{ value: notes.text, onChange: notes.setText, label: "Search notes" }}
         sort={{
@@ -44,17 +45,20 @@ export function NotesTab({ patientId }: { patientId: string }) {
       </ListToolbar>
       <DataState
         query={list}
+        skeleton={<TableSkeleton />}
         isEmpty={(page) => page.total === 0}
         empty={<EmptyState title={copy.empty.notes} />}
       >
         {(page) => (
-          <div className="grid gap-4 lg:grid-cols-[minmax(0,23rem)_minmax(0,1fr)] lg:items-start">
+          <div className="grid gap-4 lg:min-h-0 lg:flex-1 lg:grid-cols-[minmax(17.5rem,20rem)_minmax(0,1fr)]">
             <section
               aria-label="Notes"
-              className="overflow-hidden rounded-xl border border-border bg-card shadow-sm"
+              className="flex flex-col overflow-hidden rounded-xl border border-border bg-card shadow-sm lg:min-h-0"
             >
-              <NoteList notes={page.items} selected={noteId} onOpen={open} />
-              <div className="border-t border-border bg-muted/40 px-3 py-2.5">
+              <div className="min-h-0 flex-1 overflow-y-auto">
+                <NoteList notes={page.items} selected={noteId} onOpen={open} />
+              </div>
+              <div className="border-t border-border bg-surface-2 px-3 py-2.5">
                 <Pagination
                   noun="notes"
                   total={page.total}
@@ -65,7 +69,7 @@ export function NotesTab({ patientId }: { patientId: string }) {
                 />
               </div>
             </section>
-            <div aria-live="polite" className="lg:sticky lg:top-0">
+            <div aria-live="polite" className="lg:min-h-0 lg:overflow-y-auto">
               {noteId ? (
                 <DataState query={note} skeleton={<SkeletonRows rows={4} />}>
                   {(detail) => <NoteReader note={detail} />}

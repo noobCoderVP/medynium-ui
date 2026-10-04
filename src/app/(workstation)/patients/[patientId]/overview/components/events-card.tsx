@@ -1,7 +1,9 @@
 import Link from "next/link";
+import { DoctorLine } from "@/components/shared/doctor-line";
 import { RowList, Row } from "@/components/shared/row-list";
 import { Card, CardBody, CardHeader, CardTitle } from "@/components/ui/card";
-import { formatDate } from "@/lib/format";
+import { formatShortDate } from "@/lib/format";
+import { recordHref } from "@/lib/event-types";
 import type { OverviewEvent } from "../types";
 
 export function EventsCard({ patientId, events }: { patientId: string; events: OverviewEvent[] }) {
@@ -23,12 +25,23 @@ export function EventsCard({ patientId, events }: { patientId: string; events: O
           <RowList>
             {events.map((e) => (
               <Row key={e.event_id}>
-                <p className="font-medium">{e.title}</p>
-                <p className="text-xs text-muted-foreground">
-                  {formatDate(e.date)}
-                  {e.summary ? ` · ${e.summary}` : ""} ·{" "}
-                  <span className="font-mono">{e.record.table}</span>
-                </p>
+                <div className="flex gap-3">
+                  <p className="w-14 shrink-0 text-xs font-semibold text-muted-foreground uppercase">
+                    {formatShortDate(e.date)}
+                  </p>
+                  <div className="min-w-0">
+                    <Link
+                      href={recordHref(patientId, e)}
+                      className="font-medium hover:text-primary hover:underline"
+                    >
+                      {e.title}
+                    </Link>
+                    {e.summary ? (
+                      <p className="text-xs text-muted-foreground">{e.summary}</p>
+                    ) : null}
+                    <DoctorLine doctor={e.doctor} />
+                  </div>
+                </div>
               </Row>
             ))}
           </RowList>

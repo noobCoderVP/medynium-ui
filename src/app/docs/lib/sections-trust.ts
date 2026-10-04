@@ -4,6 +4,7 @@ import type { DocSection } from "../types";
 export const TRUST_SECTIONS: DocSection[] = [
   {
     id: "how-answers-work",
+    group: "trust",
     title: "How answers are produced",
     summary: "What the assistant reads, what it checks, and what it will not do.",
     topics: [
@@ -31,12 +32,17 @@ export const TRUST_SECTIONS: DocSection[] = [
   },
   {
     id: "security",
+    group: "trust",
     title: "Security and access",
     summary: "Who can see what, and what is recorded.",
     topics: [
       {
         title: "Patient access",
         body: "Access is enforced inside the database, per user, not only by the screens. You can open only patients assigned to you. An assistant can only be assigned patients their supervising doctor holds. A patient you cannot open looks identical to one that does not exist.",
+      },
+      {
+        title: "Roles",
+        body: "Doctors and clinic assistants can both read their patients, ask the assistant, run safety reviews, raise findings, upload reports and share summaries. Only doctors can register patients, add or change medicines and other record entries, accept and approve what was read from a report, mark an abnormal lab reviewed, and approve a change the assistant prepared. Administrators are doctors with the Admin flag; only they see the Admin section. The server enforces every one of these rules whatever the screen shows.",
       },
       {
         title: "What is recorded",
@@ -54,12 +60,13 @@ export const TRUST_SECTIONS: DocSection[] = [
   },
   {
     id: "limits",
+    group: "trust",
     title: "Limits and known gaps",
     summary: "What Medynium does not cover yet.",
     topics: [
       {
         title: "Data",
-        body: "All data here is synthetic. The record is loaded in batches by an administrator; you cannot yet add or correct patients, medicines, results or allergies in the app. An empty allergy list means none are recorded, not that none are known.",
+        body: "All data here is synthetic. The bulk of the record is loaded in batches by an administrator. Doctors can register patients and add medicines in the app, and approve entries read from uploaded reports; clinic assistants have read access only. An empty allergy list means none are recorded, not that none are known.",
       },
       {
         title: "Evidence",
@@ -73,6 +80,7 @@ export const TRUST_SECTIONS: DocSection[] = [
   },
   {
     id: "faq",
+    group: "trust",
     title: "Frequently asked questions",
     summary: "Short answers.",
     topics: [
@@ -90,7 +98,7 @@ export const TRUST_SECTIONS: DocSection[] = [
       },
       {
         title: "Can the assistant change the record?",
-        body: "No. It can open a patient, show a timeline or lab trend, run the safety review and pin evidence. Nothing else.",
+        body: "Not by itself. It can open a patient, show a timeline or lab trend, run the safety review and pin evidence. For a doctor it can also prepare a change to the record, but nothing is saved until the doctor approves it. For a clinic assistant it declines such requests.",
       },
     ],
   },

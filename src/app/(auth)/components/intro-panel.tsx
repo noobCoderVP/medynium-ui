@@ -9,6 +9,8 @@ import {
   Stethoscope,
   type LucideIcon,
 } from "lucide-react";
+import { SnowflakeLogo } from "@/components/shared/snowflake-logo";
+import { SNOWFLAKE_FEATURES } from "@/lib/snowflake-features";
 import { env } from "@/lib/env";
 
 const SOURCES: { label: string; icon: LucideIcon }[] = [
@@ -25,15 +27,15 @@ const TAGS = [
 ];
 
 const PILLARS: { title: string; text: string; icon: LucideIcon }[] = [
-  { title: "Governed access", text: "You only see patients you are allowed to.", icon: Lock },
+  { title: "Governed access", text: "Only see patients you're authorized to access.", icon: Lock },
   {
     title: "Evidence on every answer",
-    text: "Each statement shows where it came from.",
+    text: "Every insight traces back to its source.",
     icon: ShieldCheck,
   },
   {
-    title: "You stay in control",
-    text: "Everything the assistant does has a manual control.",
+    title: "Human controlled",
+    text: "AI recommendations remain under user control.",
     icon: Sparkles,
   },
 ];
@@ -43,13 +45,13 @@ export function IntroPanel() {
   return (
     <aside
       aria-label={`About ${env.NEXT_PUBLIC_APP_NAME}`}
-      className="hidden flex-col justify-center gap-8 border-r border-border bg-surface-2 px-12 py-10 lg:flex xl:px-16"
+      className="hidden flex-col justify-center overflow-y-auto border-r border-border bg-surface-2 px-12 py-8 lg:flex xl:px-16"
     >
-      <div className="max-w-xl space-y-8">
+      <div className="mx-auto w-full max-w-3xl space-y-6 [@media(max-height:760px)]:space-y-4">
         <div className="flex items-center gap-3">
           <span
             aria-hidden="true"
-            className="flex size-11 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-sm"
+            className="flex size-10 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-sm"
           >
             <HeartPulse className="size-5" />
           </span>
@@ -59,21 +61,24 @@ export function IntroPanel() {
         </div>
 
         <div className="space-y-2">
-          <h2 className="font-heading text-3xl font-bold tracking-tight text-heading xl:text-4xl">
+          <h2 className="font-heading text-3xl font-bold tracking-tight text-heading xl:text-[2.5rem] xl:leading-tight">
             The whole patient, in one view.
           </h2>
-          <p className="text-base text-muted-foreground">
+          <p className="max-w-[550px] text-base text-muted-foreground">
             Records from every system, joined and explained, with an assistant that shows its
             evidence.
           </p>
         </div>
 
-        <figure aria-hidden="true" className="space-y-3">
+        <figure
+          aria-hidden="true"
+          className="mx-auto max-w-xl space-y-2 [@media(max-height:900px)]:hidden"
+        >
           <div className="grid grid-cols-4 gap-2">
             {SOURCES.map(({ label, icon: Icon }) => (
               <div
                 key={label}
-                className="flex flex-col items-center gap-1.5 rounded-lg border border-border bg-card px-2 py-3 text-xs font-medium text-muted-foreground"
+                className="flex flex-col items-center gap-1.5 rounded-lg border border-border bg-card px-2 py-2.5 text-xs font-medium text-muted-foreground"
               >
                 <Icon className="size-5 text-primary" />
                 {label}
@@ -127,7 +132,7 @@ export function IntroPanel() {
           </div>
         </figure>
 
-        <ul className="grid gap-4">
+        <ul className="grid gap-3 lg:grid-cols-3">
           {PILLARS.map(({ title, text, icon: Icon }) => (
             <li key={title} className="flex items-start gap-3">
               <span
@@ -136,13 +141,44 @@ export function IntroPanel() {
               >
                 <Icon className="size-4" />
               </span>
-              <p className="text-sm">
-                <span className="font-semibold">{title}.</span>{" "}
+              <p className="text-sm leading-snug">
+                <span className="block font-semibold">{title}</span>
                 <span className="text-muted-foreground">{text}</span>
               </p>
             </li>
           ))}
         </ul>
+
+        <section
+          aria-labelledby="built-on-snowflake"
+          className="space-y-4 rounded-2xl border border-[#29B5E8]/25 bg-gradient-to-br from-[#29B5E8]/10 via-card to-card p-5 shadow-sm"
+        >
+          <div className="flex items-center gap-4">
+            <SnowflakeLogo className="size-14" />
+            <div className="space-y-0.5">
+              <h3
+                id="built-on-snowflake"
+                className="font-heading text-lg font-bold tracking-wide text-heading uppercase"
+              >
+                Powered by Snowflake
+              </h3>
+              <p className="text-sm font-medium text-muted-foreground">
+                Data. Intelligence. Evidence. Governance.
+              </p>
+            </div>
+          </div>
+          <ul className="grid grid-cols-2 gap-2 lg:grid-cols-3">
+            {SNOWFLAKE_FEATURES.map((feature) => (
+              <li
+                key={feature.name}
+                className="rounded-lg border border-border bg-card/90 px-3 py-2"
+              >
+                <p className="text-sm font-semibold text-foreground">{feature.name}</p>
+                <p className="text-xs text-muted-foreground">{feature.tagline}</p>
+              </li>
+            ))}
+          </ul>
+        </section>
 
         <p className="text-xs text-muted-foreground">
           Synthetic data only. Decision support, not diagnosis.

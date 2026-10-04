@@ -1,4 +1,4 @@
-import { ArrowDown, ArrowUp, Minus } from "lucide-react";
+import { DoctorLine } from "@/components/shared/doctor-line";
 import { StatusChip, type ChangeKind } from "@/components/shared/chips";
 import { DataTable, type Column } from "@/components/shared/data-table";
 import { Button } from "@/components/ui/button";
@@ -37,6 +37,19 @@ export function labChange(lab: LabLatest): ChangeKind | null {
   return null;
 }
 
+/** Slope from the previous value to the latest. Decorative: the words beside it say the same. */
+function MiniTrend({ kind }: { kind: ChangeKind | null }) {
+  const y1 = kind === "increased" ? 11 : kind === "decreased" ? 3 : 7;
+  const y2 = kind === "increased" ? 3 : kind === "decreased" ? 11 : 7;
+  return (
+    <svg viewBox="0 0 28 14" className="h-3.5 w-7 text-muted-foreground" aria-hidden="true">
+      <line x1="2" y1={y1} x2="26" y2={y2} stroke="currentColor" strokeWidth="1.5" />
+      <circle cx="2" cy={y1} r="1.5" fill="currentColor" opacity="0.5" />
+      <circle cx="26" cy={y2} r="2.5" fill="currentColor" />
+    </svg>
+  );
+}
+
 export const LAB_SORTS = [
   { key: "test", label: "Test" },
   { key: "date", label: "Date" },
@@ -64,16 +77,19 @@ export function LabsTable({
       minWidth: "7rem",
       sortKey: "test",
       cell: (l) => (
-        <Button
-          variant="link"
-          size="sm"
-          aria-pressed={l.code === selected}
-          aria-label={`Show trend for ${l.test}`}
-          onClick={() => onSelect(l.code)}
-          className="h-auto p-0 font-medium"
-        >
-          {l.test}
-        </Button>
+        <div>
+          <Button
+            variant="link"
+            size="sm"
+            aria-pressed={l.code === selected}
+            aria-label={`Show trend for ${l.test}`}
+            onClick={() => onSelect(l.code)}
+            className="h-auto p-0 font-medium"
+          >
+            {l.test}
+          </Button>
+          <DoctorLine doctor={l.doctor} className="block" />
+        </div>
       ),
     },
     {
@@ -84,7 +100,7 @@ export function LabsTable({
       sortKey: "value",
       align: "right",
       cell: (l) => (
-        <span className={cn("tabular-nums", isAbnormal(l) ? "font-bold text-crit" : "font-medium")}>
+        <span className={cn("tabular-nums", isAbnormal(l) ? "font-bold" : "font-medium")}>
           {formatValue(l.value, l.unit)}
         </span>
       ),
@@ -97,13 +113,12 @@ export function LabsTable({
       cell: (l) => {
         const kind = labChange(l);
         if (!l.previous) return <span className="text-muted-foreground">–</span>;
-        const Icon = kind === "increased" ? ArrowUp : kind === "decreased" ? ArrowDown : Minus;
         const word =
           kind === "increased" ? "Increased" : kind === "decreased" ? "Decreased" : "No change";
         return (
           <span className="inline-flex flex-col leading-tight tabular-nums">
-            <span className="inline-flex items-center gap-1">
-              <Icon className="size-3.5" aria-hidden="true" />
+            <span className="inline-flex items-center gap-1.5">
+              <MiniTrend kind={kind} />
               <span className="sr-only">{word} from </span>
               {formatValue(l.previous.value)}
             </span>
@@ -138,7 +153,9 @@ export function LabsTable({
       minWidth: "5rem",
       cell: (l) =>
         l.flag && l.flag !== "NORMAL" ? (
-          <StatusChip tone="crit">{l.flag === "HIGH" ? "High" : "Low"}</StatusChip>
+          <StatusChip tone={l.flag === "HIGH" ? "crit" : "info"}>
+            {l.flag === "HIGH" ? "↑ High" : "↓ Low"}
+          </StatusChip>
         ) : (
           <span className="sr-only">Normal</span>
         ),
@@ -146,6 +163,7 @@ export function LabsTable({
   ];
   return (
     <DataTable
+      fill
       caption="Latest result per test"
       columns={columns}
       rows={rows}

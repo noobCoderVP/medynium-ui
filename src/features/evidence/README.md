@@ -8,6 +8,8 @@
 
 **Public surface (`index.ts`):** `AnswerView`, `EvidenceDrawer`, `RefButton`.
 
+**In words, with proof (phase C):** under each statement the records and label sections it rests on are shown as text ("eGFR 42 mL/min on 14 Sep 2026", "Lisinopril label · Warnings and precautions"), each with a link that opens the real source (the lab on its trend, the note, the label with its citation) and a Details button for the panel. Ids such as P1 and S2 stay inside the panel and are the fallback only if the evidence cannot be read. The gap block reads "What I checked / What I could not check".
+
 **URL contract:** `?why=<answer id>&stmt=<statement id>&ref=<evidence id>`. `RefButton` pushes it, the drawer reads it, closing removes it. Pages and the agent panel never pass evidence through props.
 
 **Rules it carries:**

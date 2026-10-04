@@ -28,6 +28,8 @@
 
 **Keyboard:** the tab bar is a `<nav>` of links with `aria-current="page"`; every tab control is native or a named button.
 
-**Needs attention and what changed:** `components/recent-changes.tsx` sits under the header and lists labs outside their reference range (Requires review) and the latest medicine, lab and visit events from the overview already loaded (no extra call), each as a `ChangeChip` (icon and word, never colour alone) linking to its record, plus a Review safety link. Hidden when there are none.
+**Workspace shell:** `components/patient-workspace.tsx` renders one sticky block (compact `patient-header.tsx` plus `tab-bar.tsx`); the header collapses to an identity line on scroll. Attention is a single clickable chip (`attention-chip.tsx`) that lists flagged labs (recorded values only, no model) and links to the safety review. Five primary tabs plus "More" (Claims, Notes, Reports, Similar patients). The content region is `flex-1 min-h-0`, so pages can fill the viewport. Surface tokens: background (shell), surface (white workspace), surface-2 (tinted secondary), card.
 
 **Tabs added in the production-readiness work:** Reports (upload, review, approve), Similar patients. See `reports/README.md` and `similar/README.md`. The Medications tab has an Add medicine dialog (doctors).
+
+**Polish (phase 4):** hover and focus states on every link, row and card; `Alt+1..9` opens a section, `/` focuses the page search, Up and Down move through the notes list; shaped loading skeletons (`components/shared/skeletons.tsx`) for the workspace, tables and cards; Labs shows the trend beside the table on wide screens, with a slope marker per row; "Explain these results" and "Explain trend" (`AskButton` from the agent panel) open the assistant with a ready question and render nothing when it is unavailable, so every page works without them. Record links come from `src/lib/event-types.ts`.

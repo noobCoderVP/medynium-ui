@@ -11,18 +11,16 @@ import { spring } from "@/lib/motion";
 import { cn } from "@/lib/utils";
 import { TABS, type TabId } from "../lib/tabs";
 
-const SHOW = { 1: "", 2: "hidden lg:block", 3: "hidden xl:block" } as const;
-const HIDE_IN_MENU = { 1: "hidden", 2: "lg:hidden", 3: "xl:hidden" } as const;
-
 /**
- * Patient sections as links to ?tab=, sticky under the patient context. Every tab is a link at 1280 px and up; below
- * that the later ones move under "More" (1024 px keeps five, 768 px keeps two), so More appears only when it is
- * needed and every view stays linkable. On a phone the same destinations are one native menu.
+ * Patient sections as links to ?tab=, under the patient context. Five primary tabs plus "More" (Claims, Notes,
+ * Reports, Similar patients) on medium widths; from lg up every section is a tab and "More" is hidden. On a phone
+ * the same destinations are one native menu.
  */
 export function TabBar({ patientId, active }: { patientId: string; active: TabId }) {
   const router = useRouter();
   const id = useId();
   const list = useRef<HTMLUListElement>(null);
+  const moreActive = TABS.some((tab) => !tab.primary && tab.id === active);
   const href = (tab: TabId) => `/patients/${encodeURIComponent(patientId)}?tab=${tab}`;
 
   // Alt + 1..9 opens the nth section from anywhere on the page, except while typing in a field.
@@ -58,7 +56,7 @@ export function TabBar({ patientId, active }: { patientId: string; active: TabId
     items[next]?.focus();
   };
   return (
-    <div className="sticky top-0 z-20 -mx-4 bg-surface px-4 md:-mx-6 md:px-6 2xl:-mx-8 2xl:px-8">
+    <div className="px-4">
       <div className="md:hidden">
         <label htmlFor={id} className="mb-1 block text-xs font-medium text-muted-foreground">
           Section
@@ -71,10 +69,10 @@ export function TabBar({ patientId, active }: { patientId: string; active: TabId
           className="h-11 text-base font-medium"
         />
       </div>
-      <nav aria-label="Patient sections" className="hidden border-b border-border md:block">
+      <nav aria-label="Patient sections" className="hidden overflow-x-auto md:block">
         <ul ref={list} onKeyDown={onListKey} className="flex gap-1">
           {TABS.map((tab) => (
-            <li key={tab.id} className={SHOW[tab.tier]}>
+            <li key={tab.id} className={tab.primary ? undefined : "hidden lg:list-item"}>
               <Link
                 href={href(tab.id)}
                 aria-current={tab.id === active ? "page" : undefined}
@@ -98,27 +96,29 @@ export function TabBar({ patientId, active }: { patientId: string; active: TabId
               </Link>
             </li>
           ))}
-          <li className="xl:hidden">
+          <li className="lg:hidden">
             <Menu
               align="start"
               trigger={
                 <button
                   type="button"
-                  className="relative inline-flex min-h-10 items-center gap-1 rounded-t-md px-3.5 text-[13px] font-medium whitespace-nowrap text-muted-foreground transition-colors hover:text-foreground"
+                  className={cn(
+                    "relative inline-flex min-h-10 items-center gap-1 rounded-t-md px-3.5 text-[13px] font-medium whitespace-nowrap transition-colors",
+                    moreActive
+                      ? "font-semibold text-primary"
+                      : "text-muted-foreground hover:text-foreground",
+                  )}
                 >
                   More
                   <ChevronDown className="size-3.5" aria-hidden="true" />
                 </button>
               }
             >
-              {TABS.filter((tab) => tab.tier > 1).map((tab) => (
+              {TABS.filter((tab) => !tab.primary).map((tab) => (
                 <MenuItem
                   key={tab.id}
                   render={<Link href={href(tab.id)} />}
-                  className={cn(
-                    HIDE_IN_MENU[tab.tier],
-                    tab.id === active ? "font-semibold text-primary" : undefined,
-                  )}
+                  className={tab.id === active ? "font-semibold text-primary" : undefined}
                 >
                   {tab.label}
                 </MenuItem>

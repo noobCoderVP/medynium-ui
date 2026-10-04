@@ -1,8 +1,60 @@
-import { render, screen } from "@testing-library/react";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { render as rtlRender, screen, waitFor } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import type { StreamAnswer } from "@/lib/api/events";
 import { AnswerView } from "./answer-view";
+
+const evidence = vi.fn();
+vi.mock("@/lib/api/endpoints", () => ({
+  endpoints: { evidence: (...args: unknown[]) => evidence(...args) },
+}));
+
+const stored = {
+  answer_id: "ANS-1",
+  patient_id: "P-1",
+  created_at: "2026-10-03T08:00:00Z",
+  route: null,
+  patient_records: [
+    {
+      evidence_id: "P1",
+      record_type: "Lab result",
+      record_id: "L1",
+      table: "CLINICAL.LAB_RESULT",
+      value: "eGFR 42 mL/min on 14 Sep 2026 (low)",
+      date: "2026-09-14",
+    },
+  ],
+  sql: [],
+  sources: [
+    {
+      evidence_id: "S1",
+      chunk_id: "c1",
+      document_id: "DOC-MET",
+      title: "Metformin hydrochloride tablets: prescribing information",
+      source: "FDA",
+      section: "Warnings and precautions",
+      version: "15",
+      effective_date: "2026-08-21",
+      retrieved_date: "2026-10-02",
+      text: "Assess renal function.",
+      matched: true,
+    },
+  ],
+  statement_map: {},
+  dropped_statements: [],
+  snapshot_date: "2026-10-02",
+};
+
+function render(node: React.ReactNode) {
+  return rtlRender(
+    <QueryClientProvider
+      client={new QueryClient({ defaultOptions: { queries: { retry: false } } })}
+    >
+      {node}
+    </QueryClientProvider>,
+  );
+}
 
 const push = vi.fn();
 vi.mock("next/navigation", () => ({
@@ -44,7 +96,11 @@ const base: StreamAnswer = {
   created_at: "2026-10-03T08:00:00Z",
 };
 
-beforeEach(() => push.mockClear());
+beforeEach(() => {
+  push.mockClear();
+  evidence.mockReset();
+  evidence.mockResolvedValue(stored);
+});
 
 describe("AnswerView", () => {
   it("shows each statement with its tag as text", () => {
@@ -78,10 +134,35 @@ describe("AnswerView", () => {
     expect(screen.getByText("May warrant clinician review")).toBeInTheDocument();
   });
 
-  it("opens the Why? drawer from a reference button without hover (URL carries the state)", async () => {
+  it("shows what each statement rests on in words, with links to the real records", async () => {
     render(<AnswerView answer={base} />);
-    await userEvent.click(screen.getAllByRole("button", { name: "P1" })[0]);
+    expect(await screen.findAllByText("eGFR 42 mL/min on 14 Sep 2026 (low)")).not.toHaveLength(0);
+    expect(
+      screen.getAllByText("Metformin hydrochloride label · Warnings and precautions"),
+    ).not.toHaveLength(0);
+    expect(screen.getAllByRole("link", { name: /Open the lab/ })[0]).toHaveAttribute(
+      "href",
+      "/patients/P-1?tab=labs&lab=eGFR",
+    );
+    const label = screen.getAllByRole("link", { name: /Open label/ })[0];
+    expect(label.getAttribute("href")).toContain("/knowledge?q=Metformin%20hydrochloride");
+    expect(screen.queryByRole("button", { name: "P1" })).not.toBeInTheDocument();
+  });
+
+  it("opens the Why? drawer at one item from its Details button without hover (URL carries the state)", async () => {
+    render(<AnswerView answer={base} />);
+    await waitFor(() =>
+      expect(screen.getAllByRole("button", { name: "Details" })).not.toHaveLength(0),
+    );
+    await userEvent.click(screen.getAllByRole("button", { name: "Details" })[0]);
     expect(push).toHaveBeenCalledWith(expect.stringContaining("why=ANS-1"), expect.anything());
+    expect(push).toHaveBeenCalledWith(expect.stringContaining("ref=P1"), expect.anything());
+  });
+
+  it("falls back to the plain ids if the evidence cannot be read", async () => {
+    evidence.mockRejectedValue(new Error("down"));
+    render(<AnswerView answer={base} />);
+    await userEvent.click((await screen.findAllByRole("button", { name: "P1" }))[0]);
     expect(push).toHaveBeenCalledWith(expect.stringContaining("ref=P1"), expect.anything());
   });
 
@@ -91,7 +172,7 @@ describe("AnswerView", () => {
       screen.getByText("No documented consideration found in the indexed sources."),
     ).toBeInTheDocument();
     expect(screen.getByText(/not a statement that there is no risk/i)).toBeInTheDocument();
-    expect(screen.getByText("Checked")).toBeInTheDocument();
+    expect(screen.getByText("What I checked")).toBeInTheDocument();
     expect(screen.getByText("Source snapshot")).toBeInTheDocument();
   });
 

@@ -69,6 +69,7 @@ export function EvidenceBody({
           <PatientRecordItem
             key={item.evidence_id}
             item={item}
+            patientId={data.patient_id}
             highlighted={linked.has(item.evidence_id)}
             pinned={isPinned(item.evidence_id)}
             onPin={pinFor(item.evidence_id)}

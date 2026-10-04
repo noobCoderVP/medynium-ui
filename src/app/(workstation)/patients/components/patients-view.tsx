@@ -5,6 +5,7 @@ import { FilterField, ListToolbar } from "@/components/shared/list-toolbar";
 import { PageHeading } from "@/components/shared/page-heading";
 import { Pagination } from "@/components/shared/pagination";
 import { EmptyState } from "@/components/shared/state-panels";
+import { useIsDoctor } from "@/features/session";
 import { copy } from "@/lib/copy";
 import { NewPatientDialog } from "./new-patient-dialog";
 import { usePatientList } from "../hooks/use-patients";
@@ -28,6 +29,7 @@ const FLAG = [
 
 export function PatientsView() {
   const list = usePatientList();
+  const isDoctor = useIsDoctor();
   const { query } = list;
 
   return (
@@ -35,7 +37,7 @@ export function PatientsView() {
       <PageHeading
         title="Patients"
         note="Find and review patients in your care. Only patients you are assigned to appear here."
-        actions={<NewPatientDialog />}
+        actions={isDoctor ? <NewPatientDialog /> : null}
       />
       <ListToolbar
         search={{

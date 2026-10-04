@@ -34,8 +34,10 @@ export function SafetyTab({ patientId }: { patientId: string }) {
           <RunResult patientId={patientId} state={state} onRetry={run} />
         </CardBody>
       </Card>
-      <FindingsCard patientId={patientId} />
-      <PinsCard patientId={patientId} />
+      <div className="grid items-start gap-4 lg:grid-cols-2">
+        <FindingsCard patientId={patientId} />
+        <PinsCard patientId={patientId} />
+      </div>
     </div>
   );
 }

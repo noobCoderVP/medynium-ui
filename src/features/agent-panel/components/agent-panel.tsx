@@ -1,8 +1,9 @@
 "use client";
 
 import { AnimatePresence, motion } from "framer-motion";
-import { Sparkles, Trash2, X } from "lucide-react";
-import { useEffect, useRef, type CSSProperties } from "react";
+import { Maximize2, Minimize2, Sparkles, Trash2, X } from "lucide-react";
+import { useEffect, useRef, useState, type CSSProperties } from "react";
+import { PoweredBySnowflake } from "@/components/shared/powered-by-snowflake";
 import { Button } from "@/components/ui/button";
 import { Tooltip } from "@/components/ui/tooltip";
 import { copy } from "@/lib/copy";
@@ -31,6 +32,7 @@ export function AgentPanel() {
   const { open, setOpen, turns, ask, clear } = useAgent();
   const scope = useAgentScope();
   const end = useRef<HTMLDivElement>(null);
+  const [expanded, setExpanded] = useState(false);
   const { width, setWidth } = usePanelWidth();
 
   useEffect(() => {
@@ -48,9 +50,13 @@ export function AgentPanel() {
           id="agent-panel"
           aria-label="Assistant"
           style={{ "--agent-w": `${width}px` } as CSSProperties}
-          className="fixed z-30 flex flex-col border border-border bg-card shadow-lg max-md:inset-x-0 max-md:bottom-0 max-md:h-[75dvh] max-md:rounded-t-xl md:inset-y-0 md:right-0 md:w-[var(--agent-w)] xl:relative xl:h-auto xl:w-[var(--agent-w)] xl:shrink-0 xl:rounded-none xl:border-y-0 xl:border-r-0 xl:shadow-none"
+          className={
+            expanded
+              ? "fixed inset-0 z-40 flex flex-col bg-card"
+              : "fixed z-30 flex flex-col border border-border bg-card shadow-lg max-md:inset-x-0 max-md:bottom-0 max-md:h-[75dvh] max-md:rounded-t-xl md:inset-y-0 md:right-0 md:w-[var(--agent-w)] xl:relative xl:h-auto xl:w-[var(--agent-w)] xl:shrink-0 xl:rounded-none xl:border-y-0 xl:border-r-0 xl:shadow-none"
+          }
         >
-          <ResizeHandle width={width} onResize={setWidth} />
+          {expanded ? null : <ResizeHandle width={width} onResize={setWidth} />}
           <header className="flex items-center justify-between gap-2 border-b border-border px-3 py-2">
             <div className="flex min-w-0 items-center gap-2">
               <Sparkles className="size-4 shrink-0 text-agent" aria-hidden="true" />
@@ -71,6 +77,17 @@ export function AgentPanel() {
                   <Trash2 aria-hidden="true" />
                 </Button>
               </Tooltip>
+              <Tooltip label={expanded ? "Exit full window" : "Open full window"}>
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  aria-label={expanded ? "Exit full window" : "Open full window"}
+                  aria-pressed={expanded}
+                  onClick={() => setExpanded((value) => !value)}
+                >
+                  {expanded ? <Minimize2 aria-hidden="true" /> : <Maximize2 aria-hidden="true" />}
+                </Button>
+              </Tooltip>
               <Tooltip label="Collapse assistant">
                 <Button
                   variant="ghost"
@@ -83,20 +100,25 @@ export function AgentPanel() {
               </Tooltip>
             </div>
           </header>
-          <div className="min-h-0 flex-1 space-y-5 overflow-y-auto p-3">
-            {turns.length === 0 ? (
-              <Suggestions hasPatient={Boolean(scope.patientId)} onPick={ask} />
-            ) : null}
-            {turns.map((turn) => (
-              <TurnView key={turn.id} turn={turn} onRetry={ask} />
-            ))}
-            <p className="sr-only" aria-live="polite">
-              {announcement(turns[turns.length - 1])}
-            </p>
-            <div ref={end} />
+          <div className="min-h-0 flex-1 overflow-y-auto">
+            <div className={`space-y-5 p-3 ${expanded ? "mx-auto max-w-3xl md:p-6" : ""}`}>
+              {turns.length === 0 ? (
+                <Suggestions hasPatient={Boolean(scope.patientId)} onPick={ask} />
+              ) : null}
+              {turns.map((turn) => (
+                <TurnView key={turn.id} turn={turn} onRetry={ask} />
+              ))}
+              <p className="sr-only" aria-live="polite">
+                {announcement(turns[turns.length - 1])}
+              </p>
+              <div ref={end} />
+            </div>
           </div>
           <div className="border-t border-border p-3">
-            <AskForm />
+            <div className={expanded ? "mx-auto max-w-3xl" : ""}>
+              <AskForm />
+              <PoweredBySnowflake className="mt-2" />
+            </div>
           </div>
         </motion.aside>
       ) : null}

@@ -8,6 +8,7 @@ import { EmptyState } from "@/components/shared/state-panels";
 import { copy } from "@/lib/copy";
 import { useAudit } from "../hooks/use-audit";
 import { ACTIONS, OUTCOMES, humanize } from "../lib/labels";
+import { AiMetricsCard } from "./ai-metrics-card";
 import { AUDIT_SORTS, AuditTable } from "./audit-table";
 
 const toOptions = (values: readonly string[]) =>
@@ -22,6 +23,7 @@ export function ActivityView() {
         title="Activity log"
         note="What you and the assistant did on your behalf. Only your own entries appear."
       />
+      <AiMetricsCard />
       <ListToolbar
         search={{
           value: audit.text,

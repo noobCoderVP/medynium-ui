@@ -2,6 +2,7 @@ import type {
   StreamAction,
   StreamAnswer,
   StreamEvent,
+  StreamProposal,
   StreamRefusal,
   StreamRoute,
   StreamStep,
@@ -22,6 +23,7 @@ export interface Turn {
   steps: StreamStep[];
   actions: StreamAction[];
   answers: StreamAnswer[];
+  proposals: StreamProposal[];
   refusal: StreamRefusal | null;
   error: TurnError | null;
   auditId: string | null;
@@ -35,6 +37,7 @@ export const newTurn = (id: string, question: string): Turn => ({
   steps: [],
   actions: [],
   answers: [],
+  proposals: [],
   refusal: null,
   error: null,
   auditId: null,
@@ -59,6 +62,8 @@ export function applyEvent(turn: Turn, event: StreamEvent): Turn {
       return { ...turn, actions: [...turn.actions, event.data] };
     case "answer":
       return { ...turn, answers: [...turn.answers, event.data] };
+    case "proposal":
+      return { ...turn, proposals: [...turn.proposals, event.data] };
     case "refusal":
       return { ...turn, refusal: event.data };
     case "error":

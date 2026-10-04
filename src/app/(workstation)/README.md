@@ -8,7 +8,7 @@
 
 **Layout by width:** 1280 and up: nav with labels, workspace and assistant side by side. 1024 to 1279: icon nav, search and command bar still in the top bar, assistant is an overlay. 768 to 1023: icon nav, search is an icon, the Ask AI button opens the assistant. Under 768: bottom tabs (three primary destinations plus More), assistant is a bottom sheet, drawer is full screen.
 
-**User control:** the nav toggle (or Ctrl/Cmd + B) collapses or expands the rail and the choice is kept in `localStorage` (`medynium-sidebar`); with no choice the width decides. Collapsed icons show a tooltip on hover and focus. The assistant can be resized from 320 to 480 px (drag the edge or use the arrow keys); see `features/agent-panel`. The account button opens a menu with name, role and Sign out.
+**User control:** the nav toggle (or Ctrl/Cmd + B) collapses or expands the rail and the choice is kept in `localStorage` (`medynium-sidebar`); with no choice the width decides. Collapsed icons show a tooltip on hover and focus. Items are grouped under Workspace and Support headings (a divider when collapsed), and Sign out sits at the bottom of the rail. The assistant can be resized from 320 to 480 px (drag the edge or use the arrow keys); see `features/agent-panel`. The account button opens a menu with name, role and Sign out.
 
 **Rules:**
 

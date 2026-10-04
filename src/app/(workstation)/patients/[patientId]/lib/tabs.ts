@@ -1,17 +1,17 @@
 /**
- * `tier` is the narrowest breakpoint at which a tab is a link in the bar: 1 always (from 768 px), 2 from 1024 px,
- * 3 from 1280 px. Tabs that do not fit sit under "More", which only shows while one of them is hidden.
+ * `primary` tabs are links in the bar at every width; the rest sit under "More" below `lg` and are plain tabs from
+ * `lg` up, so every view stays linkable.
  */
 export const TABS = [
-  { id: "overview", label: "Overview", tier: 1 },
-  { id: "timeline", label: "Timeline", tier: 1 },
-  { id: "medications", label: "Medications", tier: 2 },
-  { id: "labs", label: "Labs", tier: 2 },
-  { id: "safety", label: "Safety review", tier: 2 },
-  { id: "claims", label: "Claims", tier: 3 },
-  { id: "notes", label: "Notes", tier: 3 },
-  { id: "reports", label: "Reports", tier: 3 },
-  { id: "similar", label: "Similar patients", tier: 3 },
+  { id: "overview", label: "Overview", primary: true },
+  { id: "timeline", label: "Timeline", primary: true },
+  { id: "medications", label: "Medications", primary: true },
+  { id: "labs", label: "Labs", primary: true },
+  { id: "safety", label: "Safety", primary: true },
+  { id: "claims", label: "Claims", primary: false },
+  { id: "notes", label: "Notes", primary: false },
+  { id: "reports", label: "Reports", primary: false },
+  { id: "similar", label: "Similar patients", primary: false },
 ] as const;
 
 export type TabId = (typeof TABS)[number]["id"];

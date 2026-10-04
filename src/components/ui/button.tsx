@@ -55,6 +55,7 @@ function Button({
       className={cn(buttonVariants({ variant, size, className }))}
       disabled={disabled || loading}
       aria-busy={loading || undefined}
+      nativeButton={props.render ? false : undefined}
       {...props}
     >
       {loading ? <Spinner /> : null}

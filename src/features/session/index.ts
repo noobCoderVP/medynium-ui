@@ -1,2 +1,2 @@
 export { AdminGate } from "./components/admin-gate";
-export { useMe, useSignOut } from "./hooks/use-session";
+export { useIsDoctor, useMe, useSignOut } from "./hooks/use-session";

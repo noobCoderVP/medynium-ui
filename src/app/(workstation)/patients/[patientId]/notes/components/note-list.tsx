@@ -1,4 +1,5 @@
 import { FileText } from "lucide-react";
+import { DoctorLine } from "@/components/shared/doctor-line";
 import { formatDate } from "@/lib/format";
 import type { NoteSummary } from "@/lib/api/types";
 import { cn } from "@/lib/utils";
@@ -14,7 +15,18 @@ export function NoteList({
   onOpen: (id: string) => void;
 }) {
   return (
-    <ul className="divide-y divide-border">
+    <ul
+      className="divide-y divide-border"
+      onKeyDown={(e) => {
+        if (e.key !== "ArrowDown" && e.key !== "ArrowUp") return;
+        const items = [...e.currentTarget.querySelectorAll<HTMLElement>("button")];
+        const at = items.indexOf(document.activeElement as HTMLElement);
+        if (at < 0) return;
+        e.preventDefault();
+        const next = Math.min(items.length - 1, Math.max(0, at + (e.key === "ArrowDown" ? 1 : -1)));
+        items[next]?.focus();
+      }}
+    >
       {notes.map((note) => {
         const on = note.note_id === selected;
         return (
@@ -41,6 +53,7 @@ export function NoteList({
                   {formatDate(note.date)}
                   {note.type ? ` · ${note.type}` : ""}
                 </span>
+                <DoctorLine doctor={note.doctor} />
               </span>
             </button>
           </li>

@@ -7,3 +7,11 @@ export const EXAMPLES = [
   "pregnancy",
   "hypoglycemia",
 ] as const;
+
+/** Starter questions for the assistant on this screen. Each is answered from the indexed labels. */
+export const DRUG_QUESTIONS = [
+  "Share details of amoxicillin",
+  "Which medicines are used for high blood pressure?",
+  "What is the usual adult dose of metformin?",
+  "Side effects and interactions of warfarin",
+] as const;

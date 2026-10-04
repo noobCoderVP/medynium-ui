@@ -3,9 +3,17 @@ import type { ReactNode } from "react";
 import { RouteChip } from "@/components/shared/chips";
 import { copy } from "@/lib/copy";
 import type { StreamAnswer } from "@/lib/api/events";
+import { CopyAnswerButton } from "./copy-answer-button";
 import { LimitsBlock } from "./limits-block";
+import { MarkdownText } from "./markdown-text";
 import { RefButton } from "./ref-button";
 import { Statement } from "./statement";
+
+/** The answer as plain markdown for the clipboard: short answer, then each statement with its tag. */
+function answerMarkdown(answer: StreamAnswer): string {
+  const lines = answer.considerations.map((c) => `- ${c.text} _(${c.tag.replace("_", " ")})_`);
+  return [answer.short_answer, ...(lines.length ? ["", ...lines] : [])].join("\n");
+}
 
 /**
  * A structured answer: the short answer, each tagged statement with its evidence buttons, conflicts and
@@ -28,10 +36,13 @@ export function AnswerView({
         <RefButton answerId={answer.answer_id} className="font-sans font-medium">
           Why? Show evidence
         </RefButton>
+        <CopyAnswerButton text={answerMarkdown(answer)} />
       </div>
-      <p className="text-sm leading-relaxed font-medium">
-        {gap ? copy.gap.title : answer.short_answer}
-      </p>
+      {gap ? (
+        <p className="text-sm leading-relaxed font-medium">{copy.gap.title}</p>
+      ) : (
+        <MarkdownText text={answer.short_answer} className="text-sm leading-relaxed" />
+      )}
       {gap ? <p className="text-sm text-muted-foreground">{copy.gap.note}</p> : null}
       {answer.considerations.length > 0 ? (
         <ul className="space-y-2">
@@ -40,6 +51,7 @@ export function AnswerView({
               key={item.id}
               answerId={answer.answer_id}
               item={item}
+              patientId={answer.patient_id}
               action={statementAction?.(item)}
             />
           ))}

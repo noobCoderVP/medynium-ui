@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Select } from "@/components/ui/select";
 import type { SortOrder } from "@/lib/use-list-state";
-import { cn } from "@/lib/utils";
 import { LAB_SORTS } from "./labs-table";
 
 const QUICK = [
@@ -29,12 +28,13 @@ interface Props {
   onClear: () => void;
 }
 
-/** One compact row: search, quick flag filters (a real group of toggle buttons) and, on phones, a sort menu. */
+/** One compact row: search, a status dropdown and, on phones, a sort menu. */
 export function LabsToolbar(props: Props) {
   const searchId = useId();
   const sortId = useId();
+  const statusId = useId();
   return (
-    <div className="flex flex-wrap items-center gap-2 rounded-xl border border-border bg-muted/60 p-2">
+    <div className="flex flex-wrap items-center gap-2 rounded-xl border border-border bg-surface-2 p-2">
       <div className="relative w-full sm:max-w-xs sm:flex-1">
         <label htmlFor={searchId} className="sr-only">
           Search tests
@@ -53,23 +53,16 @@ export function LabsToolbar(props: Props) {
           autoComplete="off"
         />
       </div>
-      <div role="group" aria-label="Flag" className="flex flex-wrap gap-1">
-        {QUICK.map((option) => (
-          <button
-            key={option.value}
-            type="button"
-            aria-pressed={props.flag === option.value}
-            onClick={() => props.onFlag(option.value)}
-            className={cn(
-              "min-h-8 rounded-md border px-2.5 text-sm font-medium transition-colors focus-visible:ring-3 focus-visible:ring-ring/50 focus-visible:outline-none",
-              props.flag === option.value
-                ? "border-primary bg-primary text-primary-foreground"
-                : "border-border bg-card text-foreground hover:bg-muted",
-            )}
-          >
-            {option.label}
-          </button>
-        ))}
+      <div className="max-sm:w-full">
+        <label htmlFor={statusId} className="sr-only">
+          Status
+        </label>
+        <Select
+          id={statusId}
+          value={props.flag}
+          onValueChange={props.onFlag}
+          options={QUICK.map((o) => (o.value ? o : { value: "", label: "All results" }))}
+        />
       </div>
       <div className="max-sm:w-full md:hidden">
         <label htmlFor={sortId} className="sr-only">
@@ -91,7 +84,7 @@ export function LabsToolbar(props: Props) {
       {props.activeCount > 0 ? (
         <Button variant="ghost" onClick={props.onClear} className="max-sm:w-full">
           <X aria-hidden="true" />
-          Clear {props.activeCount === 1 ? "filter" : `${props.activeCount} filters`}
+          Reset
         </Button>
       ) : null}
     </div>

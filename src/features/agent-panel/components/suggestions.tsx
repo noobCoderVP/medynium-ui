@@ -5,15 +5,19 @@ import { Button } from "@/components/ui/button";
 
 // Starting points, not the only way in: every one of these has a manual control on its own screen (FR-20).
 const WITH_PATIENT = [
+  "Brief me on this patient",
+  "What changed since the last visit, and is any of it a concern?",
   "Run the safety review",
   "What are the current medications?",
-  "What changed since the last visit?",
+  "What medicine options do the labels document for this patient's conditions?",
 ];
 const WITHOUT_PATIENT = [
   "Who are my patients and what is pending?",
   "Which of my patients have an abnormal lab result?",
   "Open the kidney patient and run the safety review",
   "What does the label say about metformin and kidney function?",
+  "Share details of amoxicillin",
+  "Which medicines are used for high blood pressure?",
 ];
 
 /** Empty-state prompts that depend on whether a patient is in scope. */

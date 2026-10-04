@@ -14,6 +14,8 @@
 - Collapsed, failing or rate-limited, the panel shows its own state and nothing else changes.
 - Navigation and read-only actions run directly. Anything that saves goes through the preview-and-approve dialog on the patient page, not through the agent.
 
+**Drug questions:** "what should I prescribe", "details of amoxicillin" and "which medicines treat X" are answered by the API's `drug` route (answer kind `DRUG`) from label text, with the open patient's record added when one is in scope. They are no longer refused; only a diagnosis is. The Knowledge screen's Ask AI card sends the same questions.
+
 **Scope:** the open patient comes from the route (`/patients/[patientId]`); the pill shows its name, or "No patient in scope". The server re-checks entitlement on every call; the id the browser sends is never proof of access.
 
 **States:** running (live steps, a polite live region), answer (announced once on completion), refusal (calm and scoped), not found (same wording for denied and missing), agent unavailable or timeout (panel-only banner with retry), rate limited (countdown), network error.

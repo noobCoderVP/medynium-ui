@@ -12,6 +12,10 @@
 
 **Keyboard:** every drill-down is a link.
 
+## Clinical brief (agentic upgrade, phases C and D)
+
+The tab now leads with the brief from `GET /patients/{id}/brief`: a rule-made headline, a written summary that arrives later from `/brief/summary` (rephrases the rule signals only; shown with the AI tag), **Attention** (worst first, each line opens its record), **What changed** (previous visit, 90 days or 1 year; each line opens its record), **Missing information** and **Latest results**. All of it is rules over the record; the old attention and clinical-summary cards were replaced by it. `lib/source-link.ts` turns a source reference into a workspace URL.
+
 ## Layout (UI improvement plan, P0)
 
-Sections in order: Patient snapshot, Clinical overview (clinical summary beside latest results with change since previous), Medications (tile grid), Recent activity. The clinical summary is built only from the loaded overview (patient facts), with no model call. Flagged-lab helpers live in `src/lib/abnormal-labs.ts`; the workspace header shows the attention panel (`components/attention-panel.tsx`) and tabs put Claims, Notes, Reports and Similar patients under "More".
+Sections in order: Attention (flagged results with range and movement, plus Review safety), Clinical overview (clinical summary beside latest results), a 12-month snapshot, and Recent activity (diagnoses and date-first events). Medications live on their own tab. The clinical summary is built only from the loaded overview (patient facts), with no model call. Flagged-lab helpers live in `src/lib/abnormal-labs.ts`; the workspace header shows the attention chip (`components/attention-chip.tsx`) and tabs put Claims, Notes, Reports and Similar patients under "More".

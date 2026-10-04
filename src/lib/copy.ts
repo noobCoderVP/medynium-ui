@@ -20,8 +20,8 @@ export const copy = {
 
   gap: {
     title: "No documented consideration found in the indexed sources.",
-    checked: "Checked",
-    notChecked: "Not checked",
+    checked: "What I checked",
+    notChecked: "What I could not check",
     snapshot: "Source snapshot",
     note: "This is not a statement that there is no risk. It only reflects what the indexed sources contain.",
   },
@@ -42,7 +42,7 @@ export const copy = {
     scope: (name: string) => `Scope: ${name}`,
     placeholder: "Ask or tell me what to do",
     noModel: "no model call",
-    empty: "Ask about the open patient, look up a label, or say what you want opened.",
+    empty: "Ask about the open patient, a drug or a condition, or say what you want opened.",
     refusalHeading: "I can't help with that here",
     thinking: "Working on it",
   },

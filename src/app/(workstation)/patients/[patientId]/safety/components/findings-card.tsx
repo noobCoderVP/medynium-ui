@@ -1,6 +1,8 @@
 "use client";
 
 import { DataState, SkeletonRows } from "@/components/shared/data-state";
+import { ShieldCheck } from "lucide-react";
+import { EmptyState } from "@/components/shared/state-panels";
 import { StatusChip } from "@/components/shared/chips";
 import { Card, CardBody, CardHeader, CardTitle } from "@/components/ui/card";
 import { RefButton } from "@/features/evidence";
@@ -35,10 +37,10 @@ export function FindingsCard({ patientId }: { patientId: string }) {
           skeleton={<SkeletonRows rows={2} />}
           isEmpty={(list) => list.items.length === 0}
           empty={
-            <p className="text-sm text-muted-foreground">
-              No findings yet. After a review, choose Add to findings on a conclusion to record what
-              you decide.
-            </p>
+            <EmptyState icon={<ShieldCheck className="size-6" />} title="No safety findings yet">
+              Run a safety review, then choose Add to findings on a conclusion to record what you
+              decide.
+            </EmptyState>
           }
         >
           {(list) => (

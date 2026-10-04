@@ -1,13 +1,14 @@
 import { HeartPulse } from "lucide-react";
+import { PoweredBySnowflake } from "@/components/shared/powered-by-snowflake";
 import { env } from "@/lib/env";
 import { IntroPanel } from "./components/intro-panel";
 
 /** Sign-in, invite and reset pages: product intro on the left (desktop only), form on the right. No shell, no patient data, so no synthetic banner needed. */
 export default function AuthLayout({ children }: LayoutProps<"/">) {
   return (
-    <div className="grid min-h-dvh lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)]">
+    <div className="grid min-h-dvh lg:h-dvh lg:grid-cols-[minmax(0,7fr)_minmax(380px,3fr)] lg:overflow-hidden">
       <IntroPanel />
-      <main className="mx-auto flex w-full max-w-md flex-col justify-center gap-6 px-4 py-10 lg:max-w-lg lg:px-10">
+      <main className="mx-auto flex w-full max-w-md flex-col justify-center gap-6 px-4 py-10 lg:max-w-[360px] lg:overflow-y-auto lg:px-0">
         <div className="flex items-center gap-3 lg:hidden">
           <span
             aria-hidden="true"
@@ -25,6 +26,7 @@ export default function AuthLayout({ children }: LayoutProps<"/">) {
           </div>
         </div>
         {children}
+        <PoweredBySnowflake className="lg:hidden" />
       </main>
     </div>
   );

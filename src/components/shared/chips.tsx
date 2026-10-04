@@ -19,7 +19,7 @@ import type { Flag, Tag } from "@/lib/api/types";
 import { cn } from "@/lib/utils";
 
 const base =
-  "inline-flex items-center gap-1 rounded-md border px-1.5 py-0.5 text-xs font-medium whitespace-nowrap";
+  "inline-flex h-6 items-center gap-1 rounded-md border px-2 text-xs font-medium whitespace-nowrap";
 
 const tagStyle: Record<Tag, { icon: LucideIcon; className: string }> = {
   patient_fact: { icon: UserRound, className: "border-fact/30 bg-fact-soft text-fact" },
@@ -122,18 +122,22 @@ export function RouteChip({
   );
 }
 
-/** Neutral status chip, for outcomes shown by text as well as tone. */
+/**
+ * The one status chip: crit (danger), warn, ok (success), info (active) and muted (neutral) share height, radius
+ * and type. Tone is always paired with a word, never colour alone.
+ */
 export function StatusChip({
   tone,
   children,
 }: {
-  tone: "ok" | "warn" | "crit" | "muted";
+  tone: "ok" | "warn" | "crit" | "info" | "muted";
   children: string;
 }) {
   const style = {
     ok: "border-ok/30 bg-ok-soft text-ok",
     warn: "border-warn/30 bg-warn-soft text-warn",
     crit: "border-crit/30 bg-crit-soft text-crit",
+    info: "border-fact/30 bg-fact-soft text-fact",
     muted: "border-border bg-muted text-muted-foreground",
   }[tone];
   return <span className={cn(base, style)}>{children}</span>;

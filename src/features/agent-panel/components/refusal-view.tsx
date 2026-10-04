@@ -4,7 +4,7 @@ import { formatDate } from "@/lib/format";
 import type { StreamRefusal } from "@/lib/api/events";
 
 /**
- * A calm, scoped refusal. For a prescribing request it also lists what the label documents for the patient's
+ * A calm, scoped refusal. For a diagnosis request it also lists what the label documents for the patient's
  * current medicines, as retrieved-source statements only (AI-01, AI-10).
  */
 export function RefusalView({ refusal }: { refusal: StreamRefusal }) {

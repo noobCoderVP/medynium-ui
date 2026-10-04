@@ -41,7 +41,7 @@ export function FilterField({
   value,
   onChange,
   options,
-  anyLabel = "Any",
+  anyLabel,
 }: {
   label: string;
   value: string;
@@ -51,15 +51,15 @@ export function FilterField({
 }) {
   const id = useId();
   return (
-    <div className="flex min-w-0 flex-col gap-1 max-sm:flex-1 max-sm:basis-[calc(50%-0.375rem)]">
-      <label htmlFor={id} className="text-xs font-medium text-muted-foreground">
+    <div className="min-w-0 max-sm:flex-1 max-sm:basis-[calc(50%-0.375rem)]">
+      <label htmlFor={id} className="sr-only">
         {label}
       </label>
       <Select
         id={id}
         value={value}
         onValueChange={onChange}
-        options={[{ value: "", label: anyLabel }, ...options]}
+        options={[{ value: "", label: anyLabel ?? `All ${label.toLowerCase()}` }, ...options]}
         className="sm:min-w-36"
       />
     </div>
@@ -82,7 +82,7 @@ export function DateField({
 }) {
   const id = useId();
   return (
-    <div className="flex min-w-0 flex-col gap-1 max-sm:flex-1 max-sm:basis-[calc(50%-0.375rem)]">
+    <div className="flex min-w-0 items-center gap-1.5 max-sm:flex-1 max-sm:basis-[calc(50%-0.375rem)]">
       <label htmlFor={id} className="text-xs font-medium text-muted-foreground">
         {label}
       </label>
@@ -107,7 +107,7 @@ export function ListToolbar({ search, sort, activeCount = 0, onClear, children }
   const searchId = useId();
   const sortId = useId();
   return (
-    <div className="flex shrink-0 flex-wrap items-end gap-3 rounded-xl border border-border bg-card p-3 shadow-sm">
+    <div className="flex shrink-0 flex-wrap items-center gap-2 rounded-xl border border-border bg-surface-2 p-2">
       {search ? (
         <div className="relative w-full sm:max-w-xs sm:flex-1">
           <label htmlFor={searchId} className="sr-only">
@@ -130,10 +130,8 @@ export function ListToolbar({ search, sort, activeCount = 0, onClear, children }
       ) : null}
       {children}
       {sort ? (
-        <div
-          className={cn("flex min-w-0 flex-col gap-1 max-sm:w-full", !sort.always && "md:hidden")}
-        >
-          <label htmlFor={sortId} className="text-xs font-medium text-muted-foreground">
+        <div className={cn("min-w-0 max-sm:w-full", !sort.always && "md:hidden")}>
+          <label htmlFor={sortId} className="sr-only">
             Sort by
           </label>
           <Select
@@ -144,16 +142,16 @@ export function ListToolbar({ search, sort, activeCount = 0, onClear, children }
               sort.onChange(key, order as SortOrder);
             }}
             options={sort.options.flatMap((option) => [
-              { value: `${option.key}:asc`, label: `${option.label}, ascending` },
-              { value: `${option.key}:desc`, label: `${option.label}, descending` },
+              { value: `${option.key}:asc`, label: `Sort: ${option.label}, ascending` },
+              { value: `${option.key}:desc`, label: `Sort: ${option.label}, descending` },
             ])}
           />
         </div>
       ) : null}
       {activeCount > 0 && onClear ? (
-        <Button variant="ghost" size="lg" onClick={onClear} className="max-sm:w-full">
+        <Button variant="ghost" onClick={onClear} className="max-sm:w-full">
           <X aria-hidden="true" />
-          Clear {activeCount === 1 ? "filter" : `${activeCount} filters`}
+          Reset
         </Button>
       ) : null}
     </div>

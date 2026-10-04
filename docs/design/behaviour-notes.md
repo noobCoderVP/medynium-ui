@@ -1,6 +1,6 @@
 # Prototype behaviour notes (X-1)
 
-`medynium-prototype.html` is a behaviour reference, not the visual target (UI rule 9). This file maps every behaviour in it to a screen of the real app, or records that it was dropped on purpose. No styling was ported.
+`medynium-prototype.html` (this folder) is a behaviour reference, not the visual target (UI rule 9). This file maps every behaviour in it to a screen of the real app, or records that it was dropped on purpose. No styling was ported.
 
 | Prototype behaviour (function or element)                                                   | In the real app                                                                                                              | Where                                                       |
 | ------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------- |

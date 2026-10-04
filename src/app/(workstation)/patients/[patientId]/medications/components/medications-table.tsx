@@ -1,3 +1,4 @@
+import { DoctorLine } from "@/components/shared/doctor-line";
 import { StatusChip } from "@/components/shared/chips";
 import { DataTable, type Column } from "@/components/shared/data-table";
 import { formatDate } from "@/lib/format";
@@ -8,7 +9,7 @@ const columns: Column<Medication>[] = [
   {
     key: "drug",
     header: "Medicine",
-    width: "26%",
+    width: "20%",
     minWidth: "6rem",
     sortKey: "drug",
     cell: (m) => (
@@ -24,14 +25,14 @@ const columns: Column<Medication>[] = [
   {
     key: "dose",
     header: "Dose",
-    width: "12%",
+    width: "10%",
     minWidth: "6rem",
     cell: (m) => m.dose ?? m.strength ?? "–",
   },
   {
     key: "started",
     header: "Started",
-    width: "14%",
+    width: "11%",
     minWidth: "6rem",
     sortKey: "started",
     mobile: "secondary",
@@ -40,14 +41,14 @@ const columns: Column<Medication>[] = [
   {
     key: "stopped",
     header: "Stopped",
-    width: "14%",
+    width: "11%",
     minWidth: "6rem",
     cell: (m) => (m.stopped ? formatDate(m.stopped) : <StatusChip tone="ok">current</StatusChip>),
   },
   {
     key: "change",
     header: "Last change",
-    width: "18%",
+    width: "16%",
     minWidth: "6rem",
     sortKey: "last_change",
     cell: (m) =>
@@ -63,9 +64,17 @@ const columns: Column<Medication>[] = [
       ),
   },
   {
+    key: "doctor",
+    header: "Doctor",
+    width: "16%",
+    minWidth: "6rem",
+    mobile: "secondary",
+    cell: (m) => (m.doctor ? <DoctorLine doctor={m.doctor} /> : "–"),
+  },
+  {
     key: "label",
     header: "Label",
-    width: "16%",
+    width: "12%",
     minWidth: "6rem",
     mobile: "secondary",
     cell: (m) =>
@@ -94,19 +103,14 @@ export function MedicationsTable({
   onSort: (key: string) => void;
 }) {
   return (
-    <div className="space-y-2">
-      <DataTable
-        caption="Medications"
-        columns={columns}
-        rows={rows}
-        rowKey={(m) => m.medication_id}
-        sort={sort}
-        onSort={onSort}
-      />
-      <p className="text-xs text-muted-foreground">
-        Source: <span className="font-mono">CLINICAL.MEDICATION</span>. &quot;Not indexed&quot;
-        means the safety review has no label text for that medicine and will say so.
-      </p>
-    </div>
+    <DataTable
+      fill
+      caption="Medications"
+      columns={columns}
+      rows={rows}
+      rowKey={(m) => m.medication_id}
+      sort={sort}
+      onSort={onSort}
+    />
   );
 }

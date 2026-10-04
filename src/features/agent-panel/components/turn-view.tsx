@@ -7,6 +7,7 @@ import { StepsList } from "@/components/shared/steps-list";
 import { copy } from "@/lib/copy";
 import { AnswerView } from "@/features/evidence";
 import { hrefForAction, type Turn } from "../lib/conversation";
+import { ProposalCard } from "./proposal-card";
 import { RefusalView } from "./refusal-view";
 
 const ACTION_LABEL: Record<string, string> = {
@@ -89,6 +90,9 @@ export function TurnView({ turn, onRetry }: { turn: Turn; onRetry: (question: st
       })}
       {turn.answers.map((answer) => (
         <AnswerView key={answer.answer_id} answer={answer} />
+      ))}
+      {turn.proposals.map((proposal) => (
+        <ProposalCard key={proposal.proposal_id} proposal={proposal} />
       ))}
       {turn.refusal ? <RefusalView refusal={turn.refusal} /> : null}
       <TurnError turn={turn} onRetry={() => onRetry(turn.question)} />

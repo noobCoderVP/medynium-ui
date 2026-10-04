@@ -2,9 +2,12 @@ import { Pin } from "lucide-react";
 import type { ReactNode } from "react";
 import { TagChip } from "@/components/shared/chips";
 import { Button } from "@/components/ui/button";
+import Link from "next/link";
 import { formatDate, formatDateTime } from "@/lib/format";
+import { evidenceHref } from "@/lib/source-link";
 import type { PatientEvidence, SourceEvidence, SqlEvidence } from "@/lib/api/types";
 import { cn } from "@/lib/utils";
+import { sourceHrefFor } from "../lib/evidence-label";
 
 interface ItemProps {
   highlighted: boolean;
@@ -61,7 +64,9 @@ export function PatientRecordItem({
   highlighted,
   pinned,
   onPin,
-}: ItemProps & { item: PatientEvidence }) {
+  patientId,
+}: ItemProps & { item: PatientEvidence; patientId?: string | null }) {
+  const link = evidenceHref(patientId, item.table, item.record_id, item.value);
   return (
     <Item
       id={item.evidence_id}
@@ -77,6 +82,11 @@ export function PatientRecordItem({
           {item.record_id ? ` ${item.record_id}` : ""}
         </span>
       </p>
+      {link ? (
+        <Link href={link.href} className="inline-block text-xs font-medium text-primary underline">
+          {link.label}
+        </Link>
+      ) : null}
     </Item>
   );
 }
@@ -103,6 +113,12 @@ export function SourceItem({
       <blockquote className="border-l-2 border-source pl-3 text-sm leading-relaxed">
         {item.text}
       </blockquote>
+      <Link
+        href={sourceHrefFor(item)}
+        className="inline-block text-xs font-medium text-primary underline"
+      >
+        Open the label
+      </Link>
     </Item>
   );
 }

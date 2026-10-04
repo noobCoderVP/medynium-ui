@@ -387,7 +387,7 @@ All external accounts, keys and decisions are listed in [docs/external-dependenc
 
 - [AGENTS.md](AGENTS.md): working rules for contributors and AI sessions
 - [Design direction](docs/design/design-direction.md), [component specs](docs/design/component-specs.md), [accessibility pass](docs/design/usability-and-accessibility-pass.md)
-- [Manual parity checklist](docs/quality/manual-parity-checklist.md)
+- [Manual parity checklist](docs/quality/manual-parity-checklist.md), [user journeys](docs/quality/user-journeys.md)
 - [Media shot list](docs/media/README.md): what to capture for the images above
 - Backend: [architecture](../medynium-apis/docs/architecture/overview.md), [AI layer](../medynium-apis/docs/architecture/ai-layer.md), [security and access](../medynium-apis/docs/architecture/security-and-access.md)
-- `medynium-prototype.html` (in the workspace root) is a behaviour reference, not the visual target
+- [`medynium-prototype.html`](docs/design/medynium-prototype.html) is a behaviour reference, not the visual target
