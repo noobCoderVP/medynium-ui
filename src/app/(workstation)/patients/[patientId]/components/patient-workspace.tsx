@@ -6,7 +6,7 @@ import { NotFoundState } from "@/components/shared/state-panels";
 import { Skeleton } from "@/components/ui/skeleton";
 import { usePatient } from "../hooks/use-patient";
 import { TABS, type TabId } from "../lib/tabs";
-import { AllergyBanner } from "./allergy-banner";
+import { AttentionPanel } from "./attention-panel";
 import { PatientHeader } from "./patient-header";
 import { RecentChanges } from "./recent-changes";
 import { TabBar } from "./tab-bar";
@@ -39,13 +39,13 @@ export function PatientWorkspace({
   return (
     <DataState query={query} skeleton={<WorkspaceSkeleton />} notFound={<NotFoundState />}>
       {(patient) => (
-        <div className="space-y-4">
+        <div className="space-y-3">
           <div className="overflow-hidden rounded-xl border border-border bg-card shadow-xs">
             <PatientHeader
               patient={patient}
               tabLabel={tab === "overview" ? undefined : TABS.find((t) => t.id === tab)?.label}
             />
-            <AllergyBanner allergies={patient.allergies} />
+            <AttentionPanel patient={patient} />
             <RecentChanges patient={patient} />
           </div>
           <TabBar patientId={patientId} active={tab} />

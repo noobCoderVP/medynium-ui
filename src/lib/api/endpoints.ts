@@ -6,6 +6,7 @@ import type {
   Briefing,
   Claims,
   ColleagueList,
+  HistoryList,
   Coverage,
   Dashboard,
   Entitlements,
@@ -106,6 +107,7 @@ export const endpoints = {
     post<{ sent: boolean }>(`${pid(id)}/share`, body),
   note: (id: string, noteId: string) =>
     get<NoteDetail>(`${pid(id)}/notes/${encodeURIComponent(noteId)}`),
+  history: (id: string) => get<HistoryList>(`${pid(id)}/history${qs({ limit: 50 })}`),
   pins: (id: string) => get<PinList>(`${pid(id)}/pins`),
   addPin: (id: string, body: { answer_id: string; evidence_id: string; note?: string }) =>
     post<Pin>(`${pid(id)}/pins`, body, {

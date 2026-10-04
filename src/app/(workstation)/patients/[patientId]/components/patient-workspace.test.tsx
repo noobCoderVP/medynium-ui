@@ -11,6 +11,7 @@ vi.mock("next/navigation", () => ({
   useSearchParams: () => new URLSearchParams(),
 }));
 vi.mock("./views-dialog", () => ({ ViewsDialog: () => null }));
+vi.mock("./history-dialog", () => ({ HistoryDialog: () => null }));
 vi.mock("./share-dialog", () => ({ ShareDialog: () => null }));
 
 const render_ = () =>
@@ -32,6 +33,7 @@ const loaded = {
     sex: "M",
     city: "Pune",
     as_of: "2026-10-02",
+    medications: [{ medication_id: "M-1" }],
     allergies: [
       { allergy_id: "ALG-1", substance: "Aspirin", reaction: "Hives", severity: "SEVERE" },
     ],
@@ -43,6 +45,8 @@ const loaded = {
         unit: "%",
         date: "2026-09-28",
         flag: "HIGH",
+        previous: null,
+        ref: { low: 4, high: 5.6 },
       },
       {
         lab_id: "L-2",
@@ -51,6 +55,8 @@ const loaded = {
         unit: "mmol/L",
         date: "2026-09-28",
         flag: "NORMAL",
+        previous: null,
+        ref: { low: 135, high: 145 },
       },
     ],
     recent_events: [
@@ -86,15 +92,18 @@ describe("PatientWorkspace", () => {
     const strip = screen.getByRole("region", { name: "Recent changes" });
     expect(strip).toHaveTextContent("Updated: Metformin dose raised");
     expect(strip).not.toHaveTextContent("Claim");
-    expect(strip).toHaveTextContent("Requires review: HbA1c");
-    expect(strip).not.toHaveTextContent("Sodium");
+    const attention = screen.getByRole("region", { name: "Needs attention" });
+    expect(attention).toHaveTextContent("1 item needs attention");
+    expect(attention).toHaveTextContent("HbA1c");
+    expect(attention).toHaveTextContent("Ref 4–5.6");
+    expect(attention).not.toHaveTextContent("Sodium");
     expect(screen.getByRole("link", { name: /Review safety/ })).toHaveAttribute(
       "href",
       "/patients/P-1?tab=safety",
     );
   });
 
-  it("shows allergies under the patient's name, most severe first as given", () => {
+  it("shows allergies on the patient identity line, most severe first as given", () => {
     usePatient.mockReturnValue(loaded);
     render_();
     expect(screen.getByRole("region", { name: "Allergies" })).toHaveTextContent(

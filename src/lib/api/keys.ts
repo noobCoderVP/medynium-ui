@@ -17,6 +17,7 @@ export const patientKeys = {
   claims: (id: string, params: object) => ["patients", id, "claims", params] as const,
   notes: (id: string, params: object) => ["patients", id, "notes", params] as const,
   note: (id: string, noteId: string) => ["patients", id, "notes", noteId] as const,
+  history: (id: string) => ["patients", id, "history"] as const,
   pins: (id: string) => ["patients", id, "pins"] as const,
   views: (id: string) => ["patients", id, "views"] as const,
   findings: (id: string) => ["patients", id, "findings"] as const,

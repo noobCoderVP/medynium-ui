@@ -11,3 +11,7 @@
 **States handled:** loading skeleton matching the 2x2 card layout, error with retry, rate limited. Not found is handled one level up by the workspace gate (same state for denied and missing). No agent call, so no agent-unavailable state.
 
 **Keyboard:** every drill-down is a link.
+
+## Layout (UI improvement plan, P0)
+
+Sections in order: Patient snapshot, Clinical overview (clinical summary beside latest results with change since previous), Medications (tile grid), Recent activity. The clinical summary is built only from the loaded overview (patient facts), with no model call. Flagged-lab helpers live in `src/lib/abnormal-labs.ts`; the workspace header shows the attention panel (`components/attention-panel.tsx`) and tabs put Claims, Notes, Reports and Similar patients under "More".

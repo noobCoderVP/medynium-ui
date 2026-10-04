@@ -60,6 +60,7 @@ export type InvitePreview = S["InvitePreview"];
 export type Briefing = S["BriefingResponse"];
 export type ViewPreview = S["ViewPreview"];
 export type SavedView = S["SavedView"];
+export type HistoryList = S["HistoryList"];
 export type Finding = S["Finding"];
 export type FindingList = S["FindingList"];
 export type FindingUpdate = S["FindingUpdate"];

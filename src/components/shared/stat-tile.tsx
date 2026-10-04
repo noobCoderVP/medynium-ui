@@ -17,13 +17,11 @@ export function StatTile({
   return (
     <motion.div
       variants={staggerItem}
-      className="rounded-xl border border-border bg-card px-4 py-3.5 shadow-xs"
+      className="rounded-xl border border-border bg-card px-3.5 py-2.5 shadow-xs"
     >
       <dt className="text-xs font-medium text-muted-foreground">{label}</dt>
-      <dd className="mt-1.5 font-heading text-2xl font-bold tracking-tight tabular-nums">
-        {value}
-      </dd>
-      {note ? <dd className="mt-0.5 text-xs text-muted-foreground">{note}</dd> : null}
+      <dd className="mt-0.5 font-heading text-xl font-bold tracking-tight tabular-nums">{value}</dd>
+      {note ? <dd className="text-xs text-muted-foreground">{note}</dd> : null}
     </motion.div>
   );
 }

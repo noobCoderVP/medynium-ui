@@ -4,6 +4,8 @@ import { ValueWithSource } from "@/components/shared/value-with-source";
 import { RowList, Row } from "@/components/shared/row-list";
 import { Card, CardBody, CardHeader, CardTitle } from "@/components/ui/card";
 import { formatDate, formatValue } from "@/lib/format";
+import { cn } from "@/lib/utils";
+import { labDelta } from "@/lib/abnormal-labs";
 import type { OverviewLab } from "../types";
 
 export function LabsCard({ patientId, labs }: { patientId: string; labs: OverviewLab[] }) {
@@ -15,7 +17,7 @@ export function LabsCard({ patientId, labs }: { patientId: string; labs: Overvie
           href={`/patients/${patientId}?tab=labs`}
           className="text-xs font-medium text-primary hover:underline"
         >
-          All results
+          View trends
         </Link>
       </CardHeader>
       <CardBody>
@@ -23,32 +25,46 @@ export function LabsCard({ patientId, labs }: { patientId: string; labs: Overvie
           <p className="text-sm text-muted-foreground">No lab results on record.</p>
         ) : (
           <RowList>
-            {labs.map((lab) => (
-              <Row key={lab.lab_id} className="flex items-start justify-between gap-3">
-                <ValueWithSource
-                  value={
-                    <Link
-                      href={`/patients/${patientId}?tab=labs&lab=${encodeURIComponent(lab.code)}`}
-                      className="text-primary hover:underline"
-                    >
-                      {lab.test}: {formatValue(lab.value, lab.unit)}
-                    </Link>
-                  }
-                  date={lab.date}
-                  source={lab.source ?? "CLINICAL.LAB_RESULT"}
+            {labs.map((lab) => {
+              const abnormal = lab.flag === "HIGH" || lab.flag === "LOW";
+              const delta = labDelta(lab);
+              return (
+                <Row
+                  key={lab.lab_id}
+                  className={cn(
+                    "flex items-start justify-between gap-3 py-1.5",
+                    abnormal && "border-l-2 border-l-crit bg-crit-soft/40",
+                  )}
                 >
-                  {lab.previous ? (
-                    <p className="text-xs text-muted-foreground">
-                      Previous {formatValue(lab.previous.value, lab.unit)} on{" "}
-                      {formatDate(lab.previous.date)}
-                    </p>
+                  <ValueWithSource
+                    value={
+                      <Link
+                        href={`/patients/${patientId}?tab=labs&lab=${encodeURIComponent(lab.code)}`}
+                        className={cn(
+                          "hover:underline",
+                          abnormal ? "font-semibold text-crit" : "text-primary",
+                        )}
+                      >
+                        {lab.test}: {formatValue(lab.value, lab.unit)}
+                        {delta ? ` ${delta.text}` : ""}
+                      </Link>
+                    }
+                    date={lab.date}
+                    source={lab.source ?? "CLINICAL.LAB_RESULT"}
+                  >
+                    {lab.previous ? (
+                      <p className="text-xs text-muted-foreground">
+                        Previous {formatValue(lab.previous.value, lab.unit)} on{" "}
+                        {formatDate(lab.previous.date)}
+                      </p>
+                    ) : null}
+                  </ValueWithSource>
+                  {abnormal ? (
+                    <StatusChip tone="crit">{lab.flag === "HIGH" ? "↑ high" : "↓ low"}</StatusChip>
                   ) : null}
-                </ValueWithSource>
-                {lab.flag && lab.flag !== "NORMAL" ? (
-                  <StatusChip tone="warn">{lab.flag.toLowerCase()}</StatusChip>
-                ) : null}
-              </Row>
-            ))}
+                </Row>
+              );
+            })}
           </RowList>
         )}
       </CardBody>
