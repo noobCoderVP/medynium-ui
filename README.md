@@ -4,6 +4,12 @@
 
 # Medynium
 
+<p align="center">
+  <a href="https://www.snowflake.com"><img src="https://cdn.simpleicons.org/snowflake/29B5E8" alt="Snowflake" height="20" align="absmiddle" /></a>
+  <b>Built for the Snowflake CoCo CLI Hackathon (GCC Edition) 2026</b><br />
+  Problem Statement 4: Patient 360 and Clinical Document Copilot
+</p>
+
 ### The clinical workstation where every AI answer shows its evidence.
 
 One Patient 360 screen. An assistant that can only see what the signed-in doctor may see. A "Why?" behind every statement.
@@ -20,7 +26,7 @@ One Patient 360 screen. An assistant that can only see what the signed-in doctor
 
 </div>
 
-> **Synthetic data only. Decision support, not diagnosis.** Built for the Snowflake CoCo CLI Hackathon 2026 (Problem Statement 4: Patient 360 and Clinical Document Copilot).
+> **Synthetic data only. Decision support, not diagnosis.**
 
 ---
 
