@@ -43,6 +43,8 @@ One Patient 360 screen. An assistant that can only see what the signed-in doctor
 14. [The Medynium repositories](#the-medynium-repositories)
 15. [Documentation](#documentation)
 
+Also see the workspace [README](../README.md) and the [evaluation hub](../medynium-apis/docs/evaluation/README.md).
+
 ---
 
 ## Why Medynium
@@ -100,7 +102,39 @@ Every statement is tagged as a **patient fact**, a **retrieved source** or an **
 **3. Governance that binds the AI, not only the user.**
 Access is enforced inside Snowflake under each person's own role. The assistant therefore cannot retrieve, summarise or even confirm the existence of a patient the doctor cannot open. Every question, action, refusal and denial lands in an audit log the user can read.
 
+No user study has been run, so these are design outcomes backed by measurements, not claims about hours saved. See [impact and use cases](../medynium-apis/docs/evaluation/impact-and-use-cases.md).
+
 Built for the context it serves: Indian brand names resolve to their generic drug, amounts are in INR, and the medicine corpus includes the National List of Essential Medicines.
+
+### Real-world use cases
+
+| Use case | Where in the UI | Why it helps |
+| --- | --- | --- |
+| **Pre-consult review** | Dashboard, "Brief me", patient Overview | Who changed and what is missing, in about a second, with no model call |
+| **Medicine safety check** | Patient, Safety tab | The lab trend tied to the exact label section, with Why? |
+| **Emergency and discharge follow-up** | Pending page | Open findings, due follow-ups, unreviewed abnormal labs, recent ER visits, most urgent first |
+| **Brand-name and typo drug lookup** | Knowledge page | Indian brand names resolve to the generic; a missing label is an honest gap with a coverage request |
+| **Paper reports to records** | Patient, Reports tab | Each extracted row shows its quoted words and page; a doctor approves |
+| **Privacy between doctors** | Any patient route | A patient you cannot open renders the same not-found as one that does not exist |
+| **Accountability** | Activity page | Your own audit log, each entry linking back to its Why? |
+
+### A clinician's day
+
+```mermaid
+journey
+  title A clinician's day in the workstation
+  section Before clinic
+    Check the worklist: 5: Doctor
+    Brief me on who changed: 5: Doctor
+  section In the consult
+    Open Patient 360: 5: Doctor
+    Run the safety review: 4: Doctor
+    Click Why? on a statement: 5: Doctor
+    Approve an assistant proposal: 4: Doctor
+  section After
+    Decide on a finding: 5: Doctor
+    Review pending follow-ups: 5: Doctor
+```
 
 ---
 
@@ -194,6 +228,8 @@ Principles the UI holds to, each enforced in code or in review:
 
 ## Architecture
 
+Backend diagrams (sign-in and refresh, proposal approval, report intake, state machines, write path, delivery pipeline) are in the [diagram gallery](../medynium-apis/docs/architecture/diagrams.md). The ones below are specific to this repo.
+
 ### System view
 
 <!-- MEDIA: optional polished export of this diagram. Suggested: docs/media/architecture.png -->
@@ -235,6 +271,37 @@ sequenceDiagram
   UI->>API: GET /evidence/{answer_id}
   API-->>UI: Records, SQL, source section
 ```
+
+### The four states of every data screen
+
+```mermaid
+stateDiagram-v2
+  [*] --> Loading
+  Loading --> Ready: data arrives
+  Loading --> Empty: nothing to show
+  Loading --> Error: request fails
+  Error --> Loading: Retry
+  Ready --> Loading: filter, tab or page changes
+  Ready --> AgentUnavailable: assistant fails
+  AgentUnavailable --> Ready: manual controls still work
+```
+
+Every data screen handles loading, empty, error with retry, and agent unavailable. The workspace stays fully usable with the assistant collapsed or failing.
+
+### Page folder boundaries
+
+```mermaid
+flowchart TB
+  P[page.tsx<br/>thin: params and composition] --> C[components/<br/>this page only]
+  P --> H[hooks/<br/>the only place that calls the API client]
+  H --> API[lib/api/client.ts]
+  C -. never calls .-> API
+  C --> SH[components/shared<br/>two or more pages]
+  C --> UIP[components/ui<br/>shadcn primitives]
+  P -. no imports across route folders .-> OTHER[other route folders]
+```
+
+ESLint enforces these boundaries.
 
 ### Types flow from the API
 
@@ -326,17 +393,27 @@ Each page folder is self-contained and carries a README card (purpose, endpoints
 
 ## Quality at a glance
 
-Figures from the backend's latest [test report](../medynium-apis/docs/quality/test-report.md), run against a real Snowflake account and seeded users.
+Backend figures are from the [evaluation hub](../medynium-apis/docs/evaluation/results.md), run against a real Snowflake account and seeded users. UI figures were re-run on 2026-10-06.
 
-| Check                                | Result                                                                                                                           |
-| ------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------- |
-| Golden question set (cited answers)  | 19 of 19                                                                                                                         |
-| Prompt-injection set                 | 12 of 12                                                                                                                         |
-| Retrieval over the drug-label corpus | recall@5 of 1.0, negatives answered honestly                                                                                     |
-| Routing set                          | 44 of 47                                                                                                                         |
-| Colour contrast (both themes)        | 52 of 52 token pairs                                                                                                             |
-| Lighthouse accessibility             | 100 on the component gallery (both themes), sign-in and the invalid-invite page                                                  |
-| Speed                                | Data screens in about 1 s. A full safety review reads records and label text, typically 15 to 40 s, with each step streamed live |
+| Check | Result |
+| --- | --- |
+| UI tests (Vitest, 29 files) | **145 passed** |
+| Golden question set (cited answers) | **18 of 19**; the miss is an open model-variance case, disclosed in the report |
+| Prompt-injection set | **12 of 12** |
+| Retrieval over the drug-label corpus | recall@5 of 1.0, negatives answered honestly |
+| Routing set | **72 of 73 (98.6%)** |
+| Colour contrast (both themes) | 52 of 52 token pairs |
+| Lighthouse accessibility | 100 on the component gallery (both themes), sign-in and the invalid-invite page |
+| Speed | Data screens about 1 s. Safety review p50 24 s (target 20 s), with each step streamed live |
+
+```mermaid
+pie showData
+  title Tests across the workspace (2026-10-06)
+  "API unit" : 250
+  "API live (functions)" : 157
+  "Web (this repo)" : 145
+  "Mobile" : 59
+```
 
 The manual parity checklist is in [docs/quality/](docs/quality/manual-parity-checklist.md).
 
@@ -389,5 +466,6 @@ All external accounts, keys and decisions are listed in [docs/external-dependenc
 - [Design direction](docs/design/design-direction.md), [component specs](docs/design/component-specs.md), [accessibility pass](docs/design/usability-and-accessibility-pass.md)
 - [Manual parity checklist](docs/quality/manual-parity-checklist.md), [user journeys](docs/quality/user-journeys.md)
 - [Media shot list](docs/media/README.md): what to capture for the images above
+- [Evaluation hub](../medynium-apis/docs/evaluation/README.md) and [diagram gallery](../medynium-apis/docs/architecture/diagrams.md)
 - Backend: [architecture](../medynium-apis/docs/architecture/overview.md), [AI layer](../medynium-apis/docs/architecture/ai-layer.md), [security and access](../medynium-apis/docs/architecture/security-and-access.md)
 - [`medynium-prototype.html`](docs/design/medynium-prototype.html) is a behaviour reference, not the visual target
