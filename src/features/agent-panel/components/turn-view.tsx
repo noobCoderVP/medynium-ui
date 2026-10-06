@@ -7,6 +7,7 @@ import { StepsList } from "@/components/shared/steps-list";
 import { copy } from "@/lib/copy";
 import { AnswerView } from "@/features/evidence";
 import { hrefForAction, type Turn } from "../lib/conversation";
+import { FollowUps } from "./follow-ups";
 import { ProposalCard } from "./proposal-card";
 import { RefusalView } from "./refusal-view";
 
@@ -41,7 +42,17 @@ function TurnError({ turn, onRetry }: { turn: Turn; onRetry: () => void }) {
 }
 
 /** One exchange: the question, route chips, live steps, any actions taken, then the answer or refusal. */
-export function TurnView({ turn, onRetry }: { turn: Turn; onRetry: (question: string) => void }) {
+export function TurnView({
+  turn,
+  onRetry,
+  onFollowUp,
+}: {
+  turn: Turn;
+  onRetry: (question: string) => void;
+  /** Given only for the latest turn, so older answers do not keep offering stale follow-ups. */
+  onFollowUp?: (question: string) => void;
+}) {
+  const lastAnswer = turn.answers.at(-1);
   return (
     <article aria-label="Exchange" className="space-y-3">
       <p className="ml-auto w-fit max-w-[90%] rounded-lg bg-agent-soft px-3 py-2 text-sm text-agent">
@@ -91,6 +102,9 @@ export function TurnView({ turn, onRetry }: { turn: Turn; onRetry: (question: st
       {turn.answers.map((answer) => (
         <AnswerView key={answer.answer_id} answer={answer} />
       ))}
+      {onFollowUp && lastAnswer && turn.status !== "running" ? (
+        <FollowUps answer={lastAnswer} onPick={onFollowUp} />
+      ) : null}
       {turn.proposals.map((proposal) => (
         <ProposalCard key={proposal.proposal_id} proposal={proposal} />
       ))}

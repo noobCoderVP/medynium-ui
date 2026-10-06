@@ -105,8 +105,13 @@ export function AgentPanel() {
               {turns.length === 0 ? (
                 <Suggestions hasPatient={Boolean(scope.patientId)} onPick={ask} />
               ) : null}
-              {turns.map((turn) => (
-                <TurnView key={turn.id} turn={turn} onRetry={ask} />
+              {turns.map((turn, index) => (
+                <TurnView
+                  key={turn.id}
+                  turn={turn}
+                  onRetry={ask}
+                  onFollowUp={index === turns.length - 1 ? ask : undefined}
+                />
               ))}
               <p className="sr-only" aria-live="polite">
                 {announcement(turns[turns.length - 1])}
