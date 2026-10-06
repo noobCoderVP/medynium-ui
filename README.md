@@ -1,7 +1,6 @@
 <div align="center">
 
-<!-- MEDIA: logo or banner. Suggested file: docs/media/banner.png (1600x400) -->
-<img src="docs/media/banner.png" alt="Medynium: the governed clinical workstation" width="100%" />
+<img src="docs/media/logo.png" alt="Medynium logo" width="96" />
 
 # Medynium
 
@@ -63,11 +62,6 @@ A clinician has minutes per patient. The facts they need live in different place
 
 ## See it in action
 
-<!-- MEDIA: hero GIF or video link. Suggested: docs/media/hero-demo.gif (about 20 s loop) and a link to the full video. -->
-<p align="center">
-  <img src="docs/media/hero-demo.gif" alt="Open a patient, run the safety review, click Why?" width="90%" />
-</p>
-
 |                                |                                                                                                                          |
 | ------------------------------ | ------------------------------------------------------------------------------------------------------------------------ |
 | **Live demo**                  | _Add the deployed Vercel URL here_                                                                                       |
@@ -76,16 +70,16 @@ A clinician has minutes per patient. The facts they need live in different place
 
 **The 60-second story.** Open the dashboard and the worklist already shows who changed overnight. Open Rahul Patel, 58, on a rising metformin dose with a falling eGFR. Run the safety review: the steps stream in live, and the answer links the renal consideration to his eGFR trend and to the exact section of the metformin label. Click **Why?** to see the records, the SQL and the source. Then sign in as an assistant who has not been given access to another patient, and watch that patient simply not exist.
 
-<!-- MEDIA: screenshot gallery. Add these files under docs/media/ -->
-
-|                                                                              |                                                                                                        |
-| ---------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------ |
-| ![Dashboard](docs/media/dashboard.png)                                       | ![Patient workspace](docs/media/patient-overview.png)                                                  |
-| **Dashboard.** Worklist with change flags, utilisation, one-click "Brief me" | **Patient 360.** Everything about one patient, each value dated and sourced                            |
-| ![Safety review](docs/media/safety-review.png)                               | ![Why panel](docs/media/why-panel.png)                                                                 |
-| **Safety review.** Live steps, then tagged statements                        | **Why? panel.** Records, SQL and source label behind a statement                                       |
-| ![Assistant](docs/media/assistant.png)                                       | ![Access denied looks missing](docs/media/denied-looks-missing.png)                                    |
-| **Assistant.** Ask in plain words, watch the steps, approve what it proposes | **Denied equals missing.** A patient you cannot open is indistinguishable from one that does not exist |
+<table>
+  <tr>
+    <td width="50%"><img src="docs/media/login.png" alt="Sign-in page" /><br /><b>Sign in.</b> What the product is, and the Snowflake features behind it</td>
+    <td width="50%"><img src="docs/media/dashboard.png" alt="Dashboard" /><br /><b>Dashboard.</b> Worklist with change flags, utilisation, one-click "Brief me"</td>
+  </tr>
+  <tr>
+    <td width="50%"><img src="docs/media/patient-overview.png" alt="Patient workspace" /><br /><b>Patient 360.</b> Everything about one patient, each value dated and sourced</td>
+    <td width="50%"><img src="docs/media/knowledge.png" alt="Knowledge search with the assistant" /><br /><b>Knowledge and assistant.</b> Cited drug-label answers with Why? evidence</td>
+  </tr>
+</table>
 
 ---
 
@@ -163,9 +157,7 @@ Workstation touches: collapsible sidebar, command palette (`Ctrl/Cmd + K`), focu
 
 A single workspace per patient with nine tabs. Every value carries its date and source, each medicine shows whether a drug label is indexed, and the allergy banner is always visible. Lab values link to their trend; timeline events open the underlying record. Filters and tabs live in the URL, so a reload or the back button returns you exactly where you were.
 
-<!-- MEDIA: docs/media/patient-timeline.png and docs/media/lab-trend.png -->
-
-![Timeline and lab trend](docs/media/lab-trend.png)
+![Patient 360 with the AI-tagged summary and a dated timeline](docs/media/patient-overview.png)
 
 ### Evidence-first safety review
 
@@ -183,10 +175,6 @@ A person, never the assistant, raises a finding from a safety statement and deci
 
 Natural language over the open patient and the clinician's own panel: summaries, "what changed since the last visit", current medications, lab trends, label questions and combined safety questions. It can navigate the workspace through four allowed actions and can prepare a new note, allergy, diagnosis or medicine as a **proposal** with a preview. Nothing is saved until the doctor clicks Approve. Prescribing, dosing, cross-patient and population questions are refused with an explanation and audited.
 
-<!-- MEDIA: docs/media/assistant-proposal.png -->
-
-![Assistant proposal with approve](docs/media/assistant-proposal.png)
-
 ### Reports: from paper to structured record
 
 Upload a PDF or a photo of a lab report or prescription. Rows are extracted with the exact words and page they came from, a patient-name mismatch blocks approval until a doctor confirms, and nothing reaches the record until a doctor accepts, edits or rejects each row and approves the report. Assistants can upload and look; only doctors decide.
@@ -198,6 +186,8 @@ For the open patient, the closest of the clinician's own patients, ranked and ex
 ### Knowledge search
 
 Search drug labels in plain words, by Indian brand name or with a typo. Results are retrieved sections with a full citation and the matched words marked. A drug that is not indexed shows an honest gap with nearby suggestions, and a clinician can request coverage which an admin reviews.
+
+![Knowledge search, drug list and cited assistant answer](docs/media/knowledge.png)
 
 ### Audit and accountability
 
@@ -231,8 +221,6 @@ Principles the UI holds to, each enforced in code or in review:
 Backend diagrams (sign-in and refresh, proposal approval, report intake, state machines, write path, delivery pipeline) are in the [diagram gallery](../medynium-apis/docs/architecture/diagrams.md). The ones below are specific to this repo.
 
 ### System view
-
-<!-- MEDIA: optional polished export of this diagram. Suggested: docs/media/architecture.png -->
 
 ```mermaid
 flowchart LR
@@ -384,7 +372,7 @@ src/
   lib/                      api client, SSE, env, formatting; no UI
 docs/design/                design direction, component specs, accessibility pass
 docs/quality/               manual parity checklist and test evidence
-docs/media/                 screenshots, GIFs and the banner used by this README
+docs/media/                 logo and screenshots used by this README
 ```
 
 Each page folder is self-contained and carries a README card (purpose, endpoints used, requirement IDs, states handled). ESLint enforces the boundaries: no imports across route folders, and components never call `fetch` or the API client.
