@@ -22,7 +22,7 @@ One Patient 360 screen. An assistant that can only see what the signed-in doctor
 ![Accessibility](https://img.shields.io/badge/Lighthouse%20a11y-100-brightgreen)
 ![Synthetic data](https://img.shields.io/badge/data-synthetic%20only-orange)
 
-**[Live demo](#see-it-in-action)** · **[Watch the 3-minute tour](#see-it-in-action)** · **[API repo](../medynium-apis)** · **[Mobile repo](../medynium-app)**
+**[Live demo](https://medynium-ui.vercel.app/)** · **[Watch the 10-minute walkthrough](https://drive.google.com/file/d/1V4aE42lnwhs9ShooGIEdXGQKrjsN-N79/view)** · **[API repo](../medynium-apis)** · **[Mobile repo](../medynium-app)**
 
 </div>
 
@@ -68,11 +68,11 @@ A clinician has minutes per patient. The facts they need live in different place
 
 ## See it in action
 
-|                                |                                                                                                                          |
-| ------------------------------ | ------------------------------------------------------------------------------------------------------------------------ |
-| **Live demo**                  | _Add the deployed Vercel URL here_                                                                                       |
-| **3-minute walkthrough video** | _Add the video link here_                                                                                                |
-| **Demo accounts**              | Doctor (admin), second doctor and assistant. Credentials are kept outside the repo in `~/.medynium/demo_credentials.txt` |
+|                                 |                                                                                                                          |
+| ------------------------------- | ------------------------------------------------------------------------------------------------------------------------ |
+| **Live demo**                   | [medynium-ui.vercel.app](https://medynium-ui.vercel.app/)                                                                |
+| **10-minute walkthrough video** | [Watch on Google Drive](https://drive.google.com/file/d/1V4aE42lnwhs9ShooGIEdXGQKrjsN-N79/view)                          |
+| **Demo accounts**               | Doctor (admin), second doctor and assistant. Credentials are kept outside the repo in `~/.medynium/demo_credentials.txt` |
 
 **The 60-second story.** Open the dashboard and the worklist already shows who changed overnight. Open Rahul Patel, 58, on a rising metformin dose with a falling eGFR. Run the safety review: the steps stream in live, and the answer links the renal consideration to his eGFR trend and to the exact section of the metformin label. Click **Why?** to see the records, the SQL and the source. Then sign in as an assistant who has not been given access to another patient, and watch that patient simply not exist.
 
@@ -108,15 +108,15 @@ Built for the context it serves: Indian brand names resolve to their generic dru
 
 ### Real-world use cases
 
-| Use case | Where in the UI | Why it helps |
-| --- | --- | --- |
-| **Pre-consult review** | Dashboard, "Brief me", patient Overview | Who changed and what is missing, in about a second, with no model call |
-| **Medicine safety check** | Patient, Safety tab | The lab trend tied to the exact label section, with Why? |
-| **Emergency and discharge follow-up** | Pending page | Open findings, due follow-ups, unreviewed abnormal labs, recent ER visits, most urgent first |
-| **Brand-name and typo drug lookup** | Knowledge page | Indian brand names resolve to the generic; a missing label is an honest gap with a coverage request |
-| **Paper reports to records** | Patient, Reports tab | Each extracted row shows its quoted words and page; a doctor approves |
-| **Privacy between doctors** | Any patient route | A patient you cannot open renders the same not-found as one that does not exist |
-| **Accountability** | Activity page | Your own audit log, each entry linking back to its Why? |
+| Use case                              | Where in the UI                         | Why it helps                                                                                        |
+| ------------------------------------- | --------------------------------------- | --------------------------------------------------------------------------------------------------- |
+| **Pre-consult review**                | Dashboard, "Brief me", patient Overview | Who changed and what is missing, in about a second, with no model call                              |
+| **Medicine safety check**             | Patient, Safety tab                     | The lab trend tied to the exact label section, with Why?                                            |
+| **Emergency and discharge follow-up** | Pending page                            | Open findings, due follow-ups, unreviewed abnormal labs, recent ER visits, most urgent first        |
+| **Brand-name and typo drug lookup**   | Knowledge page                          | Indian brand names resolve to the generic; a missing label is an honest gap with a coverage request |
+| **Paper reports to records**          | Patient, Reports tab                    | Each extracted row shows its quoted words and page; a doctor approves                               |
+| **Privacy between doctors**           | Any patient route                       | A patient you cannot open renders the same not-found as one that does not exist                     |
+| **Accountability**                    | Activity page                           | Your own audit log, each entry linking back to its Why?                                             |
 
 ### A clinician's day
 
@@ -389,16 +389,16 @@ Each page folder is self-contained and carries a README card (purpose, endpoints
 
 Backend figures are from the [evaluation hub](../medynium-apis/docs/evaluation/results.md), run against a real Snowflake account and seeded users. UI figures were re-run on 2026-10-06.
 
-| Check | Result |
-| --- | --- |
-| UI tests (Vitest, 29 files) | **145 passed** |
-| Golden question set (cited answers) | **18 of 19**; the miss is an open model-variance case, disclosed in the report |
-| Prompt-injection set | **12 of 12** |
-| Retrieval over the drug-label corpus | recall@5 of 1.0, negatives answered honestly |
-| Routing set | **72 of 73 (98.6%)** |
-| Colour contrast (both themes) | 52 of 52 token pairs |
-| Lighthouse accessibility | 100 on the component gallery (both themes), sign-in and the invalid-invite page |
-| Speed | Data screens about 1 s. Safety review p50 24 s (target 20 s), with each step streamed live |
+| Check                                | Result                                                                                     |
+| ------------------------------------ | ------------------------------------------------------------------------------------------ |
+| UI tests (Vitest, 29 files)          | **145 passed**                                                                             |
+| Golden question set (cited answers)  | **18 of 19**; the miss is an open model-variance case, disclosed in the report             |
+| Prompt-injection set                 | **12 of 12**                                                                               |
+| Retrieval over the drug-label corpus | recall@5 of 1.0, negatives answered honestly                                               |
+| Routing set                          | **72 of 73 (98.6%)**                                                                       |
+| Colour contrast (both themes)        | 52 of 52 token pairs                                                                       |
+| Lighthouse accessibility             | 100 on the component gallery (both themes), sign-in and the invalid-invite page            |
+| Speed                                | Data screens about 1 s. Safety review p50 24 s (target 20 s), with each step streamed live |
 
 ```mermaid
 pie showData
